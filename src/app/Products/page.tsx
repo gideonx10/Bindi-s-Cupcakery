@@ -1,20 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { products } from "@/app/Products/data/products";
 import type { ProductType } from "@/app/Products/types/product";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import gsap from "gsap";
+import ProductCard from "../components/ProductCard";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function ProductsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("search") || "";
+
+  const [searchTerm, setSearchTerm] = useState(query);
+  const debouncedSearchTerm = useDebounce(searchTerm, 700); // 700ms delay
+
   const [selectedTypes, setSelectedTypes] = useState<ProductType[]>([]);
   const [showBestsellers, setShowBestsellers] = useState(false);
   const [showSugarFree, setShowSugarFree] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [PricedropdownOpen, setPriceDropdownOpen] = useState(false);
+  const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
   const imageRef = useRef(null);
   const imageRef2 = useRef(null);
 
@@ -35,6 +44,20 @@ export default function ProductsPage() {
     });
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (debouncedSearchTerm) {
+      params.set("search", debouncedSearchTerm);
+    } else {
+      params.delete("search");
+    }
+    router.replace(`?${params.toString()}`);
+  }, [debouncedSearchTerm, router, searchParams]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
   const allTypes = [
     "All Products",
     ...Array.from(new Set(products.map((product) => product.type))),
@@ -42,9 +65,7 @@ export default function ProductsPage() {
 
   const toggleTypeSelection = (type: ProductType) => {
     setSelectedTypes((prev) => {
-      if (type === "All Products") {
-        return [];
-      }
+      if (type === "All Products") return [];
       return prev.includes(type)
         ? prev.filter((t) => t !== type)
         : [...prev, type];
@@ -60,25 +81,25 @@ export default function ProductsPage() {
       ) {
         return false;
       }
-      if (showBestsellers && !product.isBestseller) {
-        return false;
-      }
-      if (showSugarFree && !product.isSugarFree) {
+      if (showBestsellers && !product.isBestseller) return false;
+      if (showSugarFree && !product.isSugarFree) return false;
+      if (
+        debouncedSearchTerm &&
+        !product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      ) {
         return false;
       }
       return true;
     })
     .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.price - b.price;
-      } else if (sortOrder === "desc") {
-        return b.price - a.price;
-      }
+      if (sortOrder === "asc") return a.price - b.price;
+      if (sortOrder === "desc") return b.price - a.price;
       return 0;
     });
 
   return (
     <div className="min-h-screen w-full bg-[#E9E8E4]">
+      {/* Hero Section */}
       <div className="w-full h-[30vh] bg-[#F7DB9B] bg-opacity-35 flex items-center justify-center text-[#23221F] text-center text-[1.6rem] font-semibold font-ancient">
         <Image
           ref={imageRef}
@@ -97,10 +118,21 @@ export default function ProductsPage() {
           className="absolute z-1 -rotate-12 origin-[50%_0%] -translate-y-4 right-[13%] max-[750px]:right-[8%] top-0 max-[750px]:h-[80px] max-[750px]:w-auto"
         />
         <div className="relative z-80">
-          Homemade | Eggless | preservative free | 100% natural
+          Homemade | Eggless | Preservative-Free | 100% Natural
           <br />
           Customizable dessert hampers for your special moments
         </div>
+      </div>
+
+      {/* Search Input */}
+      <div className="flex justify-center mt-4">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search products..."
+          className="px-4 py-2 w-[80%] md:w-[50%] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F7DB9B]"
+        />
       </div>
 
       <div className="max-w-[1400px] mx-auto px-6 py-8">
@@ -165,12 +197,12 @@ export default function ProductsPage() {
           <div className="relative inline-block">
             <button
               className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex items-center justify-centre min-w-[200px]"
-              onClick={() => setPriceDropdownOpen(!PricedropdownOpen)}
+              onClick={() => setPriceDropdownOpen(!priceDropdownOpen)}
             >
               Sort by Price
               <ChevronDown className="transform translate-x-2 translate-y-0.5" />
             </button>
-            {PricedropdownOpen && (
+            {priceDropdownOpen && (
               <ul className="absolute left-0 mt-2 w-[200px] bg-[#E9E8E4] backdrop-blur-md border rounded-2xl shadow-lg z-50 opacity-90">
                 <li
                   className={`px-4 py-2 text-center font-semibold cursor-pointer ${
@@ -194,46 +226,9 @@ export default function ProductsPage() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center p-4">
           {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 w-full max-w-[350px] mx-auto bg-[#BDC1B6] bg-opacity-35 p-1 rounded-xl"
-            >
-              <div className="relative aspect-[4/3]">
-                <img
-                  src={product.image || "/placeholder.svg"}
-                  alt={product.name}
-                  className="object-cover w-full h-full rounded-xl hover:scale-[102%] transition-transform duration-400 hover:shadow-md"
-                />
-                <div className="absolute top-2 left-2 flex flex-col gap-2">
-                  {product.isBestseller && (
-                    <div className="bg-yellow-400 text-black text-xs px-2 py-1 rounded">
-                      Bestseller
-                    </div>
-                  )}
-                  {product.isSugarFree && (
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded">
-                      Sugar Free
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                  {product.description}
-                </p>
-                <div className="text-lg font-bold">
-                  ${product.price.toFixed(2)}
-                </div>
-              </div>
-              <div className="p-4 pt-0">
-                <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                  Add to Cart
-                </button>
-              </div>
-            </div>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
