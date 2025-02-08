@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Germania+One&family=IM+Fell+English:ital@0;1&family=New+Rocker&family=Space+Grotesk:wght@300..700&family=Uncial+Antiqua&display=swap");
 
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@600&family=Quicksand:wght@500&family=Montserrat:wght@600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
