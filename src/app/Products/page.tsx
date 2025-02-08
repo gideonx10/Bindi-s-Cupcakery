@@ -7,7 +7,7 @@ import { products } from "@/app/Products/data/products";
 import type { ProductType } from "@/app/Products/types/product";
 import Image from "next/image";
 import gsap from "gsap";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "@/components/ProductCard";
 import { useDebounce } from "@/hooks/useDebounce";
 
 export default function ProductsPage() {
