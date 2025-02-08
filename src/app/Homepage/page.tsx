@@ -33,7 +33,7 @@ export default function Homepage() {
 
     return (
         <div className="h-screen bg-[#ef9aaa] text-[#3D1C1A] flex overflow-hidden">
-            <div className="w-1/2 flex flex-col justify-center items-start p-12 relative z-10">
+            <div className="w-1/2 flex flex-col justify-center items-start p-12 relative z-10 ml-[3vw]">
                 <div className="relative inline-block">
                     <h1 className="font-['Teko'] text-9xl font-bold leading-none text-[#3D1C1A] drop-shadow-lg">
                         BINDI'S
@@ -42,8 +42,8 @@ export default function Homepage() {
                     <div ref={celebrateContainer} className="absolute -top-16 left-64 w-80 h-80 pointer-events-none"></div>
                 </div>
                 
-                <div className="space-y-6 mt-8 mb-10">
-                    <div className="text-4xl font-medium max-w-xl leading-tight font-['Quicksand']">
+                <div className="space-y-6 mt-4 mb-10">
+                    <div className="text-3xl font-medium max-w-xl leading-tight font-['Quicksand']">
                         <DecryptedText
                             text="Crafting Moments of Pure Bliss, One Cupcake at a Time ✨"
                             speed={80}
@@ -59,7 +59,7 @@ export default function Homepage() {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <Link href="#order" className="w-80 text-center bg-[#3D1C1A] text-[#F5E6D3] px-12 py-4 rounded-full text-2xl font-bold shadow-lg hover:translate-y-[-3px] hover:shadow-xl transition-all">
+                    <Link href="#order" className="w-80 text-center bg-[#3D1C1A] text-[#F5E6D3] px-12 py-4 rounded-2xl text-2xl font-bold shadow-lg hover:translate-y-[-3px] hover:shadow-xl transition-all">
                         Order Now 🧁
                     </Link>
                     
@@ -72,7 +72,7 @@ export default function Homepage() {
                                 'Freshly Baked',
                                 'Made with Love'
                             ]}
-                            mainClassName="inline-flex px-12 py-4 bg-[#F5E6D3] text-[#3D1C1A] overflow-hidden justify-center rounded-full text-2xl font-['Montserrat'] font-semibold whitespace-nowrap"
+                            mainClassName="inline-flex px-12 py-4 bg-[#F5E6D3] text-[#3D1C1A] overflow-hidden justify-center rounded-2xl text-2xl font-['Montserrat'] font-semibold whitespace-nowrap"
                             staggerFrom="last"
                             initial={{ y: "100%" }}
                             animate={{ y: 0 }}
@@ -86,7 +86,7 @@ export default function Homepage() {
                 </div>
             </div>
             
-            <div className="absolute right-0 top-0 w-1/2 h-full flex items-center justify-center">
+            <div className="absolute right-[6vw] bottom-2 w-[30%] h-full flex items-center justify-center">
                 <div ref={lottieContainer} className="max-w-xl w-full"></div>
             </div>
         </div>
