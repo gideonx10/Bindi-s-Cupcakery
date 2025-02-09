@@ -41,7 +41,12 @@ export const authOptions = {
         if (!isPasswordValid) throw new Error("Invalid password");
 
         // Return the basic user object
-        return { id: user.id, name: user.name, email: user.email, role: user.role };
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
     GoogleProvider({
@@ -54,7 +59,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, user }: { session: any, user: any }) {
+    async session({ session, user }: { session: any; user: any }) {
       // Enrich session.user with role from database
       if (session?.user) {
         const dbUser = await User.findOne({ email: session.user.email });
