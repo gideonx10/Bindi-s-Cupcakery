@@ -1,7 +1,7 @@
 // Page.tsx
 import Landing from "./pages/Landing";
 import { InfiniteName } from "./pages/InfiniteName";
-import Preloader from "@/components/Preloader";
+// import Preloader from "@/components/Preloader";
 
 export default function Page() {
   return (
