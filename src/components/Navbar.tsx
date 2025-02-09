@@ -5,8 +5,11 @@ import { ShoppingBag, Menu, X, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+// import { getServerSession } from "next-auth";
 
 const Navbar = () => {
+  // const session = await getServerSession(authOptions);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // New state for login status
@@ -277,6 +280,11 @@ const Navbar = () => {
               <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
                 BLOG
               </li>
+              {/* {session?(
+                <Link href="/api/auth/signout?callbackUrl=/"> Logout</Link>
+              ):(
+                <Link href="/api/auth/signin">Login</Link>
+              )} */}
             </ul>
           </div>
         </div>
