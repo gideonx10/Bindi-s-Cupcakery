@@ -1,248 +1,12 @@
-// "use client";
-
-// import { useEffect, useRef, useState } from "react";
-// import { useSearchParams, useRouter } from "next/navigation";
-// import { ChevronDown } from "lucide-react";
-// import { products } from "@/app/Products/data/products";
-// import type { ProductType } from "@/app/Products/types/product";
-// import Image from "next/image";
-// import gsap from "gsap";
-// import ProductCard from "../components/ProductCard";
-// import { useDebounce } from "@/hooks/useDebounce";
-
-// export default function ProductsPage() {
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-//   const query = searchParams.get("search") || "";
-
-//   const [searchTerm, setSearchTerm] = useState(query);
-//   const debouncedSearchTerm = useDebounce(searchTerm, 700); // 700ms delay
-
-//   const [selectedTypes, setSelectedTypes] = useState<ProductType[]>([]);
-//   const [showBestsellers, setShowBestsellers] = useState(false);
-//   const [showSugarFree, setShowSugarFree] = useState(false);
-//   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-//   const [dropdownOpen, setDropdownOpen] = useState(false);
-//   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
-//   const imageRef = useRef(null);
-//   const imageRef2 = useRef(null);
-
-//   useEffect(() => {
-//     gsap.to(imageRef.current, {
-//       rotation: 12,
-//       yoyo: true,
-//       repeat: -1,
-//       duration: 2,
-//       ease: "power1.inOut",
-//     });
-//     gsap.from(imageRef2.current, {
-//       rotation: 12,
-//       yoyo: true,
-//       repeat: -1,
-//       duration: 2,
-//       ease: "power1.inOut",
-//     });
-//   }, []);
-
-//   useEffect(() => {
-//     const params = new URLSearchParams(searchParams);
-//     if (debouncedSearchTerm) {
-//       params.set("search", debouncedSearchTerm);
-//     } else {
-//       params.delete("search");
-//     }
-//     router.replace(`?${params.toString()}`);
-//   }, [debouncedSearchTerm, router, searchParams]);
-
-//   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     setSearchTerm(event.target.value);
-//   };
-
-//   const allTypes = [
-//     "All Products",
-//     ...Array.from(new Set(products.map((product) => product.type))),
-//   ];
-
-//   const toggleTypeSelection = (type: ProductType) => {
-//     setSelectedTypes((prev) => {
-//       if (type === "All Products") return [];
-//       return prev.includes(type)
-//         ? prev.filter((t) => t !== type)
-//         : [...prev, type];
-//     });
-//   };
-
-//   const filteredProducts = products
-//     .filter((product) => {
-//       if (
-//         selectedTypes.length > 0 &&
-//         !selectedTypes.includes(product.type) &&
-//         !selectedTypes.includes("All Products")
-//       ) {
-//         return false;
-//       }
-//       if (showBestsellers && !product.isBestseller) return false;
-//       if (showSugarFree && !product.isSugarFree) return false;
-//       if (
-//         debouncedSearchTerm &&
-//         !product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-//       ) {
-//         return false;
-//       }
-//       return true;
-//     })
-//     .sort((a, b) => {
-//       if (sortOrder === "asc") return a.price - b.price;
-//       if (sortOrder === "desc") return b.price - a.price;
-//       return 0;
-//     });
-
-//   return (
-//     <div className="min-h-screen w-full bg-[#E9E8E4]">
-//       {/* Hero Section */}
-//       <div className="w-full h-[30vh] bg-[#F7DB9B] bg-opacity-35 flex items-center justify-center text-[#23221F] text-center text-[1.6rem] font-semibold font-ancient">
-//         <Image
-//           ref={imageRef}
-//           src="/images/leaves.png"
-//           alt="leaves"
-//           width={270}
-//           height={270}
-//           className="absolute z-50 -rotate-12 origin-[50%_0%] -translate-y-4 left-[9%] top-0 max-[750px]:left-[5%] max-[750px]:h-[150px] max-[750px]:w-auto"
-//         />
-//         <Image
-//           ref={imageRef2}
-//           src="/images/small_leavs.png"
-//           alt="leaves"
-//           width={150}
-//           height={150}
-//           className="absolute z-1 -rotate-12 origin-[50%_0%] -translate-y-4 right-[13%] max-[750px]:right-[8%] top-0 max-[750px]:h-[80px] max-[750px]:w-auto"
-//         />
-//         <div className="relative z-80">
-//           Homemade | Eggless | Preservative-Free | 100% Natural
-//           <br />
-//           Customizable dessert hampers for your special moments
-//         </div>
-//       </div>
-
-//       {/* Search Input */}
-//       <div className="flex justify-center mt-4">
-//         <input
-//           type="text"
-//           value={searchTerm}
-//           onChange={handleSearchChange}
-//           placeholder="Search products..."
-//           className="px-4 py-2 w-[80%] md:w-[50%] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F7DB9B]"
-//         />
-//       </div>
-
-//       <div className="max-w-[1400px] mx-auto px-6 py-8">
-//         {/* Filter Section - Centered */}
-//         <div className="flex flex-wrap gap-8 mb-8 justify-start">
-//           {/* Category Multi-Select Dropdown */}
-//           <div className="relative ">
-//             <button
-//               className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex justify-center items-center min-w-[200px]"
-//               onClick={() => setDropdownOpen(!dropdownOpen)}
-//             >
-//               Products
-//               <ChevronDown className="transform translate-x-2 translate-y-0.5" />
-//             </button>
-
-//             {dropdownOpen && (
-//               <div className="absolute w-[250px] mt-2 bg-[#E9E8E4] border rounded-2xl shadow-lg z-50 opacity-90">
-//                 <ul className="py-2">
-//                   {allTypes.map((type) => (
-//                     <li
-//                       key={type}
-//                       className={`px-4 py-2 text-center font-semibold cursor-pointer transition ${
-//                         selectedTypes.includes(type as ProductType)
-//                           ? "bg-green-500 text-white"
-//                           : "hover:bg-[#e0e6d6]"
-//                       }`}
-//                       onClick={() => toggleTypeSelection(type as ProductType)}
-//                     >
-//                       {type}
-//                     </li>
-//                   ))}
-//                 </ul>
-//               </div>
-//             )}
-//           </div>
-
-//           {/* Bestsellers Button */}
-//           <button
-//             className={`min-w-[120px] px-4 py-3 font-semibold border rounded-2xl ${
-//               showBestsellers
-//                 ? "bg-blue-500 text-white"
-//                 : "bg-[#BDC1B6] bg-opacity-35"
-//             }`}
-//             onClick={() => setShowBestsellers(!showBestsellers)}
-//           >
-//             {showBestsellers ? "✓ " : ""}Bestsellers
-//           </button>
-
-//           {/* Sugar-Free Button */}
-//           <button
-//             className={`min-w-[120px] px-4 py-3 border font-semibold rounded-2xl ${
-//               showSugarFree
-//                 ? "bg-green-500 text-white"
-//                 : "bg-[#BDC1B6] bg-opacity-35"
-//             }`}
-//             onClick={() => setShowSugarFree(!showSugarFree)}
-//           >
-//             {showSugarFree ? "✓ " : ""}Sugar Free
-//           </button>
-
-//           {/* Sort Dropdown */}
-//           <div className="relative inline-block">
-//             <button
-//               className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex items-center justify-centre min-w-[200px]"
-//               onClick={() => setPriceDropdownOpen(!priceDropdownOpen)}
-//             >
-//               Sort by Price
-//               <ChevronDown className="transform translate-x-2 translate-y-0.5" />
-//             </button>
-//             {priceDropdownOpen && (
-//               <ul className="absolute left-0 mt-2 w-[200px] bg-[#E9E8E4] backdrop-blur-md border rounded-2xl shadow-lg z-50 opacity-90">
-//                 <li
-//                   className={`px-4 py-2 text-center font-semibold cursor-pointer ${
-//                     sortOrder === "asc" ? "bg-gray-200" : "hover:bg-[#e0e6d6]"
-//                   }`}
-//                   onClick={() => setSortOrder("asc")}
-//                 >
-//                   Low to High
-//                 </li>
-//                 <li
-//                   className={`px-4 py-2 text-center font-semibold cursor-pointer ${
-//                     sortOrder === "desc" ? "bg-gray-200" : "hover:bg-[#e0e6d6]"
-//                   }`}
-//                   onClick={() => setSortOrder("desc")}
-//                 >
-//                   High to Low
-//                 </li>
-//               </ul>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Products Grid */}
-//         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center p-4">
-//           {filteredProducts.map((product) => (
-//             <ProductCard key={product.id} product={product} />
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
+import { toast } from "react-hot-toast";
+import { Plus, Minus } from "lucide-react";
 
+// ... (keep all interfaces the same)
 interface Product {
   _id: string;
   name: string;
@@ -259,7 +23,12 @@ interface Category {
   name: string;
 }
 
+interface CartQuantities {
+  [key: string]: number;
+}
+
 export default function ProductsPage() {
+  // ... (keep all state variables and other functions the same until updateCartQuantity)
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -267,6 +36,7 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   const initialSearchQuery = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
@@ -278,17 +48,110 @@ export default function ProductsPage() {
   const [filterBestseller, setFilterBestseller] = useState<boolean>(false);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const [cartQuantities, setCartQuantities] = useState<CartQuantities>({});
+  const [updatingCart, setUpdatingCart] = useState<string | null>(null);
 
-  // Update URL when searchQuery changes
-  useEffect(() => {
-    if (debouncedSearchQuery) {
-      router.push(`?search=${debouncedSearchQuery}`, { scroll: false });
-    } else {
-      router.push("/Products", { scroll: false });
+  const addToCart = async (productId: string) => {
+    setUpdatingCart(productId);
+
+    try {
+      const userId = "67a893e17d6b92f96ee990bf";
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          productId,
+          quantity: 1,
+          action: "increase",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add to cart");
+      }
+
+      setCartQuantities((prev) => ({
+        ...prev,
+        [productId]: 1,
+      }));
+
+      toast.success("Added to cart!");
+    } catch (err) {
+      toast.error("Failed to add to cart");
+      console.error("Error adding to cart:", err);
+    } finally {
+      setUpdatingCart(null);
     }
-  }, [debouncedSearchQuery, router]);
+  };
+  const updateCartQuantity = async (productId: string, newQuantity: number) => {
+    if (newQuantity < 0) return;
+    setUpdatingCart(productId);
 
-  // Fetch products when searchQuery, category, or filters change
+    try {
+      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
+
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          productId,
+          quantity: 1, // We'll always send 1 as we're incrementing/decrementing
+          action:
+            newQuantity > (cartQuantities[productId] || 0)
+              ? "increase"
+              : "decrease",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update cart");
+      }
+
+      setCartQuantities((prev) => ({
+        ...prev,
+        [productId]: newQuantity,
+      }));
+
+      toast.success("Cart updated successfully!");
+    } catch (err) {
+      toast.error("Failed to update cart");
+      console.error("Error updating cart:", err);
+    } finally {
+      setUpdatingCart(null);
+    }
+  };
+
+  // ... (keep all other functions and useEffects the same)
+  useEffect(() => {
+    async function fetchCartQuantities() {
+      try {
+        const userId = "67a893e17d6b92f96ee990bf";
+        const response = await fetch(`/api/cart?userId=${userId}`);
+        if (!response.ok) throw new Error("Failed to fetch cart");
+
+        const cartData = await response.json();
+        const quantities: CartQuantities = {};
+
+        cartData.products.forEach((item: any) => {
+          quantities[item.product._id] = item.quantity;
+        });
+
+        setCartQuantities(quantities);
+      } catch (err) {
+        console.error("Error fetching cart quantities:", err);
+      }
+    }
+
+    fetchCartQuantities();
+  }, []);
+
+  // Fetch products
   useEffect(() => {
     async function fetchProducts() {
       setLoading(true);
@@ -297,8 +160,6 @@ export default function ProductsPage() {
         if (debouncedSearchQuery)
           queryParams.append("search", debouncedSearchQuery);
         if (selectedCategory) queryParams.append("category", selectedCategory);
-
-        // Send price filter to backend but without exposing it in the URL
         if (selectedPriceFilter)
           queryParams.append("priceFilter", selectedPriceFilter);
 
@@ -317,7 +178,7 @@ export default function ProductsPage() {
     fetchProducts();
   }, [debouncedSearchQuery, selectedCategory, selectedPriceFilter]);
 
-  // Fetch categories from API
+  // Fetch categories
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -334,7 +195,7 @@ export default function ProductsPage() {
     fetchCategories();
   }, []);
 
-  // Price filter function: Sort products based on selected price filter
+  // Filter and sort functions
   const sortByPrice = (products: Product[]) => {
     if (selectedPriceFilter === "high-low") {
       return products.sort((a, b) => b.price - a.price);
@@ -344,7 +205,6 @@ export default function ProductsPage() {
     return products;
   };
 
-  // Apply additional filters (Sugar-Free and Bestseller)
   const filterProducts = (products: Product[]) => {
     let filtered = sortByPrice(products);
     if (filterSugarFree) {
@@ -357,9 +217,9 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = filterProducts(products);
-
   return (
     <div className="container mx-auto p-4">
+      {/* ... (keep all filters and search components the same) */}
       <h1 className="text-2xl font-bold mb-4">Our Products</h1>
 
       {/* Search Bar */}
@@ -371,7 +231,7 @@ export default function ProductsPage() {
         className="w-full p-2 mb-4 border border-gray-300 rounded-md"
       />
 
-      {/* Category Filter (Not in URL) */}
+      {/* Category Filter */}
       <select
         value={selectedCategory || ""}
         onChange={(e) => setSelectedCategory(e.target.value || null)}
@@ -385,7 +245,7 @@ export default function ProductsPage() {
         ))}
       </select>
 
-      {/* Price Filter (Not in URL) */}
+      {/* Price Filter */}
       <select
         value={selectedPriceFilter || ""}
         onChange={(e) => setSelectedPriceFilter(e.target.value || null)}
@@ -423,7 +283,66 @@ export default function ProductsPage() {
       {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <div key={product._id} className="border rounded-lg p-4 shadow-sm">
+              <ProductCard product={product} />
+              <div className="mt-2">
+                {cartQuantities[product._id] ? (
+                  // Show quantity controls if item is in cart
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() =>
+                        updateCartQuantity(
+                          product._id,
+                          (cartQuantities[product._id] || 0) - 1
+                        )
+                      }
+                      disabled={updatingCart === product._id}
+                      className={`p-2 rounded-l-md ${
+                        updatingCart === product._id
+                          ? "bg-gray-300"
+                          : "bg-blue-600 hover:bg-blue-700 text-white"
+                      }`}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+
+                    <span className="px-4 py-2 bg-gray-100 font-medium">
+                      {cartQuantities[product._id]}
+                    </span>
+
+                    <button
+                      onClick={() =>
+                        updateCartQuantity(
+                          product._id,
+                          (cartQuantities[product._id] || 0) + 1
+                        )
+                      }
+                      disabled={updatingCart === product._id}
+                      className={`p-2 rounded-r-md ${
+                        updatingCart === product._id
+                          ? "bg-gray-300"
+                          : "bg-blue-600 hover:bg-blue-700 text-white"
+                      }`}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  // Show Add to Cart button if item is not in cart
+                  <button
+                    onClick={() => addToCart(product._id)}
+                    disabled={updatingCart === product._id}
+                    className={`w-full p-2 rounded-md ${
+                      updatingCart === product._id
+                        ? "bg-gray-300"
+                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    }`}
+                  >
+                    Add to Cart
+                  </button>
+                )}
+              </div>
+            </div>
           ))}
         </div>
       ) : (
