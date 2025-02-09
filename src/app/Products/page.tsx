@@ -1,242 +1,434 @@
+// "use client";
+
+// import { useEffect, useRef, useState } from "react";
+// import { useSearchParams, useRouter } from "next/navigation";
+// import { ChevronDown } from "lucide-react";
+// import { products } from "@/app/Products/data/products";
+// import type { ProductType } from "@/app/Products/types/product";
+// import Image from "next/image";
+// import gsap from "gsap";
+// import ProductCard from "../components/ProductCard";
+// import { useDebounce } from "@/hooks/useDebounce";
+
+// export default function ProductsPage() {
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const query = searchParams.get("search") || "";
+
+//   const [searchTerm, setSearchTerm] = useState(query);
+//   const debouncedSearchTerm = useDebounce(searchTerm, 700); // 700ms delay
+
+//   const [selectedTypes, setSelectedTypes] = useState<ProductType[]>([]);
+//   const [showBestsellers, setShowBestsellers] = useState(false);
+//   const [showSugarFree, setShowSugarFree] = useState(false);
+//   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+//   const [dropdownOpen, setDropdownOpen] = useState(false);
+//   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
+//   const imageRef = useRef(null);
+//   const imageRef2 = useRef(null);
+
+//   useEffect(() => {
+//     gsap.to(imageRef.current, {
+//       rotation: 12,
+//       yoyo: true,
+//       repeat: -1,
+//       duration: 2,
+//       ease: "power1.inOut",
+//     });
+//     gsap.from(imageRef2.current, {
+//       rotation: 12,
+//       yoyo: true,
+//       repeat: -1,
+//       duration: 2,
+//       ease: "power1.inOut",
+//     });
+//   }, []);
+
+//   useEffect(() => {
+//     const params = new URLSearchParams(searchParams);
+//     if (debouncedSearchTerm) {
+//       params.set("search", debouncedSearchTerm);
+//     } else {
+//       params.delete("search");
+//     }
+//     router.replace(`?${params.toString()}`);
+//   }, [debouncedSearchTerm, router, searchParams]);
+
+//   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setSearchTerm(event.target.value);
+//   };
+
+//   const allTypes = [
+//     "All Products",
+//     ...Array.from(new Set(products.map((product) => product.type))),
+//   ];
+
+//   const toggleTypeSelection = (type: ProductType) => {
+//     setSelectedTypes((prev) => {
+//       if (type === "All Products") return [];
+//       return prev.includes(type)
+//         ? prev.filter((t) => t !== type)
+//         : [...prev, type];
+//     });
+//   };
+
+//   const filteredProducts = products
+//     .filter((product) => {
+//       if (
+//         selectedTypes.length > 0 &&
+//         !selectedTypes.includes(product.type) &&
+//         !selectedTypes.includes("All Products")
+//       ) {
+//         return false;
+//       }
+//       if (showBestsellers && !product.isBestseller) return false;
+//       if (showSugarFree && !product.isSugarFree) return false;
+//       if (
+//         debouncedSearchTerm &&
+//         !product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+//       ) {
+//         return false;
+//       }
+//       return true;
+//     })
+//     .sort((a, b) => {
+//       if (sortOrder === "asc") return a.price - b.price;
+//       if (sortOrder === "desc") return b.price - a.price;
+//       return 0;
+//     });
+
+//   return (
+//     <div className="min-h-screen w-full bg-[#E9E8E4]">
+//       {/* Hero Section */}
+//       <div className="w-full h-[30vh] bg-[#F7DB9B] bg-opacity-35 flex items-center justify-center text-[#23221F] text-center text-[1.6rem] font-semibold font-ancient">
+//         <Image
+//           ref={imageRef}
+//           src="/images/leaves.png"
+//           alt="leaves"
+//           width={270}
+//           height={270}
+//           className="absolute z-50 -rotate-12 origin-[50%_0%] -translate-y-4 left-[9%] top-0 max-[750px]:left-[5%] max-[750px]:h-[150px] max-[750px]:w-auto"
+//         />
+//         <Image
+//           ref={imageRef2}
+//           src="/images/small_leavs.png"
+//           alt="leaves"
+//           width={150}
+//           height={150}
+//           className="absolute z-1 -rotate-12 origin-[50%_0%] -translate-y-4 right-[13%] max-[750px]:right-[8%] top-0 max-[750px]:h-[80px] max-[750px]:w-auto"
+//         />
+//         <div className="relative z-80">
+//           Homemade | Eggless | Preservative-Free | 100% Natural
+//           <br />
+//           Customizable dessert hampers for your special moments
+//         </div>
+//       </div>
+
+//       {/* Search Input */}
+//       <div className="flex justify-center mt-4">
+//         <input
+//           type="text"
+//           value={searchTerm}
+//           onChange={handleSearchChange}
+//           placeholder="Search products..."
+//           className="px-4 py-2 w-[80%] md:w-[50%] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F7DB9B]"
+//         />
+//       </div>
+
+//       <div className="max-w-[1400px] mx-auto px-6 py-8">
+//         {/* Filter Section - Centered */}
+//         <div className="flex flex-wrap gap-8 mb-8 justify-start">
+//           {/* Category Multi-Select Dropdown */}
+//           <div className="relative ">
+//             <button
+//               className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex justify-center items-center min-w-[200px]"
+//               onClick={() => setDropdownOpen(!dropdownOpen)}
+//             >
+//               Products
+//               <ChevronDown className="transform translate-x-2 translate-y-0.5" />
+//             </button>
+
+//             {dropdownOpen && (
+//               <div className="absolute w-[250px] mt-2 bg-[#E9E8E4] border rounded-2xl shadow-lg z-50 opacity-90">
+//                 <ul className="py-2">
+//                   {allTypes.map((type) => (
+//                     <li
+//                       key={type}
+//                       className={`px-4 py-2 text-center font-semibold cursor-pointer transition ${
+//                         selectedTypes.includes(type as ProductType)
+//                           ? "bg-green-500 text-white"
+//                           : "hover:bg-[#e0e6d6]"
+//                       }`}
+//                       onClick={() => toggleTypeSelection(type as ProductType)}
+//                     >
+//                       {type}
+//                     </li>
+//                   ))}
+//                 </ul>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Bestsellers Button */}
+//           <button
+//             className={`min-w-[120px] px-4 py-3 font-semibold border rounded-2xl ${
+//               showBestsellers
+//                 ? "bg-blue-500 text-white"
+//                 : "bg-[#BDC1B6] bg-opacity-35"
+//             }`}
+//             onClick={() => setShowBestsellers(!showBestsellers)}
+//           >
+//             {showBestsellers ? "✓ " : ""}Bestsellers
+//           </button>
+
+//           {/* Sugar-Free Button */}
+//           <button
+//             className={`min-w-[120px] px-4 py-3 border font-semibold rounded-2xl ${
+//               showSugarFree
+//                 ? "bg-green-500 text-white"
+//                 : "bg-[#BDC1B6] bg-opacity-35"
+//             }`}
+//             onClick={() => setShowSugarFree(!showSugarFree)}
+//           >
+//             {showSugarFree ? "✓ " : ""}Sugar Free
+//           </button>
+
+//           {/* Sort Dropdown */}
+//           <div className="relative inline-block">
+//             <button
+//               className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex items-center justify-centre min-w-[200px]"
+//               onClick={() => setPriceDropdownOpen(!priceDropdownOpen)}
+//             >
+//               Sort by Price
+//               <ChevronDown className="transform translate-x-2 translate-y-0.5" />
+//             </button>
+//             {priceDropdownOpen && (
+//               <ul className="absolute left-0 mt-2 w-[200px] bg-[#E9E8E4] backdrop-blur-md border rounded-2xl shadow-lg z-50 opacity-90">
+//                 <li
+//                   className={`px-4 py-2 text-center font-semibold cursor-pointer ${
+//                     sortOrder === "asc" ? "bg-gray-200" : "hover:bg-[#e0e6d6]"
+//                   }`}
+//                   onClick={() => setSortOrder("asc")}
+//                 >
+//                   Low to High
+//                 </li>
+//                 <li
+//                   className={`px-4 py-2 text-center font-semibold cursor-pointer ${
+//                     sortOrder === "desc" ? "bg-gray-200" : "hover:bg-[#e0e6d6]"
+//                   }`}
+//                   onClick={() => setSortOrder("desc")}
+//                 >
+//                   High to Low
+//                 </li>
+//               </ul>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Products Grid */}
+//         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center p-4">
+//           {filteredProducts.map((product) => (
+//             <ProductCard key={product.id} product={product} />
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { products } from "@/app/Products/data/products";
-import type { ProductType } from "@/app/Products/types/product";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import gsap from "gsap";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
+import ProductCard from "../../components/ProductCard";
+
+interface Product {
+  _id: string;
+  name: string;
+  description?: string;
+  price: number;
+  images: string[];
+  isFeatured?: boolean;
+  isSugarFree?: boolean;
+  category: string;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+}
 
 export default function ProductsPage() {
-  const [selectedTypes, setSelectedTypes] = useState<ProductType[]>([]);
-  const [showBestsellers, setShowBestsellers] = useState(false);
-  const [showSugarFree, setShowSugarFree] = useState(false);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [PricedropdownOpen, setPriceDropdownOpen] = useState(false);
-  const imageRef = useRef(null);
-  const imageRef2 = useRef(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const initialSearchQuery = searchParams.get("search") || "";
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedPriceFilter, setSelectedPriceFilter] = useState<string | null>(
+    null
+  );
+  const [filterSugarFree, setFilterSugarFree] = useState<boolean>(false);
+  const [filterBestseller, setFilterBestseller] = useState<boolean>(false);
+
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Update URL when searchQuery changes
   useEffect(() => {
-    gsap.to(imageRef.current, {
-      rotation: 12,
-      yoyo: true,
-      repeat: -1,
-      duration: 2,
-      ease: "power1.inOut",
-    });
-    gsap.from(imageRef2.current, {
-      rotation: 12,
-      yoyo: true,
-      repeat: -1,
-      duration: 2,
-      ease: "power1.inOut",
-    });
+    if (debouncedSearchQuery) {
+      router.push(`?search=${debouncedSearchQuery}`, { scroll: false });
+    } else {
+      router.push("/Products", { scroll: false });
+    }
+  }, [debouncedSearchQuery, router]);
+
+  // Fetch products when searchQuery, category, or filters change
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      try {
+        const queryParams = new URLSearchParams();
+        if (debouncedSearchQuery)
+          queryParams.append("search", debouncedSearchQuery);
+        if (selectedCategory) queryParams.append("category", selectedCategory);
+
+        // Send price filter to backend but without exposing it in the URL
+        if (selectedPriceFilter)
+          queryParams.append("priceFilter", selectedPriceFilter);
+
+        const response = await fetch(`/api/products?${queryParams.toString()}`);
+        if (!response.ok) throw new Error("Failed to fetch products");
+
+        const data: Product[] = await response.json();
+        setProducts(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, [debouncedSearchQuery, selectedCategory, selectedPriceFilter]);
+
+  // Fetch categories from API
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch("/api/categories");
+        if (!response.ok) throw new Error("Failed to fetch categories");
+
+        const data: Category[] = await response.json();
+        setCategories(data);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    }
+
+    fetchCategories();
   }, []);
 
-  const allTypes = [
-    "All Products",
-    ...Array.from(new Set(products.map((product) => product.type))),
-  ];
-
-  const toggleTypeSelection = (type: ProductType) => {
-    setSelectedTypes((prev) => {
-      if (type === "All Products") {
-        return [];
-      }
-      return prev.includes(type)
-        ? prev.filter((t) => t !== type)
-        : [...prev, type];
-    });
+  // Price filter function: Sort products based on selected price filter
+  const sortByPrice = (products: Product[]) => {
+    if (selectedPriceFilter === "high-low") {
+      return products.sort((a, b) => b.price - a.price);
+    } else if (selectedPriceFilter === "low-high") {
+      return products.sort((a, b) => a.price - b.price);
+    }
+    return products;
   };
 
-  const filteredProducts = products
-    .filter((product) => {
-      if (
-        selectedTypes.length > 0 &&
-        !selectedTypes.includes(product.type) &&
-        !selectedTypes.includes("All Products")
-      ) {
-        return false;
-      }
-      if (showBestsellers && !product.isBestseller) {
-        return false;
-      }
-      if (showSugarFree && !product.isSugarFree) {
-        return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.price - b.price;
-      } else if (sortOrder === "desc") {
-        return b.price - a.price;
-      }
-      return 0;
-    });
+  // Apply additional filters (Sugar-Free and Bestseller)
+  const filterProducts = (products: Product[]) => {
+    let filtered = sortByPrice(products);
+    if (filterSugarFree) {
+      filtered = filtered.filter((product) => product.isSugarFree);
+    }
+    if (filterBestseller) {
+      filtered = filtered.filter((product) => product.isFeatured);
+    }
+    return filtered;
+  };
+
+  const filteredProducts = filterProducts(products);
 
   return (
-    <div className="min-h-screen w-full bg-[#E9E8E4]">
-      <div className="w-full h-[30vh] bg-[#F7DB9B] bg-opacity-35 flex items-center justify-center text-[#23221F] text-center text-[1.6rem] font-semibold font-ancient">
-        <Image
-          ref={imageRef}
-          src="/images/leaves.png"
-          alt="leaves"
-          width={270}
-          height={270}
-          className="absolute z-50 -rotate-12 origin-[50%_0%] -translate-y-4 left-[9%] top-0 max-[750px]:left-[5%] max-[750px]:h-[150px] max-[750px]:w-auto"
-        />
-        <Image
-          ref={imageRef2}
-          src="/images/small_leavs.png"
-          alt="leaves"
-          width={150}
-          height={150}
-          className="absolute z-1 -rotate-12 origin-[50%_0%] -translate-y-4 right-[13%] max-[750px]:right-[8%] top-0 max-[750px]:h-[80px] max-[750px]:w-auto"
-        />
-        <div className="relative z-80">
-          Homemade | Eggless | preservative free | 100% natural
-          <br />
-          Customizable dessert hampers for your special moments
-        </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Our Products</h1>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Search for products..."
+        className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+      />
+
+      {/* Category Filter (Not in URL) */}
+      <select
+        value={selectedCategory || ""}
+        onChange={(e) => setSelectedCategory(e.target.value || null)}
+        className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+      >
+        <option value="">All Categories</option>
+        {categories.map((category) => (
+          <option key={category._id} value={category._id}>
+            {category.name}
+          </option>
+        ))}
+      </select>
+
+      {/* Price Filter (Not in URL) */}
+      <select
+        value={selectedPriceFilter || ""}
+        onChange={(e) => setSelectedPriceFilter(e.target.value || null)}
+        className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+      >
+        <option value="">Sort by Price</option>
+        <option value="low-high">Low to High</option>
+        <option value="high-low">High to Low</option>
+      </select>
+
+      {/* Additional Filters */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setFilterSugarFree((prev) => !prev)}
+          className={`px-4 py-2 text-white rounded-md transition ${
+            filterSugarFree ? "bg-green-600" : "bg-gray-400"
+          }`}
+        >
+          {filterSugarFree ? "✔ Sugar-Free" : "Sugar-Free"}
+        </button>
+
+        <button
+          onClick={() => setFilterBestseller((prev) => !prev)}
+          className={`px-4 py-2 text-white rounded-md transition ${
+            filterBestseller ? "bg-yellow-600" : "bg-gray-400"
+          }`}
+        >
+          {filterBestseller ? "✔ Bestseller" : "Bestseller"}
+        </button>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
-        {/* Filter Section - Centered */}
-        <div className="flex flex-wrap gap-8 mb-8 justify-start">
-          {/* Category Multi-Select Dropdown */}
-          <div className="relative ">
-            <button
-              className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex justify-center items-center min-w-[200px]"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              Products
-              <ChevronDown className="transform translate-x-2 translate-y-0.5" />
-            </button>
+      {loading && <p>Loading products...</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
-            {dropdownOpen && (
-              <div className="absolute w-[250px] mt-2 bg-[#E9E8E4] border rounded-2xl shadow-lg z-50 opacity-90">
-                <ul className="py-2">
-                  {allTypes.map((type) => (
-                    <li
-                      key={type}
-                      className={`px-4 py-2 text-center font-semibold cursor-pointer transition ${
-                        selectedTypes.includes(type as ProductType)
-                          ? "bg-green-500 text-white"
-                          : "hover:bg-[#e0e6d6]"
-                      }`}
-                      onClick={() => toggleTypeSelection(type as ProductType)}
-                    >
-                      {type}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          {/* Bestsellers Button */}
-          <button
-            className={`min-w-[120px] px-4 py-3 font-semibold border rounded-2xl ${
-              showBestsellers
-                ? "bg-blue-500 text-white"
-                : "bg-[#BDC1B6] bg-opacity-35"
-            }`}
-            onClick={() => setShowBestsellers(!showBestsellers)}
-          >
-            {showBestsellers ? "✓ " : ""}Bestsellers
-          </button>
-
-          {/* Sugar-Free Button */}
-          <button
-            className={`min-w-[120px] px-4 py-3 border font-semibold rounded-2xl ${
-              showSugarFree
-                ? "bg-green-500 text-white"
-                : "bg-[#BDC1B6] bg-opacity-35"
-            }`}
-            onClick={() => setShowSugarFree(!showSugarFree)}
-          >
-            {showSugarFree ? "✓ " : ""}Sugar Free
-          </button>
-
-          {/* Sort Dropdown */}
-          <div className="relative inline-block">
-            <button
-              className="px-8 py-3 font-semibold border rounded-2xl bg-[#BDC1B6] bg-opacity-35 flex items-center justify-centre min-w-[200px]"
-              onClick={() => setPriceDropdownOpen(!PricedropdownOpen)}
-            >
-              Sort by Price
-              <ChevronDown className="transform translate-x-2 translate-y-0.5" />
-            </button>
-            {PricedropdownOpen && (
-              <ul className="absolute left-0 mt-2 w-[200px] bg-[#E9E8E4] backdrop-blur-md border rounded-2xl shadow-lg z-50 opacity-90">
-                <li
-                  className={`px-4 py-2 text-center font-semibold cursor-pointer ${
-                    sortOrder === "asc" ? "bg-gray-200" : "hover:bg-[#e0e6d6]"
-                  }`}
-                  onClick={() => setSortOrder("asc")}
-                >
-                  Low to High
-                </li>
-                <li
-                  className={`px-4 py-2 text-center font-semibold cursor-pointer ${
-                    sortOrder === "desc" ? "bg-gray-200" : "hover:bg-[#e0e6d6]"
-                  }`}
-                  onClick={() => setSortOrder("desc")}
-                >
-                  High to Low
-                </li>
-              </ul>
-            )}
-          </div>
-        </div>
-
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
+      {filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 w-full max-w-[350px] mx-auto bg-[#BDC1B6] bg-opacity-35 p-1 rounded-xl"
-            >
-              <div className="relative aspect-[4/3]">
-                <img
-                  src={product.image || "/placeholder.svg"}
-                  alt={product.name}
-                  className="object-cover w-full h-full rounded-xl hover:scale-[102%] transition-transform duration-400 hover:shadow-md"
-                />
-                <div className="absolute top-2 left-2 flex flex-col gap-2">
-                  {product.isBestseller && (
-                    <div className="bg-yellow-400 text-black text-xs px-2 py-1 rounded">
-                      Bestseller
-                    </div>
-                  )}
-                  {product.isSugarFree && (
-                    <div className="bg-green-500 text-white text-xs px-2 py-1 rounded">
-                      Sugar Free
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                  {product.description}
-                </p>
-                <div className="text-lg font-bold">
-                  ${product.price.toFixed(2)}
-                </div>
-              </div>
-              <div className="p-4 pt-0">
-                <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                  Add to Cart
-                </button>
-              </div>
-            </div>
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
-      </div>
+      ) : (
+        !loading && <p>No products available.</p>
+      )}
     </div>
   );
 }
