@@ -26,6 +26,12 @@ export default function SignInPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    const res = await signIn("google", { callbackUrl: "/" });
+
+    console.log("Google SignIn Response:", res); // Debugging log
+  };
+
   return (
     <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
       <h1>Sign In</h1>
@@ -52,7 +58,7 @@ export default function SignInPage() {
         <button type="submit">Sign In</button>
       </form>
       <div style={{ marginTop: "1rem" }}>
-        <button onClick={() => signIn("google")}>Sign In with Google</button>
+      <button onClick={handleGoogleSignIn}>Sign In with Google</button>
         <button onClick={() => signIn("facebook")}>Sign In with Facebook</button>
       </div>
       <p style={{ marginTop: "1rem" }}>
