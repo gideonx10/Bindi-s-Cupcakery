@@ -8,6 +8,7 @@ export interface IUser extends Document {
   area: string;
   role: "user" | "admin";
   provider?: "google" | "facebook" | "credentials";
+  profileComplete: Boolean;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
 }
@@ -25,6 +26,7 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ["google", "facebook", "credentials"],
       default: "credentials",
     },
+    profileComplete: { type: Boolean, default: false },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },
