@@ -37,6 +37,8 @@ export async function POST(request: Request) {
       phone,
       area,
       role: "user",
+      provider: "credentials",
+      profileComplete: true,
     });
 
     return NextResponse.json(

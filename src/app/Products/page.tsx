@@ -5,8 +5,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 
-// ... (keep all interfaces the same)
 interface Product {
   _id: string;
   name: string;
@@ -28,9 +28,9 @@ interface CartQuantities {
 }
 
 export default function ProductsPage() {
-  // ... (keep all state variables and other functions the same until updateCartQuantity)
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -51,11 +51,29 @@ export default function ProductsPage() {
   const [cartQuantities, setCartQuantities] = useState<CartQuantities>({});
   const [updatingCart, setUpdatingCart] = useState<string | null>(null);
 
+  const handleCartAction = async (
+    productId: string,
+    action: "add" | "update",
+    newQuantity?: number
+  ) => {
+    if (status === "unauthenticated") {
+      toast.error("Please sign in to add items to cart");
+      router.push("/signin");
+      return;
+    }
+
+    if (action === "add") {
+      await addToCart(productId);
+    } else if (action === "update" && typeof newQuantity === "number") {
+      await updateCartQuantity(productId, newQuantity);
+    }
+  };
+
   const addToCart = async (productId: string) => {
     setUpdatingCart(productId);
 
     try {
-      const userId = "67a893e17d6b92f96ee990bf";
+      const userId = (session?.user as { id: string })?.id;
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -86,12 +104,13 @@ export default function ProductsPage() {
       setUpdatingCart(null);
     }
   };
+
   const updateCartQuantity = async (productId: string, newQuantity: number) => {
     if (newQuantity < 0) return;
     setUpdatingCart(productId);
 
     try {
-      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
+      const userId = (session?.user as { id: string })?.id;
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -101,7 +120,7 @@ export default function ProductsPage() {
         body: JSON.stringify({
           userId,
           productId,
-          quantity: 1, // We'll always send 1 as we're incrementing/decrementing
+          quantity: 1,
           action:
             newQuantity > (cartQuantities[productId] || 0)
               ? "increase"
@@ -127,12 +146,19 @@ export default function ProductsPage() {
     }
   };
 
-  // ... (keep all other functions and useEffects the same)
+  // ... (keep all useEffects and other functions the same)
   useEffect(() => {
     async function fetchCartQuantities() {
+      console.log("Session data:", session);
+      if (!session || !session.user) return; // Ensure session exists
+      const userId = (session.user as { id: string })?.id;
+      console.log("User ID on page load:", userId);
+      console.log("hello");
+      if (!userId) return; // Avoid making a request if userId is undefined
+
       try {
-        const userId = "67a893e17d6b92f96ee990bf";
         const response = await fetch(`/api/cart?userId=${userId}`);
+
         if (!response.ok) throw new Error("Failed to fetch cart");
 
         const cartData = await response.json();
@@ -149,7 +175,7 @@ export default function ProductsPage() {
     }
 
     fetchCartQuantities();
-  }, []);
+  }, [session]); // Add `session` as a dependency
 
   // Fetch products
   useEffect(() => {
@@ -217,6 +243,7 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = filterProducts(products);
+
   return (
     <div className="container mx-auto p-4">
       {/* ... (keep all filters and search components the same) */}
@@ -291,8 +318,9 @@ export default function ProductsPage() {
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() =>
-                        updateCartQuantity(
+                        handleCartAction(
                           product._id,
+                          "update",
                           (cartQuantities[product._id] || 0) - 1
                         )
                       }
@@ -312,8 +340,9 @@ export default function ProductsPage() {
 
                     <button
                       onClick={() =>
-                        updateCartQuantity(
+                        handleCartAction(
                           product._id,
+                          "update",
                           (cartQuantities[product._id] || 0) + 1
                         )
                       }
@@ -330,7 +359,7 @@ export default function ProductsPage() {
                 ) : (
                   // Show Add to Cart button if item is not in cart
                   <button
-                    onClick={() => addToCart(product._id)}
+                    onClick={() => handleCartAction(product._id, "add")}
                     disabled={updatingCart === product._id}
                     className={`w-full p-2 rounded-md ${
                       updatingCart === product._id
