@@ -1,9 +1,11 @@
-"use client";
-import React from "react";
+"use client"
+import React from 'react';
 import { gsap } from "gsap";
 
 interface MenuItemProps {
+  link: string;
   text: string;
+  image: string;
 }
 
 interface FlowingMenuProps {
@@ -12,8 +14,8 @@ interface FlowingMenuProps {
 
 const FlowingMenu: React.FC<FlowingMenuProps> = ({ items = [] }) => {
   return (
-    <div className="w-full h-full">
-      <nav className="flex flex-col h-full">
+    <div className="w-full h-full overflow-hidden">
+      <nav className="flex flex-col h-full m-0 p-0">
         {items.map((item, idx) => (
           <MenuItem key={idx} {...item} />
         ))}
@@ -22,7 +24,7 @@ const FlowingMenu: React.FC<FlowingMenuProps> = ({ items = [] }) => {
   );
 };
 
-const MenuItem: React.FC<MenuItemProps> = ({ text }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ link, text, image }) => {
   const itemRef = React.useRef<HTMLDivElement>(null);
   const marqueeRef = React.useRef<HTMLDivElement>(null);
   const marqueeInnerRef = React.useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ text }) => {
     return topEdgeDist < bottomEdgeDist ? "top" : "bottom";
   };
 
-  const handleMouseEnter = (ev: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = (ev: React.MouseEvent<HTMLAnchorElement>) => {
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current)
       return;
     const rect = itemRef.current.getBoundingClientRect();
@@ -58,7 +60,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ text }) => {
       .to([marqueeRef.current, marqueeInnerRef.current], { y: "0%" });
   };
 
-  const handleMouseLeave = (ev: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = (ev: React.MouseEvent<HTMLAnchorElement>) => {
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current)
       return;
     const rect = itemRef.current.getBoundingClientRect();
@@ -77,37 +79,48 @@ const MenuItem: React.FC<MenuItemProps> = ({ text }) => {
   };
 
   const repeatedMarqueeContent = React.useMemo(() => {
-    return Array.from({ length: 8 }).map((_, idx) => (
-      <span
-        key={idx}
-        className="text-green-900 uppercase font-bold text-3xl leading-none mx-8"
-        style={{ fontFamily: "Barlow Condensed, sans-serif" }}
-      >
-        {text}
-      </span>
+    return Array.from({ length: 4 }).map((_, idx) => (
+      <React.Fragment key={idx}>
+        <span 
+          className="text-green-900 uppercase font-bold text-3xl leading-[1.2] p-[1vh_1vw_0]"
+          style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+        >
+          {text}
+        </span>
+        <div
+          className="w-[200px] h-[7vh] my-[2em] mx-[2vw] p-[1em_0] rounded-[50px] bg-cover bg-center"
+          style={{ backgroundImage: `url(${image})` }}
+        />
+      </React.Fragment>
     ));
-  }, [text]);
+  }, [text, image]);
 
   return (
     <div
       className="flex-1 relative overflow-hidden text-center border-t border-green-200"
       ref={itemRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
-      <div
+      <a
         className="flex items-center justify-center h-full relative cursor-pointer uppercase font-bold text-green-900 text-3xl hover:text-green-950 transition-colors duration-300"
         style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+        href={link}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {text}
-      </div>
+      </a>
       <div
         className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none bg-green-50 translate-y-[101%]"
         ref={marqueeRef}
       >
         <div className="h-full w-[200%] flex" ref={marqueeInnerRef}>
-          <div className="flex items-center justify-center relative h-full w-[200%] will-change-transform animate-marquee">
-            {repeatedMarqueeContent}
+          <div className="flex items-center relative h-full w-[200%] animate-infinite-scroll">
+            <div className="flex items-center justify-start w-1/2 flex-shrink-0">
+              {repeatedMarqueeContent}
+            </div>
+            <div className="flex items-center justify-start w-1/2 flex-shrink-0">
+              {repeatedMarqueeContent}
+            </div>
           </div>
         </div>
       </div>

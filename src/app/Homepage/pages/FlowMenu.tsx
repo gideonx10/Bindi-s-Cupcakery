@@ -2,18 +2,14 @@
 import React from 'react';
 import FlowingMenu from "../Effects/FlowingMenu";
 
-interface MenuItem {
-  text: string;
-}
-
 const FlowMenu = () => {
-  const demoItems: MenuItem[] = [
-    { text: '🥕 VEGGIE ECSTASY' },
-    { text: '🚫 ZERO CHEMICALS' },
-    { text: '👵 SOUL RECIPES' },
-    { text: '🌱 FARM-TO-BITE' }
+  const demoItems = [
+    { link: '#', text: 'Mojave', image: 'https://picsum.photos/600/400?random=1' },
+    { link: '#', text: 'Sonoma', image: 'https://picsum.photos/600/400?random=2' },
+    { link: '#', text: 'Monterey', image: 'https://picsum.photos/600/400?random=3' },
+    { link: '#', text: 'Sequoia', image: 'https://picsum.photos/600/400?random=4' }
   ];
-  
+
   return (
     <div className="h-screen bg-green-50 flex flex-col">
       <div className="container mx-auto px-4 flex flex-col h-full">
