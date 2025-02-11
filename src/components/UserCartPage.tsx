@@ -130,7 +130,7 @@ export default function CartPage() {
 
       await clearCart();
       alert("Order placed successfully!");
-      router.push("/orders");
+      router.push("/user?tab=orders");
     } catch (error) {
       console.error(error);
       alert("Checkout failed, please try again.");

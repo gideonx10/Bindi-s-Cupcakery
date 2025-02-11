@@ -149,9 +149,11 @@ export default function ProductsPage() {
   // ... (keep all useEffects and other functions the same)
   useEffect(() => {
     async function fetchCartQuantities() {
+      console.log("Session data:", session);
       if (!session || !session.user) return; // Ensure session exists
       const userId = (session.user as { id: string })?.id;
-
+      console.log("User ID on page load:", userId);
+      console.log("hello");
       if (!userId) return; // Avoid making a request if userId is undefined
 
       try {
@@ -374,14 +376,6 @@ export default function ProductsPage() {
         </div>
       ) : (
         !loading && <p>No products available.</p>
-      )}
-      {session && (
-        <button
-          onClick={() => signOut()}
-          className="px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Logout
-        </button>
       )}
     </div>
   );

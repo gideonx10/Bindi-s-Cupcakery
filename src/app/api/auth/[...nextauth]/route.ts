@@ -11,10 +11,10 @@ import connectDB from "@/lib/connectDB";
 async function ensureDBConnection() {
   try {
     await clientPromise;
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    throw new Error('Unable to connect to database');
+    console.error("MongoDB connection error:", error);
+    throw new Error("Unable to connect to database");
   }
 }
 
@@ -47,7 +47,12 @@ export const authOptions = {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) throw new Error("Invalid password");
 
-        return { id: user.id, name: user.name, email: user.email, role: user.role };
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
     GoogleProvider({
@@ -60,46 +65,73 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, user }: { session: any, user: any }) {
+    async session({ session }: { session: any }) {
       await ensureDBConnection();
+
       if (session?.user) {
         const dbUser = await User.findOne({ email: session.user.email });
-        session.user.role = dbUser ? dbUser.role : "user";
+
+        if (dbUser) {
+          session.user.id = dbUser._id.toString(); // ✅ Convert ObjectId to string
+          session.user.role = dbUser.role;
+        } else {
+          session.user.role = "user"; // Default role
+        }
       }
+
       return session;
     },
-    async signIn({ user, account, profile }: { user: any, account: any, profile?: any }) {
+
+    async signIn({
+      user,
+      account,
+      profile,
+    }: {
+      user: any;
+      account: any;
+      profile?: any;
+    }) {
       await ensureDBConnection();
-      if (account.provider === 'google') {
+      if (account.provider === "google") {
         const dbUser = await User.findOne({ email: user.email });
         if (!dbUser) {
           try {
             await User.create({
               email: user.email,
               name: user.name,
-              role: 'user',
+              role: "user",
               emailVerified: user.emailVerified || new Date(),
             });
           } catch (error) {
-            console.error('Error creating user:', error);
+            console.error("Error creating user:", error);
             return false;
           }
         }
       }
       return true;
     },
-    async redirect({ url, baseUrl }: { url: string, baseUrl: string }) {
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
   },
   events: {
-    async signIn({ user, account, profile, isNewUser }: { user: any, account: any, profile?: any, isNewUser?: boolean }) {
-      console.log('Sign in attempt:', { user, account, isNewUser });
+    async signIn({
+      user,
+      account,
+      profile,
+      isNewUser,
+    }: {
+      user: any;
+      account: any;
+      profile?: any;
+      isNewUser?: boolean;
+    }) {
+      console.log("Sign in attempt:", { user, account, isNewUser });
     },
     async signInError(error: Error) {
-      console.error('Sign in error:', error);
+      console.error("Sign in error:", error);
     },
   },
   pages: {
@@ -108,10 +140,10 @@ export const authOptions = {
     error: "/signin",
   },
   session: {
-    strategy: 'jwt' as 'jwt', // explicitly cast to 'jwt' type
+    strategy: "jwt" as "jwt", // explicitly cast to 'jwt' type
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
 };
 

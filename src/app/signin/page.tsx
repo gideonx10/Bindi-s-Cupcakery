@@ -58,8 +58,10 @@ export default function SignInPage() {
         <button type="submit">Sign In</button>
       </form>
       <div style={{ marginTop: "1rem" }}>
-      <button onClick={handleGoogleSignIn}>Sign In with Google</button>
-        <button onClick={() => signIn("facebook")}>Sign In with Facebook</button>
+        <button onClick={handleGoogleSignIn}>Sign In with Google</button>
+        <button onClick={() => signIn("facebook")}>
+          Sign In with Facebook
+        </button>
       </div>
       <p style={{ marginTop: "1rem" }}>
         Don't have an account? <a href="/signup">Sign Up</a>
