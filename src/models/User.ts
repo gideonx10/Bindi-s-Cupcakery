@@ -20,11 +20,16 @@ const UserSchema: Schema<IUser> = new Schema(
     phone: { type: String, required: true },
     area: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
-    provider: { type: String, enum: ["google", "facebook", "credentials"], default: "credentials" },
+    provider: {
+      type: String,
+      enum: ["google", "facebook", "credentials"],
+      default: "credentials",
+    },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },
   { timestamps: true }
 );
 
-export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+export default mongoose.models.User ||
+  mongoose.model<IUser>("User", UserSchema);

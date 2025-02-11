@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface Product {
   _id: string;
@@ -15,12 +17,15 @@ interface CartItem {
 }
 
 export default function CartPage() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const userId = "67a893e17d6b92f96ee990bf"; // Replace with actual user ID (from auth)
+  const [checkingOut, setCheckingOut] = useState(false);
+  const userId = (session?.user as { id: string })?.id;
 
   useEffect(() => {
-    fetchCart();
+    if (userId) fetchCart();
   }, [userId]);
 
   async function fetchCart() {
@@ -42,21 +47,42 @@ export default function CartPage() {
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          productId,
-          quantity: 1,
-          action,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, productId, quantity: 1, action }),
       });
       if (!res.ok) throw new Error("Failed to update cart");
       const data = await res.json();
       setCartItems(data.cart.products);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function removeItem(productId: string) {
+    setLoading(true);
+    try {
+      console.log("Removing product:", productId);
+
+      const res = await fetch("/api/cart/removeItem", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, productId }), // Pass userId & productId
+      });
+
+      const data = await res.json();
+      console.log("Response:", data);
+
+      if (!res.ok) throw new Error(data.error || "Failed to remove item");
+
+      // Update UI state
+      setCartItems((prev) =>
+        prev.filter((item) => item.product._id !== productId)
+      );
+    } catch (error: any) {
+      console.error("Error:", error);
+      alert(error.message);
     } finally {
       setLoading(false);
     }
@@ -74,6 +100,42 @@ export default function CartPage() {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleCheckout() {
+    if (cartItems.length === 0) return alert("Your cart is empty!");
+
+    setCheckingOut(true);
+    try {
+      const orderData = {
+        userId,
+        products: cartItems.map(({ product, quantity }) => ({
+          product: product._id,
+          quantity,
+        })),
+        totalAmount: cartItems.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        ),
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!res.ok) throw new Error("Failed to place order");
+
+      await clearCart();
+      alert("Order placed successfully!");
+      router.push("/orders");
+    } catch (error) {
+      console.error(error);
+      alert("Checkout failed, please try again.");
+    } finally {
+      setCheckingOut(false);
     }
   }
 
@@ -99,8 +161,15 @@ export default function CartPage() {
           {cartItems.map((item) => (
             <div
               key={item.product._id}
-              className="border p-4 rounded-lg shadow-sm"
+              className="relative border p-4 rounded-lg shadow-sm"
             >
+              {/* Cross button for removing item */}
+              <button
+                onClick={() => removeItem(item.product._id)}
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+              >
+                ❌
+              </button>
               <h2 className="font-semibold">{item.product.name}</h2>
               <p className="text-gray-600">{item.product.description}</p>
               <p className="font-medium">Price: ${item.product.price}</p>
@@ -123,6 +192,24 @@ export default function CartPage() {
               </div>
             </div>
           ))}
+          <div className="mt-6 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">
+              Total: $
+              {cartItems
+                .reduce(
+                  (total, item) => total + item.product.price * item.quantity,
+                  0
+                )
+                .toFixed(2)}
+            </h2>
+            <button
+              onClick={handleCheckout}
+              disabled={checkingOut || loading}
+              className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 disabled:opacity-50"
+            >
+              {checkingOut ? "Processing..." : "Checkout"}
+            </button>
+          </div>
         </div>
       )}
     </div>

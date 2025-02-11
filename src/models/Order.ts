@@ -1,50 +1,39 @@
-import mongoose, { Schema, Document } from 'mongoose';
-
-// Define a sub-schema for individual order items.
-export interface IOrderItem {
-  product: mongoose.Types.ObjectId; // Reference to the Product.
-  quantity: number;
-  customization?: string;           // Any custom note or option chosen.
-}
-
-const OrderItemSchema: Schema = new Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-  quantity: { type: Number, required: true },
-  customization: { type: String },
-});
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 // Define the interface for an Order document.
 export interface IOrder extends Document {
-  customerName: string;
-  customerContact: string;   // Phone number or email.
-  orderItems: IOrderItem[];    // An array of items in the order.
-  totalAmount: number;
-  paymentStatus: 'pending' | 'completed' | 'failed';
-  orderStatus: 'received' | 'preparing' | 'ready for pickup' | 'completed' | 'cancelled';
-  createdAt: Date;
-  updatedAt: Date;
+  user: Types.ObjectId; // Reference to the User collection
+  products: { product: Types.ObjectId; quantity: number }[]; // Array of product references with quantity
+  totalAmount: number; // Total cost of the order
+  createdAt: Date; // Timestamp for when the order was created
+  status: "pending" | "shipped" | "delivered" | "cancelled"; // Order status
 }
 
 // Create the Order schema.
 const OrderSchema: Schema = new Schema(
   {
-    customerName: { type: String, required: true },
-    customerContact: { type: String, required: true },
-    orderItems: [OrderItemSchema],
-    totalAmount: { type: Number, required: true },
-    paymentStatus: {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    products: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: { type: Number, required: true, min: 1 },
+      },
+    ],
+    totalAmount: { type: Number, required: true, min: 0 }, // Total cost of the order
+    createdAt: { type: Date, default: Date.now },
+    status: {
       type: String,
-      enum: ['pending', 'completed', 'failed'],
-      default: 'pending',
-    },
-    orderStatus: {
-      type: String,
-      enum: ['received', 'preparing', 'ready for pickup', 'completed', 'cancelled'],
-      default: 'received',
+      enum: ["pending", "shipped", "delivered", "cancelled"],
+      default: "pending",
     },
   },
   { timestamps: true }
 );
 
-// Export the model.
-export default mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+// Export the model (or retrieve it if already defined).
+export default mongoose.models.Order ||
+  mongoose.model<IOrder>("Order", OrderSchema);
