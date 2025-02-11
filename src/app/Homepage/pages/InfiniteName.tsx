@@ -1,5 +1,5 @@
 // InfiniteName.tsx
-import InfiniteText from "../TextEffects/InfiniteText";
+import InfiniteText from "../Effects/InfiniteText";
 
 export function InfiniteName() {
   return (

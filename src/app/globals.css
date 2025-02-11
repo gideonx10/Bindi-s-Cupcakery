@@ -4,6 +4,8 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Germania+One&family=Great+Vibes&family=IM+Fell+English:ital@0;1&family=New+Rocker&family=Pacifico&family=Space+Grotesk:wght@300..700&family=Uncial+Antiqua&display=swap");
 
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Barlow:wght@500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
