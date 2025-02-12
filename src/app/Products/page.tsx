@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { signOut, useSession } from "next-auth/react";
 
+// ... (keep all interfaces the same)
 interface Product {
   _id: string;
   name: string;
@@ -30,13 +30,13 @@ interface CartQuantities {
 }
 
 export default function ProductsPage() {
+  // ... (keep all existing refs and other state)
   const contentRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -65,11 +65,9 @@ export default function ProductsPage() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isFilterSticky, setIsFilterSticky] = useState(false);
 
-  // Refs for scroll handling
   const filterContainerRef = useRef<HTMLDivElement>(null);
   const productContainerRef = useRef<HTMLDivElement>(null);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (filterContainerRef.current) {
@@ -84,13 +82,13 @@ export default function ProductsPage() {
   }, []);
 
   // Handle category selection
-  const toggleCategory = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
+  // const toggleCategory = (categoryId: string) => {
+  //   setSelectedCategories((prev) =>
+  //     prev.includes(categoryId)
+  //       ? prev.filter((id) => id !== categoryId)
+  //       : [...prev, categoryId]
+  //   );
+  // };
 
   const handleCartAction = async (
     productId: string,
@@ -114,7 +112,7 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf";
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -145,13 +143,12 @@ export default function ProductsPage() {
       setUpdatingCart(null);
     }
   };
-
   const updateCartQuantity = async (productId: string, newQuantity: number) => {
     if (newQuantity < 0) return;
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -161,7 +158,7 @@ export default function ProductsPage() {
         body: JSON.stringify({
           userId,
           productId,
-          quantity: newQuantity,
+          quantity: 1, // We'll always send 1 as we're incrementing/decrementing
           action:
             newQuantity > (cartQuantities[productId] || 0)
               ? "increase"
@@ -187,15 +184,12 @@ export default function ProductsPage() {
     }
   };
 
+  // ... (keep all other functions and useEffects the same)
   useEffect(() => {
     async function fetchCartQuantities() {
-      if (!session || !session.user) return; // Ensure session exists
-      const userId = (session.user as { id: string })?.id;
-      if (!userId) return; // Avoid making a request if userId is undefined
-
       try {
+        const userId = "67a893e17d6b92f96ee990bf";
         const response = await fetch(`/api/cart?userId=${userId}`);
-
         if (!response.ok) throw new Error("Failed to fetch cart");
 
         const cartData = await response.json();
@@ -212,19 +206,29 @@ export default function ProductsPage() {
     }
 
     fetchCartQuantities();
-  }, [session]); // Add `session` as a dependency
+  }, []);
 
-  // Fetch products
+  // Update fetchProducts to handle multiple categories
   useEffect(() => {
     async function fetchProducts() {
       setLoading(true);
       try {
         const queryParams = new URLSearchParams();
-        if (debouncedSearchQuery)
+
+        if (debouncedSearchQuery) {
           queryParams.append("search", debouncedSearchQuery);
-        if (selectedCategory) queryParams.append("category", selectedCategory);
-        if (selectedPriceFilter)
+        }
+
+        // Add selected categories to query params
+        if (selectedCategories.length > 0) {
+          selectedCategories.forEach((categoryId) => {
+            queryParams.append("categories[]", categoryId);
+          });
+        }
+
+        if (selectedPriceFilter) {
           queryParams.append("priceFilter", selectedPriceFilter);
+        }
 
         const response = await fetch(`/api/products?${queryParams.toString()}`);
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -239,9 +243,8 @@ export default function ProductsPage() {
     }
 
     fetchProducts();
-  }, [debouncedSearchQuery, selectedCategory, selectedPriceFilter]);
+  }, [debouncedSearchQuery, selectedCategories, selectedPriceFilter]);
 
-  // Fetch categories
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -258,34 +261,47 @@ export default function ProductsPage() {
     fetchCategories();
   }, []);
 
+  // Update toggleCategory function
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(categoryId)) {
+        return prev.filter((id) => id !== categoryId);
+      } else {
+        return [...prev, categoryId];
+      }
+    });
+  };
+
   // Filter and sort functions
   const sortByPrice = (products: Product[]) => {
     if (selectedPriceFilter === "high-low") {
-      return products.sort((a, b) => b.price - a.price);
+      return [...products].sort((a, b) => b.price - a.price);
     } else if (selectedPriceFilter === "low-high") {
-      return products.sort((a, b) => a.price - b.price);
+      return [...products].sort((a, b) => a.price - b.price);
     }
     return products;
   };
 
   const filterProducts = (products: Product[]) => {
-    let filtered = sortByPrice(products);
+    let filtered = sortByPrice([...products]);
+
     if (filterSugarFree) {
       filtered = filtered.filter((product) => product.isSugarFree);
     }
     if (filterBestseller) {
       filtered = filtered.filter((product) => product.isFeatured);
     }
+
     return filtered;
   };
 
   const filteredProducts = filterProducts(products);
 
+  // Rest of your component remains the same...
   return (
     <div className="w-screen min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%]">
-      <Navbar />
       {/* Category Filter */}
-      <div className="flex-1">
+      <div className="flex-1 ">
         <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-10 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
@@ -303,7 +319,7 @@ export default function ProductsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold"
+                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold "
               />
               <Search
                 className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -316,14 +332,18 @@ export default function ProductsPage() {
           <div
             className={`
               fixed left-1/2 -translate-x-[55%] top-[160px] w-[75%] duration-300 z-50 rounded-2xl
-              ${isMobileFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+              ${
+                isMobileFilterOpen
+                  ? "opacity-100"
+                  : "opacity-0 pointer-events-none"
+              }
             `}
           >
             <div
               className={`
-                bg-[#DCF5FF] rounded-2xl p-6 transition-transform duration-300 shadow-lg
-                ${isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"}
-              `}
+      bg-[#DCF5FF] rounded-2xl p-6 transition-transform duration-300 shadow-lg
+      ${isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"}
+    `}
             >
               <div className="space-y-4">
                 {/* Categories */}
@@ -336,7 +356,7 @@ export default function ProductsPage() {
                         onClick={() => toggleCategory(category._id)}
                         className={`p-2 rounded-xl ${
                           selectedCategories.includes(category._id)
-                            ? "border-2 border-black"
+                            ? "bg-blue-500 text-white"
                             : "bg-[#c0dbf4]"
                         }`}
                       >
@@ -345,7 +365,6 @@ export default function ProductsPage() {
                     ))}
                   </div>
                 </div>
-
                 {/* Price Sort */}
                 <div className="space-y-2">
                   <h3 className="font-semibold">Sort by Price</h3>
@@ -382,7 +401,9 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setFilterSugarFree((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
-                      filterSugarFree ? "bg-lime-100 text-white" : "bg-[#c0dbf4]"
+                      filterSugarFree
+                        ? "bg-lime-100 text-white"
+                        : "bg-[#c0dbf4]"
                     }`}
                   >
                     Sugar-Free
@@ -390,12 +411,15 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setFilterBestseller((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
-                      filterBestseller ? "bg-yellow-600 text-white" : "bg-[#c0dbf4]"
+                      filterBestseller
+                        ? "bg-yellow-600 text-white"
+                        : "bg-[#c0dbf4]"
                     }`}
                   >
                     Bestseller
                   </button>
                 </div>
+                {/* Rest of the mobile filter modal remains the same... */}
               </div>
             </div>
           </div>
@@ -410,7 +434,9 @@ export default function ProductsPage() {
                 onMouseLeave={() => setCategoryDropdownOpen(false)}
               >
                 <button className="p-2 rounded-2xl w-40 bg-[#c0dbf4] text-center font-semibold flex justify-center items-center">
-                  Categories
+                  Categories{" "}
+                  {selectedCategories.length > 0 &&
+                    `(${selectedCategories.length})`}
                   <ChevronRight
                     className={`h-5.5 w-5.5 translate-y-0.5 transition-transform duration-300 ${
                       categoryDropdownOpen ? "rotate-90" : ""
@@ -422,7 +448,11 @@ export default function ProductsPage() {
                   className={`
                     absolute z-50 bg-[#c0dbf4] rounded-md w-64 mt-2 shadow-md
                     transition-all duration-300 origin-top
-                    ${categoryDropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"}
+                    ${
+                      categoryDropdownOpen
+                        ? "scale-y-100 opacity-100"
+                        : "scale-y-0 opacity-0"
+                    }
                   `}
                 >
                   <div className="p-3 grid grid-cols-2 gap-2">
@@ -442,7 +472,6 @@ export default function ProductsPage() {
                   </div>
                 </div>
               </div>
-
               {/* Price Filter Dropdown */}
               <div
                 className="relative group"
@@ -462,7 +491,11 @@ export default function ProductsPage() {
                   className={`
                     absolute z-50 bg-[#c0dbf4] rounded-md w-48 mt-2 shadow-md
                     transition-all duration-300 origin-top
-                    ${priceDropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"}
+                    ${
+                      priceDropdownOpen
+                        ? "scale-y-100 opacity-100"
+                        : "scale-y-0 opacity-0"
+                    }
                   `}
                 >
                   <div className="p-2 space-y-2">

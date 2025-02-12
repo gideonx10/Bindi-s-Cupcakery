@@ -115,7 +115,7 @@ export default function OrdersPage() {
                 Status: {order.status}
               </p>
               <p className="text-gray-500">
-                Total Amount: ${order.totalAmount.toFixed(2)}
+                Total Amount: ₹{order.totalAmount.toFixed(2)}
               </p>
               <p className="text-gray-500">
                 Placed On: {new Date(order.createdAt).toLocaleString()}
@@ -127,7 +127,7 @@ export default function OrdersPage() {
                     className="border p-2 rounded bg-gray-100"
                   >
                     <p>
-                      {product.name} (x{quantity}) - $
+                      {product.name} (x{quantity}) - ₹
                       {(product.price * quantity).toFixed(2)}
                     </p>
                   </li>

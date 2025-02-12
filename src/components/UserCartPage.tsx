@@ -172,7 +172,7 @@ export default function CartPage() {
               </button>
               <h2 className="font-semibold">{item.product.name}</h2>
               <p className="text-gray-600">{item.product.description}</p>
-              <p className="font-medium">Price: ${item.product.price}</p>
+              <p className="font-medium">Price: ₹{item.product.price}</p>
               <div className="flex items-center gap-2 mt-2">
                 <button
                   onClick={() => updateQuantity(item.product._id, "decrease")}
@@ -194,7 +194,7 @@ export default function CartPage() {
           ))}
           <div className="mt-6 flex justify-between items-center">
             <h2 className="text-xl font-semibold">
-              Total: $
+              Total: ₹
               {cartItems
                 .reduce(
                   (total, item) => total + item.product.price * item.quantity,
