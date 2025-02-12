@@ -74,6 +74,7 @@ export const authOptions = {
         if (dbUser) {
           session.user.id = dbUser._id.toString(); // ✅ Convert ObjectId to string
           session.user.role = dbUser.role;
+          session.user.provider = dbUser.provider;
         } else {
           session.user.role = "user"; // Default role
         }
