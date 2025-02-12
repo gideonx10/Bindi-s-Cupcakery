@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { signOut, useSession } from "next-auth/react";
 
+// ... (keep all interfaces the same)
 interface Product {
   _id: string;
   name: string;
@@ -30,13 +30,13 @@ interface CartQuantities {
 }
 
 export default function ProductsPage() {
+  // ... (keep all state variables and other functions the same until updateCartQuantity)
   const contentRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -69,6 +69,8 @@ export default function ProductsPage() {
   const filterContainerRef = useRef<HTMLDivElement>(null);
   const productContainerRef = useRef<HTMLDivElement>(null);
 
+
+
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -92,29 +94,11 @@ export default function ProductsPage() {
     );
   };
 
-  const handleCartAction = async (
-    productId: string,
-    action: "add" | "update",
-    newQuantity?: number
-  ) => {
-    if (status === "unauthenticated") {
-      toast.error("Please sign in to add items to cart");
-      router.push("/signin");
-      return;
-    }
-
-    if (action === "add") {
-      await addToCart(productId);
-    } else if (action === "update" && typeof newQuantity === "number") {
-      await updateCartQuantity(productId, newQuantity);
-    }
-  };
-
   const addToCart = async (productId: string) => {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf";
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -145,13 +129,12 @@ export default function ProductsPage() {
       setUpdatingCart(null);
     }
   };
-
   const updateCartQuantity = async (productId: string, newQuantity: number) => {
     if (newQuantity < 0) return;
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -161,7 +144,7 @@ export default function ProductsPage() {
         body: JSON.stringify({
           userId,
           productId,
-          quantity: newQuantity,
+          quantity: 1, // We'll always send 1 as we're incrementing/decrementing
           action:
             newQuantity > (cartQuantities[productId] || 0)
               ? "increase"
@@ -187,15 +170,12 @@ export default function ProductsPage() {
     }
   };
 
+  // ... (keep all other functions and useEffects the same)
   useEffect(() => {
     async function fetchCartQuantities() {
-      if (!session || !session.user) return; // Ensure session exists
-      const userId = (session.user as { id: string })?.id;
-      if (!userId) return; // Avoid making a request if userId is undefined
-
       try {
+        const userId = "67a893e17d6b92f96ee990bf";
         const response = await fetch(`/api/cart?userId=${userId}`);
-
         if (!response.ok) throw new Error("Failed to fetch cart");
 
         const cartData = await response.json();
@@ -212,7 +192,7 @@ export default function ProductsPage() {
     }
 
     fetchCartQuantities();
-  }, [session]); // Add `session` as a dependency
+  }, []);
 
   // Fetch products
   useEffect(() => {
@@ -280,12 +260,11 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = filterProducts(products);
-
   return (
     <div className="w-screen min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%]">
       <Navbar />
       {/* Category Filter */}
-      <div className="flex-1">
+      <div className="flex-1 ">
         <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-10 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
@@ -303,7 +282,7 @@ export default function ProductsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold"
+                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold "
               />
               <Search
                 className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -315,15 +294,16 @@ export default function ProductsPage() {
           {/* Mobile Filter Modal */}
           <div
             className={`
-              fixed left-1/2 -translate-x-[55%] top-[160px] w-[75%] duration-300 z-50 rounded-2xl
-              ${isMobileFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
-            `}
+    fixed left-1/2 -translate-x-[55%] top-[160px] w-[75%] duration-300 z-50 rounded-2xl
+    
+    ${isMobileFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+  `}
           >
             <div
               className={`
-                bg-[#DCF5FF] rounded-2xl p-6 transition-transform duration-300 shadow-lg
-                ${isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"}
-              `}
+      bg-[#DCF5FF] rounded-2xl p-6 transition-transform duration-300 shadow-lg
+      ${isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"}
+    `}
             >
               <div className="space-y-4">
                 {/* Categories */}
@@ -382,7 +362,9 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setFilterSugarFree((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
-                      filterSugarFree ? "bg-lime-100 text-white" : "bg-[#c0dbf4]"
+                      filterSugarFree
+                        ? "bg-lime-100 text-white"
+                        : "bg-[#c0dbf4]"
                     }`}
                   >
                     Sugar-Free
@@ -390,7 +372,9 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setFilterBestseller((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
-                      filterBestseller ? "bg-yellow-600 text-white" : "bg-[#c0dbf4]"
+                      filterBestseller
+                        ? "bg-yellow-600 text-white"
+                        : "bg-[#c0dbf4]"
                     }`}
                   >
                     Bestseller
@@ -420,10 +404,12 @@ export default function ProductsPage() {
 
                 <div
                   className={`
-                    absolute z-50 bg-[#c0dbf4] rounded-md w-64 mt-2 shadow-md
-                    transition-all duration-300 origin-top
-                    ${categoryDropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"}
-                  `}
+      absolute z-50 bg-[#c0dbf4] rounded-md w-64 mt-2 shadow-md
+      transition-all duration-300 origin-top
+      ${
+        categoryDropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
+      }
+    `}
                 >
                   <div className="p-3 grid grid-cols-2 gap-2">
                     {categories.map((category) => (
@@ -433,7 +419,7 @@ export default function ProductsPage() {
                         className={`p-2 text-center font-medium rounded-lg transition-all duration-300 ${
                           selectedCategories.includes(category._id)
                             ? "border-2 border-black"
-                            : "bg-[#c0dbf4]"
+                            : "bg-[#c0dbf4] "
                         }`}
                       >
                         {category.name}
@@ -460,10 +446,14 @@ export default function ProductsPage() {
 
                 <div
                   className={`
-                    absolute z-50 bg-[#c0dbf4] rounded-md w-48 mt-2 shadow-md
-                    transition-all duration-300 origin-top
-                    ${priceDropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"}
-                  `}
+          absolute z-50 bg-[#c0dbf4] rounded-md w-48 mt-2 shadow-md
+          transition-all duration-300 origin-top
+          ${
+            priceDropdownOpen
+              ? "scale-y-100 opacity-100"
+              : "scale-y-0 opacity-0"
+          }
+        `}
                 >
                   <div className="p-2 space-y-2">
                     {["Default", "Low to High", "High to Low"].map((option) => (
