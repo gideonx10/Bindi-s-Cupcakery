@@ -24,15 +24,15 @@ export function convertDriveLink(driveUrl: string): string {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="relative border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+    <div className="relative rounded-t-xl rounded-b-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow h-[40vh] flex flex-col gap-2">
       {/* Labels for Sugar-Free & Bestseller */}
       {product.isSugarFree && (
-        <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+        <span className="absolute top-2 left-2 bg-green-600 text-black text-xs font-semibold px-2 py-1 rounded-md z-10 shadow-3xl">
           Sugar-Free
         </span>
       )}
       {product.isFeatured && (
-        <span className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+        <span className="absolute top-2 right-2 bg-[#ffe923d8] text-black text-xs font-semibold px-2 py-1 rounded-md z-10">
           Bestseller
         </span>
       )}
@@ -44,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           alt={product.name}
           layout="fill"
           objectFit="cover"
-          className="rounded-t-lg"
+          className="rounded-t-lg grayscale-[30%] hover:grayscale-0 hover:scale-[102%] transition-transform duration-200"
         />
       </div>
 
