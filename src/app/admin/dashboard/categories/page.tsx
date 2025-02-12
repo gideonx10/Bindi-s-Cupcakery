@@ -1,8 +1,8 @@
-// app/admin/dashboard/categories/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -24,14 +24,13 @@ interface Category {
   _id: string;
   name: string;
   description: string;
-  isActive: boolean;
-  productCount: number;
 }
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -41,15 +40,16 @@ export default function CategoriesPage() {
   async function fetchCategories() {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/categories");
-      const data = await response.json();
-      
-      if (Array.isArray(data)) {
-        setCategories(data);
-      } else {
-        setCategories([]);
-        throw new Error("Invalid data format");
+      const response = await fetch("/api/admin/categories", {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const data = await response.json();
+      setCategories(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching categories:", error);
       toast({
@@ -75,144 +75,143 @@ export default function CategoriesPage() {
         body: JSON.stringify(category),
       });
 
-      if (!response.ok) throw new Error("Failed to save category");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save category");
+      }
 
       toast({
         title: "Success",
         description: `Category ${category._id ? "updated" : "created"} successfully`,
       });
-
+      setIsDialogOpen(false);
       setEditingCategory(null);
-      fetchCategories();
+      await fetchCategories();
     } catch (error) {
       console.error("Error saving category:", error);
       toast({
         title: "Error",
-        description: "Failed to save category",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to save category",
         variant: "destructive",
       });
     }
   }
 
   async function handleDelete(id: string) {
+    if (!confirm("Are you sure you want to delete this category?")) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/admin/categories/${id}`, {
         method: "DELETE",
       });
 
-      if (!response.ok) throw new Error("Failed to delete category");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete category");
+      }
 
       toast({
         title: "Success",
         description: "Category deleted successfully",
       });
-
-      fetchCategories();
+      await fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
       toast({
         title: "Error",
-        description: "Failed to delete category",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete category",
         variant: "destructive",
       });
     }
   }
 
   if (isLoading) {
-    return <div>Loading categories...</div>;
+    return <div className="flex justify-center items-center min-h-screen">Loading categories...</div>;
   }
 
   return (
-    <div className="space-y-4">
+    <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Categories</h1>
-        <Dialog>
+        <h1 className="text-3xl font-bold">Categories Management</h1>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>Add Category</Button>
+            <Button onClick={() => { setEditingCategory(null); setIsDialogOpen(true); }}>
+              Add Category
+            </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
               <DialogTitle>
                 {editingCategory?._id ? "Edit Category" : "Add New Category"}
               </DialogTitle>
             </DialogHeader>
             <CategoryForm
-              category={editingCategory || {
-                _id: "",
-                name: "",
-                description: "",
-                isActive: true,
-                productCount: 0,
-              }}
+              category={
+                editingCategory || {
+                  _id: "",
+                  name: "",
+                  description: "",
+                }
+              }
               onSave={handleSave}
-              onCancel={() => setEditingCategory(null)}
+              onCancel={() => {
+                setIsDialogOpen(false);
+                setEditingCategory(null);
+              }}
             />
           </DialogContent>
         </Dialog>
       </div>
 
       {categories.length === 0 ? (
-        <p>No categories found</p>
+        <div className="text-center py-10">
+          <p className="text-gray-500">No categories found</p>
+        </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Products</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.map((category) => (
-              <TableRow key={category._id}>
-                <TableCell>{category.name}</TableCell>
-                <TableCell>{category.description}</TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded text-sm ${
-                      category.isActive
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {category.isActive ? "Active" : "Inactive"}
-                  </span>
-                </TableCell>
-                <TableCell>{category.productCount}</TableCell>
-                <TableCell className="space-x-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        onClick={() => setEditingCategory(category)}
-                      >
-                        Edit
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Category</DialogTitle>
-                      </DialogHeader>
-                      <CategoryForm
-                        category={category}
-                        onSave={handleSave}
-                        onCancel={() => setEditingCategory(null)}
-                      />
-                    </DialogContent>
-                  </Dialog>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete(category._id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {categories.map((category) => (
+                <TableRow key={category._id}>
+                  <TableCell className="font-medium">{category.name}</TableCell>
+                  <TableCell>{category.description}</TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEditingCategory(category);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDelete(category._id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );
@@ -226,38 +225,49 @@ interface CategoryFormProps {
 
 function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) {
   const [formData, setFormData] = useState(category);
+  const [errors, setErrors] = useState<Partial<Record<keyof Category, string>>>({});
+
+  const validateForm = () => {
+    const newErrors: Partial<Record<keyof Category, string>> = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.description.trim()) newErrors.description = "Description is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onSave(formData);
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Category Name"
-        value={formData.name || ""}
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-      />
-      <Input
-        placeholder="Description"
-        value={formData.description || ""}
-        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-      />
-      <div className="flex items-center space-x-2">
-        <label>Status:</label>
-        <select
-          value={formData.isActive ? "true" : "false"}
-          onChange={(e) =>
-            setFormData({ ...formData, isActive: e.target.value === "true" })
-          }
-          className="border p-2 rounded"
-        >
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
-        </select>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Name</label>
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className={errors.name ? "border-red-500" : ""}
+        />
+        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
       </div>
-      <div className="flex justify-end space-x-2">
-        <Button variant="outline" onClick={onCancel}>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Description</label>
+        <Textarea
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className={errors.description ? "border-red-500" : ""}
+        />
+        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+      </div>
+      <div className="flex justify-end space-x-2 pt-4">
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button onClick={() => onSave(formData)}>Save</Button>
+        <Button type="submit">Save</Button>
       </div>
-    </div>
+    </form>
   );
 }
