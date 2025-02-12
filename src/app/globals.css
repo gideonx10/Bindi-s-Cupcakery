@@ -4,6 +4,8 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Germania+One&family=Great+Vibes&family=IM+Fell+English:ital@0;1&family=New+Rocker&family=Pacifico&family=Space+Grotesk:wght@300..700&family=Uncial+Antiqua&display=swap");
 
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Barlow:wght@500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,6 +19,9 @@
   font-weight: normal;
   font-style: normal;
 }
+.btn {
+  @apply px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600;
+}
 
 .bindi {
   font-family: "Ananda", serif;
@@ -29,3 +34,6 @@
   font-family: "Ananda", serif;
   letter-spacing: 1.5px;
 }
+
+
+

@@ -122,6 +122,7 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
+    const productId = searchParams.get("productId");
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
@@ -133,12 +134,24 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
-    // Clear the products array
-    cart.products = [];
+    if (productId) {
+      // Remove only the specified product
+      cart.products = cart.products.filter(
+        (item: any) => item.product.toString() !== productId
+      );
+    } else {
+      // Clear the entire cart
+      cart.products = [];
+    }
+
     await cart.save();
 
     return NextResponse.json(
-      { message: "Cart cleared successfully" },
+      {
+        message: productId
+          ? "Product removed from cart"
+          : "Cart cleared successfully",
+      },
       { status: 200 }
     );
   } catch (error) {

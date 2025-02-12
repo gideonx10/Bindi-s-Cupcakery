@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/connectDB";
 import User from "@/models/User";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   await connectDB();
@@ -37,6 +37,8 @@ export async function POST(request: Request) {
       phone,
       area,
       role: "user",
+      provider: "credentials",
+      profileComplete: true,
     });
 
     return NextResponse.json(

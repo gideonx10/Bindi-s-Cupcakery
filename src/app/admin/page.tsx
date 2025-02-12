@@ -1,22 +1,61 @@
-// This is a server component; no "use client" here.
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
+"use client"
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
-export default async function AdminPanel() {
-  const session = await getServerSession(authOptions);
+export default function AdminPanel() {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  // If there is no session or the user is not an admin, redirect to the admin login page.
-  if (!session || session.user.role !== "admin") {
-    redirect("/admin/login");
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const response = await fetch('/api/admin/session');
+        if (!response.ok) {
+          router.push('/admin/login');
+          return;
+        }
+        const data = await response.json();
+        setSession(data.session);
+      } catch (error) {
+        console.error('Error fetching session:', error);
+        router.push('/admin/login');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    checkSession();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen p-8">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
-  // Render the protected admin panel.
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Admin Panel</h1>
-      <p>Welcome, {session.user.name}</p>
-      {/* Render additional admin functionalities here */}
+    <div className="min-h-screen p-8">
+      <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
+      
+      <div className="bg-white shadow rounded p-6">
+        <h2 className="text-xl font-semibold mb-4">Admin Session Info:</h2>
+        <pre className="bg-gray-100 p-4 rounded">
+          {JSON.stringify(session, null, 2)}
+        </pre>
+      </div>
+
+      <div className="mt-6">
+        <button
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Sign Out
+        </button>
+      </div> 
     </div>
   );
 }
