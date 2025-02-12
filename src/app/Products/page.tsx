@@ -404,9 +404,6 @@ export default function ProductsPage() {
                       filterSugarFree
                         ? "bg-lime-100 text-white"
                         : "bg-[#c0dbf4]"
-                      filterSugarFree
-                        ? "bg-lime-100 text-white"
-                        : "bg-[#c0dbf4]"
                     }`}
                   >
                     Sugar-Free
@@ -414,9 +411,6 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setFilterBestseller((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
-                      filterBestseller
-                        ? "bg-yellow-600 text-white"
-                        : "bg-[#c0dbf4]"
                       filterBestseller
                         ? "bg-yellow-600 text-white"
                         : "bg-[#c0dbf4]"
@@ -468,7 +462,7 @@ export default function ProductsPage() {
                         onClick={() => toggleCategory(category._id)}
                         className={`p-2 text-center font-medium rounded-lg transition-all duration-300 ${
                           selectedCategories.includes(category._id)
-                            ? "bg-blue-500 text-white"
+                            ? "border-2 border-black"
                             : "bg-[#c0dbf4]"
                         }`}
                       >
