@@ -1,14 +1,20 @@
-// Page.tsx
 import Landing from "./pages/Landing";
 import { InfiniteName } from "./pages/InfiniteName";
+import Navbar from "@/components/Navbar";
 // import Preloader from "@/components/Preloader";
+import FlowMenu from "./pages/FlowMenu";
+import TopCategories from "./pages/TopCategories";
+// import BlogsSection from "./pages/BlogsSection";
 
 export default function Page() {
   return (
     <div>
+      {/* <Navbar /> */}
       <Landing />
       <InfiniteName />
-      {/* <Preloader /> */}
+      <FlowMenu />
+      <TopCategories />
+      {/* <BlogsSection /> */}
     </div>
   );
 }

@@ -1,61 +1,73 @@
-"use client"
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+// app/admin/dashboard/page.tsx
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+// import Products from './components/Products';
+// import Categories from './components/Categories';
+// import Users from './components/Users';
+// import Reviews from './components/Reviews';
+// import Orders from './components/Orders';
 
-export default function AdminPanel() {
+export default function AdminDashboard() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    async function checkSession() {
-      try {
-        const response = await fetch('/api/admin/session');
-        if (!response.ok) {
-          router.push('/admin/login');
-          return;
-        }
-        const data = await response.json();
-        setSession(data.session);
-      } catch (error) {
-        console.error('Error fetching session:', error);
-        router.push('/admin/login');
-      } finally {
-        setLoading(false);
-      }
-    }
-
     checkSession();
-  }, [router]);
+  }, []);
+
+  async function checkSession() {
+    try {
+      const response = await fetch("/api/admin/session");
+      if (!response.ok) {
+        router.push("/admin/login");
+        return;
+      }
+      const data = await response.json();
+      setSession(data.session);
+    } catch (error) {
+      console.error("Error fetching session:", error);
+      router.push("/admin/login");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (loading) {
-    return (
-      <div className="min-h-screen p-8">
-        <p>Loading...</p>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
-      
-      <div className="bg-white shadow rounded p-6">
-        <h2 className="text-xl font-semibold mb-4">Admin Session Info:</h2>
-        <pre className="bg-gray-100 p-4 rounded">
-          {JSON.stringify(session, null, 2)}
-        </pre>
-      </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <Tabs defaultValue="products" className="w-full">
+        <TabsList>
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="reviews">Reviews</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+        </TabsList>
 
-      <div className="mt-6">
-        <button
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Sign Out
-        </button>
-      </div> 
+        {/* <TabsContent value="products">
+          <Products />
+        </TabsContent>
+        <TabsContent value="categories">
+          <Categories />
+        </TabsContent>
+        <TabsContent value="users">
+          <Users />
+        </TabsContent>
+        <TabsContent value="reviews">
+          <Reviews />
+        </TabsContent>
+        <TabsContent value="orders">
+          <Orders />
+        </TabsContent> */}
+      </Tabs>
     </div>
   );
 }

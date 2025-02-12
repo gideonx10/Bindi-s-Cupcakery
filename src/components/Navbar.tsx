@@ -5,6 +5,9 @@ import { ShoppingBag, Menu, X, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
+import Cart from "./SidebarCart";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 // import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 // import { getServerSession } from "next-auth";
 
@@ -17,7 +20,9 @@ const Navbar = () => {
   const waveRef = useRef(null);
   const [delayedOpen, setDelayedOpen] = useState(false);
   const component = useRef(null);
-
+  const { data: session } = useSession();
+  const userId = (session?.user as { id: string })?.id;
+  const pathname = usePathname();
   gsap.set(component.current, {
     opacity: 0,
   });
@@ -117,17 +122,18 @@ const Navbar = () => {
 
         {/* Right side icons */}
         <div className="flex items-center gap-7 max-sm:gap-2 max-sm:scale-85">
-          <button
-            onClick={() => setIsCartOpen(!isCartOpen)}
-            className="text-[#3b0017] p-4 max-sm:p-2"
-          >
-            <ShoppingBag
-              size={30}
-              className="transform translate-x-3 max-sm:size-6"
-            />
-          </button>
-
-          {isLoggedIn ? (
+          {pathname.startsWith("/products") && (
+            <button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className="text-[#3b0017] p-4 max-sm:p-2"
+            >
+              <ShoppingBag
+                size={30}
+                className="transform translate-x-3 max-sm:size-6"
+              />
+            </button>
+          )}
+          {/* {isLoggedIn ? (
             <div className="text-[#3b0017] px-4 py-3 bg-transparent rounded-xl border-[#3b0017] border-2 max-sm:px-2 max-sm:py-2 max-sm:text-sm">
               {userName}
             </div>
@@ -138,7 +144,7 @@ const Navbar = () => {
             >
               Login/Signup
             </button>
-          )}
+          )} */}
 
           <div
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -330,16 +336,20 @@ const Navbar = () => {
       </div>
 
       {/* Cart sidebar */}
-      <div
+      {/* <div
         className={`fixed top-0 right-0 h-full w-1/3 bg-yellow-400 shadow-lg transition-transform duration-300 z-30 ${
           isCartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="pt-24 px-8">
-          <h2 className="text-2xl font-bold text-[#3b0017] mb-6">Your Cart</h2>
-          <div className="text-[#3b0017]">Cart items will appear here</div>
-        </div>
-      </div>
+          <h2 className="text-2xl font-bold text-[#3b0017] mb-6">Your Cart</h2> */}
+      <Cart
+        userId={userId}
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+      />
+      {/* </div>
+      </div> */}
 
       <style jsx>{`
         .rounded-star {
