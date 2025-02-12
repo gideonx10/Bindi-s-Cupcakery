@@ -1,33 +1,39 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/connectDB";
-import Category from "@/models/Category";
+import { ObjectId } from "mongodb";
 
 export async function GET() {
-  await connectDB();
   try {
-    const categories = await Category.find();
-    return NextResponse.json({ success: true, data: categories });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const db = await connectDB();
+    const categories = await db.collection("categories").find().toArray();
+    return NextResponse.json(categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch categories" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: Request) {
-  await connectDB();
   try {
     const body = await request.json();
-    const { name, description, image } = body;
+    const db = await connectDB();
+    
+    const result = await db.collection("categories").insertOne({
+      ...body,
+      productCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
-    // Check if category exists
-    const existingCategory = await Category.findOne({ name });
-    if (existingCategory) {
-      return NextResponse.json({ success: false, message: "Category already exists" }, { status: 400 });
-    }
-
-    const category = new Category({ name, description, image });
-    await category.save();
-    return NextResponse.json({ success: true, data: category }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("Error creating category:", error);
+    return NextResponse.json(
+      { error: "Failed to create category" },
+      { status: 500 }
+    );
   }
 }

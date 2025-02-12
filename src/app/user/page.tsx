@@ -47,26 +47,34 @@ const UserPage = () => {
         return <div className="p-4">General Information Content</div>;
       default:
         return (
-          <div className="grid gap-4">
-            <button className="btn" onClick={() => handleTabChange("details")}>
-              Details
-            </button>
-            <button className="btn" onClick={() => handleTabChange("orders")}>
-              Orders
-            </button>
-            <button className="btn" onClick={() => handleTabChange("cart")}>
-              Cart
-            </button>
-            <button className="btn" onClick={() => handleTabChange("general")}>
-              General Info
-            </button>
+          <div className="mt-10">
+            <div className="grid gap-4">
+              <button
+                className="btn"
+                onClick={() => handleTabChange("details")}
+              >
+                Details
+              </button>
+              <button className="btn" onClick={() => handleTabChange("orders")}>
+                Orders
+              </button>
+              <button className="btn" onClick={() => handleTabChange("cart")}>
+                Cart
+              </button>
+              <button
+                className="btn"
+                onClick={() => handleTabChange("general")}
+              >
+                General Info
+              </button>
+            </div>
           </div>
         );
     }
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center p-10 mt-10">
       {activeTab && (
         <button
           className="mb-4 self-start px-4 py-2 bg-gray-300 rounded-lg"
