@@ -55,17 +55,17 @@ export default function Cart({
   return (
     <div>
       <div
-        className={`fixed top-0 right-0 h-full w-1/3 md:w-96 bg-yellow-400 shadow-xl transition-transform duration-300 ease-in-out z-30 ${
+        className={`fixed top-0 right-0 h-full w-1/3 md:w-96 bg-[#c5e9f7] rounded-l-xl shadow-xl transition-transform duration-300 ease-in-out z-30 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full mt-20">
           {/* Cart Header */}
-          <div className="flex justify-between items-center p-6 border-b border-yellow-500">
+          <div className="flex justify-between items-center p-6 border-b border-sky-300">
             <h2 className="text-2xl font-bold text-[#3b0017]">Your Cart</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-yellow-500 rounded-full transition-colors duration-200"
+              className="p-2 hover:border-sky-300 rounded-full transition-colors duration-200"
             >
               <X size={24} className="text-[#3b0017]" />
             </button>
@@ -112,14 +112,14 @@ export default function Cart({
 
           {/* Cart Footer - Sticky Checkout Button */}
           {cartItems.length > 0 && (
-            <div className="fixed bottom-0 right-0 w-1/3 md:w-96 bg-yellow-300 p-6 border-t rounded-2xl border-yellow-500 shadow-lg">
+            <div className="fixed bottom-0 right-0 w-1/3 md:w-96 bg-sky-200 p-6 border-t rounded-s-2xl border-sky-300 shadow-lg">
               <div className="flex justify-between text-lg font-semibold text-[#3b0017] mb-4">
                 <span>Total:</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>₹{totalPrice.toFixed(2)}</span>
               </div>
               <button
                 onClick={() => router.push("/user?tab=cart")}
-                className="w-full bg-[#3b0017] text-white py-3 rounded-xl font-semibold hover:bg-[#570025] transition-colors duration-200"
+                className="w-full bg-[#2a5d7d] text-white py-3 rounded-xl font-semibold hover:bg-[#570025] transition-colors duration-200"
               >
                 Proceed to Checkout
               </button>
