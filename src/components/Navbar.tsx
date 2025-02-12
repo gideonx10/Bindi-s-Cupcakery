@@ -122,7 +122,7 @@ const Navbar = () => {
 
         {/* Right side icons */}
         <div className="flex items-center gap-7 max-sm:gap-2 max-sm:scale-85">
-          {pathname.startsWith("/products") && (
+          {pathname.startsWith("/Products") && (
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
               className="text-[#3b0017] p-4 max-sm:p-2"
