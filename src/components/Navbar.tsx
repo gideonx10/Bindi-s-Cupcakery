@@ -169,17 +169,35 @@ const Navbar = () => {
             {/* Hamburger & Close Icon */}
             <div className="absolute flex flex-col items-center w-6 max-sm:w-4">
               <div
-                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] bg-yellow-400 rounded-full transition-all duration-300 ${
+                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
+                  isMenuOpen
+                    ? "bg-yellow-400"
+                    : pathname.startsWith("/Products")
+                    ? "bg-[#3e7496]"
+                    : "bg-yellow-400"
+                } rounded-full transition-all duration-300 ${
                   isMenuOpen ? "rotate-45" : "translate-y-2"
                 }`}
               ></div>
               <div
-                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] bg-yellow-400 rounded-full transition-all duration-300 ${
+                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
+                  isMenuOpen
+                    ? "bg-yellow-400"
+                    : pathname.startsWith("/Products")
+                    ? "bg-[#3e7496]"
+                    : "bg-yellow-400"
+                } rounded-full transition-all duration-300 ${
                   isMenuOpen ? "opacity-0 scale-0" : "opacity-100"
                 }`}
               ></div>
               <div
-                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] bg-yellow-400 rounded-full transition-all duration-300 ${
+                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
+                  isMenuOpen
+                    ? "bg-yellow-400"
+                    : pathname.startsWith("/Products")
+                    ? "bg-[#3e7496]"
+                    : "bg-yellow-400"
+                } rounded-full transition-all duration-300 ${
                   isMenuOpen ? "-rotate-45" : "-translate-y-2"
                 }`}
               ></div>
@@ -275,16 +293,16 @@ const Navbar = () => {
           <div className="options w-1/2 h-full pt-[6%] pl-[5%]">
             <ul className="text-[#3b0017] text-6xl font-bold space-y-8">
               <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                PROFILE
+                <Link href="/user">PROFILE</Link>
               </li>
               <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                PRODUCTS
+                <Link href="/Products">PRODUCTS</Link>
+              </li>
+              <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
+                <Link href="/user?tab=cart">CART</Link>
               </li>
               <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
                 ABOUT US
-              </li>
-              <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                BLOG
               </li>
               {/* {session?(
                 <Link href="/api/auth/signout?callbackUrl=/"> Logout</Link>

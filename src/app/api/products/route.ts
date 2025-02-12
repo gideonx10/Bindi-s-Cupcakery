@@ -9,11 +9,19 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const search = searchParams.get("search") || "";
-    const category = searchParams.get("category") || null;
+    const categories = searchParams.getAll("categories[]"); // Get all selected categories
 
     const query: any = {};
-    if (search) query.name = { $regex: search, $options: "i" }; // Case-insensitive search
-    if (category) query.category = category; // Filter by category if provided
+
+    // Handle search
+    if (search) {
+      query.name = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    // Handle multiple categories
+    if (categories && categories.length > 0) {
+      query.category = { $in: categories }; // Match any of the selected categories
+    }
 
     const products = await Product.find(query);
     return NextResponse.json(products, { status: 200 });
