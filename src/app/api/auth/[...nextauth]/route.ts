@@ -72,7 +72,7 @@ export const authOptions = {
         const dbUser = await User.findOne({ email: session.user.email });
 
         if (dbUser) {
-          session.user.id = dbUser._id.toString(); // ✅ Convert ObjectId to string
+          session.user.id = dbUser._id.toString();
           session.user.role = dbUser.role;
           session.user.provider = dbUser.provider;
         } else {

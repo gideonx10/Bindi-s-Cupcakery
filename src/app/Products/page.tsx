@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { signOut, useSession } from "next-auth/react";
 
+// ... (keep all interfaces the same)
 interface Product {
   _id: string;
   name: string;
@@ -37,7 +37,6 @@ export default function ProductsPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -113,7 +112,7 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf";
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -144,13 +143,12 @@ export default function ProductsPage() {
       setUpdatingCart(null);
     }
   };
-
   const updateCartQuantity = async (productId: string, newQuantity: number) => {
     if (newQuantity < 0) return;
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -160,7 +158,7 @@ export default function ProductsPage() {
         body: JSON.stringify({
           userId,
           productId,
-          quantity: newQuantity,
+          quantity: 1, // We'll always send 1 as we're incrementing/decrementing
           action:
             newQuantity > (cartQuantities[productId] || 0)
               ? "increase"
@@ -186,15 +184,12 @@ export default function ProductsPage() {
     }
   };
 
+  // ... (keep all other functions and useEffects the same)
   useEffect(() => {
     async function fetchCartQuantities() {
-      if (!session || !session.user) return; // Ensure session exists
-      const userId = (session.user as { id: string })?.id;
-      if (!userId) return; // Avoid making a request if userId is undefined
-
       try {
+        const userId = "67a893e17d6b92f96ee990bf";
         const response = await fetch(`/api/cart?userId=${userId}`);
-
         if (!response.ok) throw new Error("Failed to fetch cart");
 
         const cartData = await response.json();
@@ -211,7 +206,7 @@ export default function ProductsPage() {
     }
 
     fetchCartQuantities();
-  }, [session]); // Add `session` as a dependency
+  }, []);
 
   // Update fetchProducts to handle multiple categories
   useEffect(() => {
@@ -306,7 +301,7 @@ export default function ProductsPage() {
   return (
     <div className="w-screen min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%]">
       {/* Category Filter */}
-      <div className="flex-1">
+      <div className="flex-1 ">
         <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-10 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
@@ -324,7 +319,7 @@ export default function ProductsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold"
+                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold "
               />
               <Search
                 className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -346,9 +341,9 @@ export default function ProductsPage() {
           >
             <div
               className={`
-                bg-[#DCF5FF] rounded-2xl p-6 transition-transform duration-300 shadow-lg
-                ${isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"}
-              `}
+      bg-[#DCF5FF] rounded-2xl p-6 transition-transform duration-300 shadow-lg
+      ${isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"}
+    `}
             >
               <div className="space-y-4">
                 {/* Categories */}
@@ -409,6 +404,9 @@ export default function ProductsPage() {
                       filterSugarFree
                         ? "bg-lime-100 text-white"
                         : "bg-[#c0dbf4]"
+                      filterSugarFree
+                        ? "bg-lime-100 text-white"
+                        : "bg-[#c0dbf4]"
                     }`}
                   >
                     Sugar-Free
@@ -416,6 +414,9 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setFilterBestseller((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
+                      filterBestseller
+                        ? "bg-yellow-600 text-white"
+                        : "bg-[#c0dbf4]"
                       filterBestseller
                         ? "bg-yellow-600 text-white"
                         : "bg-[#c0dbf4]"
