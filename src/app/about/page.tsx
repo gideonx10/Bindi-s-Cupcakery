@@ -132,7 +132,7 @@ export default function About() {
               {/* Text Content - Left Side */}
               <div className="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left xl:-translate-y-[3rem]">
                 <p className="text-lg lg:text-2xl md:text-xl text-gray-700 leading-relaxed font-semibold drop-shadow-2xl">
-                  Bindi's Cupcakery was born out of a passion for baking and a
+                  Bindi&apos;s Cupcakery was born out of a passion for baking and a
                   commitment to providing high-quality, homemade desserts that
                   everyone can enjoy. Located in the heart of Parle Point,
                   Surat, our cloud kitchen serves as a haven for dessert lovers
