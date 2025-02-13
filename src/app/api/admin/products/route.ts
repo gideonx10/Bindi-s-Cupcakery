@@ -3,11 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/connectDB";
 import Product from "@/models/Product";
+import "@/models/Category";
 
 // In this single route file, we handle all CRUD operations.
 // Product ID for GET (one), PUT and DELETE should be provided as a search parameter "id".
 // When no "id" is provided, GET returns all products and POST creates a new product.
-
 export async function GET(request: Request) {
   try {
     await connectDB();
