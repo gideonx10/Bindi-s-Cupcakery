@@ -45,7 +45,7 @@ const categories: Category[] = [
   {
     id: 2,
     name: "Specialty Flavors",
-    image: "/images/leaves.png",
+    image: "/images/AboutUs_header.png",
     description: "Unique and innovative combinations",
     colors: {
       bgGradient: "from-[#E0F4FF] to-[#B5E8FF]",

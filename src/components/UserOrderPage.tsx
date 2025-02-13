@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 interface Product {
@@ -18,12 +17,11 @@ interface Order {
   status: string;
 }
 
-export default function OrdersPage() {
+export default function OrdersPage({ userId }: { userId: string }) {
   const router = useRouter();
-  const { data: session } = useSession();
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const userId = (session?.user as { id: string })?.id;
 
   useEffect(() => {
     if (!userId) return;

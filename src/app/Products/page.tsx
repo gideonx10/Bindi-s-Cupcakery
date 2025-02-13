@@ -7,6 +7,7 @@ import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { useSession } from "next-auth/react";
 
 // ... (keep all interfaces the same)
 interface Product {
@@ -67,6 +68,7 @@ export default function ProductsPage() {
 
   const filterContainerRef = useRef<HTMLDivElement>(null);
   const productContainerRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,29 +92,19 @@ export default function ProductsPage() {
   //   );
   // };
 
-  const handleCartAction = async (
-    productId: string,
-    action: "add" | "update",
-    newQuantity?: number
-  ) => {
+  const addToCart = async (productId: string) => {
+    setUpdatingCart(productId);
     if (status === "unauthenticated") {
       toast.error("Please sign in to add items to cart");
-      router.push("/signin");
+      router.push(
+        `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+      );
+
       return;
     }
 
-    if (action === "add") {
-      await addToCart(productId);
-    } else if (action === "update" && typeof newQuantity === "number") {
-      await updateCartQuantity(productId, newQuantity);
-    }
-  };
-
-  const addToCart = async (productId: string) => {
-    setUpdatingCart(productId);
-
     try {
-      const userId = "67a893e17d6b92f96ee990bf";
+      const userId = (session?.user as { id: string })?.id;
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -148,7 +140,7 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
+      const userId = (session?.user as { id: string })?.id; // Your user ID
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -188,7 +180,10 @@ export default function ProductsPage() {
   useEffect(() => {
     async function fetchCartQuantities() {
       try {
-        const userId = "67a893e17d6b92f96ee990bf";
+        const userId = (session?.user as { id: string })?.id;
+        if (!userId) {
+          return;
+        }
         const response = await fetch(`/api/cart?userId=${userId}`);
         if (!response.ok) throw new Error("Failed to fetch cart");
 

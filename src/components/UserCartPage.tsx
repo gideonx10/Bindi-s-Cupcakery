@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import CartItem from "./CartItem";
 
 interface Product {
   _id: string;
@@ -16,13 +16,12 @@ interface CartItem {
   quantity: number;
 }
 
-export default function CartPage() {
+export default function CartPage({ userId }: { userId: string }) {
   const router = useRouter();
-  const { data: session } = useSession();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
-  const userId = (session?.user as { id: string })?.id;
+  const [isHamper, setIsHamper] = useState(false); // Toggle State
 
   useEffect(() => {
     if (userId) fetchCart();
@@ -63,20 +62,15 @@ export default function CartPage() {
   async function removeItem(productId: string) {
     setLoading(true);
     try {
-      console.log("Removing product:", productId);
-
       const res = await fetch("/api/cart/removeItem", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, productId }), // Pass userId & productId
+        body: JSON.stringify({ userId, productId }),
       });
 
       const data = await res.json();
-      console.log("Response:", data);
-
       if (!res.ok) throw new Error(data.error || "Failed to remove item");
 
-      // Update UI state
       setCartItems((prev) =>
         prev.filter((item) => item.product._id !== productId)
       );
@@ -118,6 +112,7 @@ export default function CartPage() {
           (total, item) => total + item.product.price * item.quantity,
           0
         ),
+        isHamper, // Include hamper state
       };
 
       const res = await fetch("/api/orders", {
@@ -139,8 +134,24 @@ export default function CartPage() {
     }
   }
 
+  async function toggleHamper() {
+    setIsHamper((prev) => !prev);
+
+    try {
+      await fetch("/api/orders/update-hamper", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, isHamper: !isHamper }),
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update hamper status.");
+      setIsHamper((prev) => !prev);
+    }
+  }
+
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Your Cart</h1>
         {cartItems.length > 0 && (
@@ -159,39 +170,31 @@ export default function CartPage() {
       ) : (
         <div className="space-y-4">
           {cartItems.map((item) => (
-            <div
+            <CartItem
               key={item.product._id}
-              className="relative border p-4 rounded-lg shadow-sm"
-            >
-              {/* Cross button for removing item */}
-              <button
-                onClick={() => removeItem(item.product._id)}
-                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-              >
-                ❌
-              </button>
-              <h2 className="font-semibold">{item.product.name}</h2>
-              <p className="text-gray-600">{item.product.description}</p>
-              <p className="font-medium">Price: ₹{item.product.price}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <button
-                  onClick={() => updateQuantity(item.product._id, "decrease")}
-                  disabled={loading}
-                  className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-                >
-                  -
-                </button>
-                <span>{item.quantity}</span>
-                <button
-                  onClick={() => updateQuantity(item.product._id, "increase")}
-                  disabled={loading}
-                  className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-                >
-                  +
-                </button>
-              </div>
-            </div>
+              item={item}
+              loading={loading}
+              updateQuantity={updateQuantity}
+              removeItem={removeItem}
+            />
           ))}
+
+          {/* Toggle Switch for Hamper */}
+          <div className="mt-6 flex items-center">
+            <span className="mr-2 text-lg font-semibold">
+              Make it a Hamper?
+            </span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isHamper}
+                onChange={toggleHamper}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
           <div className="mt-6 flex justify-between items-center">
             <h2 className="text-xl font-semibold">
               Total: ₹
@@ -210,6 +213,18 @@ export default function CartPage() {
               {checkingOut ? "Processing..." : "Checkout"}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Redirect to Products Page */}
+      {cartItems.length > 0 && (
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => router.push("/products")}
+            className="px-6 py-3 bg-black text-white font-semibold rounded-lg"
+          >
+            Missing Something?
+          </button>
         </div>
       )}
     </div>
