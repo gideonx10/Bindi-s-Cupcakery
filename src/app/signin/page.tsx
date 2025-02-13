@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignInPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get the return URL from query params, defaulting to "/"
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Call NextAuth signIn using the "credentials" provider.
     const res = await signIn("credentials", {
-      identifier, // can be email or phone
+      identifier,
       password,
       redirect: false,
     });
@@ -21,15 +24,13 @@ export default function SignInPage() {
     if (res?.error) {
       alert("Sign in failed: " + res.error);
     } else {
-      // Redirect to the homepage (or admin panel if needed)
-      router.push("/");
+      // Redirect to the previous page
+      router.push(callbackUrl);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    const res = await signIn("google", { callbackUrl: "/" });
-
-    console.log("Google SignIn Response:", res); // Debugging log
+    await signIn("google", { callbackUrl });
   };
 
   return (
@@ -59,12 +60,15 @@ export default function SignInPage() {
       </form>
       <div style={{ marginTop: "1rem" }}>
         <button onClick={handleGoogleSignIn}>Sign In with Google</button>
-        <button onClick={() => signIn("facebook")}>
+        <button onClick={() => signIn("facebook", { callbackUrl })}>
           Sign In with Facebook
         </button>
       </div>
       <p style={{ marginTop: "1rem" }}>
-        Don't have an account? <a href="/signup">Sign Up</a>
+        Don't have an account?{" "}
+        <a href={`/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
+          Sign Up
+        </a>
       </p>
       <p>
         Forgot your password? <a href="/forgot-password">Reset Password</a>
