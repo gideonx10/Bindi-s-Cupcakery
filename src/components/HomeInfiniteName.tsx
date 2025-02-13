@@ -1,4 +1,4 @@
-import InfiniteText from "../Effects/InfiniteText";
+import InfiniteText from "../app/Homepage/Effects/InfiniteText";
 
 export function InfiniteName() {
   return (

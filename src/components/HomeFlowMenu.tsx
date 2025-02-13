@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import FlowingMenu from "../Effects/FlowingMenu";
+import FlowingMenu from "../app/Homepage/Effects/FlowingMenu";
 
 const FlowMenu = () => {
   const demoItems = [
