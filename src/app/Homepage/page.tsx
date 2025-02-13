@@ -6,6 +6,7 @@ import FlowMenu from "./pages/FlowMenu";
 import TopCategories from "./pages/TopCategories";
 import ImageGallery from "./pages/ImageFallery";
 import CustomerReviews from "./pages/CustomerReviews";
+import FAQs from "./pages/Faqs";
 // import BlogsSection from "./pages/BlogsSection";
 
 export default function Page() {
@@ -19,6 +20,7 @@ export default function Page() {
       <CustomerReviews />
       {/* <BlogsSection /> */}
       {/* <ImageGallery /> */}
+      <FAQs />
     </div>
   );
 }
