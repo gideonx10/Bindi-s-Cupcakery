@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -10,7 +9,7 @@ interface User {
   area: string;
 }
 
-const UserDetails = () => {
+const UserDetails = ({ userId }: { userId: string }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +26,6 @@ const UserDetails = () => {
     newPassword: "",
     confirmPassword: "",
   });
-
-  const { data: session } = useSession();
-  const userId = (session?.user as { id: string })?.id;
 
   useEffect(() => {
     if (!userId) {

@@ -4,7 +4,7 @@
 import { useEffect, useRef } from "react";
 import lottie from "lottie-web";
 import Link from "next/link";
-import RotatingText from "../Effects/RotatingText";
+import RotatingText from "../app/Homepage/Effects/RotatingText";
 
 export default function Landing() {
   const lottieContainer = useRef<HTMLDivElement | null>(null);

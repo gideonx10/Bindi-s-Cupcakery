@@ -20,16 +20,22 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
-interface Product {
+interface Category {
+  _id: string;
+  name: string;
+}
+
+export interface Product {
   _id: string;
   name: string;
   price: number;
   description: string;
-  category: string;
-  stock: number;
+  // product.category is expected to be either a string (the category id) or an object (populated category)
+  category: Category | string;
   isFeatured: boolean;
   isSugarFree: boolean;
-  imageUrl?: string;
+  // Adding images field. This field represents a Google Drive image URL.
+  images?: string;
 }
 
 export default function ProductsPage() {
@@ -51,11 +57,9 @@ export default function ProductsPage() {
           "Cache-Control": "no-cache",
         },
       });
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -73,8 +77,9 @@ export default function ProductsPage() {
   async function handleSave(product: Product) {
     try {
       const method = product._id ? "PUT" : "POST";
+      // For updating, send ?id=<productID> as search parameter
       const url = product._id
-        ? `/api/admin/products/${product._id}`
+        ? `/api/admin/products?id=${product._id}`
         : "/api/admin/products";
 
       const response = await fetch(url, {
@@ -114,7 +119,7 @@ export default function ProductsPage() {
     }
 
     try {
-      const response = await fetch(`/api/admin/products/${id}`, {
+      const response = await fetch(`/api/admin/products?id=${id}`, {
         method: "DELETE",
       });
 
@@ -149,7 +154,9 @@ export default function ProductsPage() {
         <h1 className="text-3xl font-bold">Products Management</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingProduct(null)}>Add Product</Button>
+            <Button onClick={() => { setEditingProduct(null); setIsDialogOpen(true); }}>
+              Add Product
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
@@ -164,10 +171,9 @@ export default function ProductsPage() {
                 price: 0,
                 description: "",
                 category: "",
-                stock: 0,
-                imageUrl:"",
                 isFeatured: false,
                 isSugarFree: false,
+                images: ""
               }}
               onSave={handleSave}
               onCancel={() => {
@@ -190,8 +196,8 @@ export default function ProductsPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Price</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Stock</TableHead>
                 <TableHead>Featured</TableHead>
                 <TableHead>Sugar Free</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -202,8 +208,12 @@ export default function ProductsPage() {
                 <TableRow key={product._id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.description}</TableCell>
+                  <TableCell>
+                    {typeof product.category === "object" && product.category !== null
+                      ? (product.category as Category).name
+                      : product.category}
+                  </TableCell>
                   <TableCell>{product.isFeatured ? "Yes" : "No"}</TableCell>
                   <TableCell>{product.isSugarFree ? "Yes" : "No"}</TableCell>
                   <TableCell className="text-right space-x-2">
@@ -240,17 +250,40 @@ interface ProductFormProps {
 }
 
 function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
-  const [formData, setFormData] = useState(product);
+  // If product.category is populated as an object, extract its _id for the form input
+  const initialCategory =
+    typeof product.category === "object" && product.category !== null
+      ? product.category._id
+      : product.category;
+
+  const [formData, setFormData] = useState<{
+    _id: string;
+    name: string;
+    price: number;
+    description: string;
+    category: Category | string;
+    isFeatured: boolean;
+    isSugarFree: boolean;
+    images?: string;
+  }>({
+    ...product,
+    category: initialCategory,
+    images: product.images || "",
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof Product, string>>>({});
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof Product, string>> = {};
-    
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (formData.price <= 0) newErrors.price = "Price must be greater than 0";
-    if (!formData.category.trim()) newErrors.category = "Category is required";
-    if (formData.stock < 0) newErrors.stock = "Stock cannot be negative";
-
+    if (!formData.description.trim()) newErrors.description = "Description is required";
+    if (!formData.category || typeof formData.category !== "string" || !formData.category.trim()) {
+      newErrors.category = "Category is required";
+    }
+    // Validate images if provided: must be a Google Drive link.
+    if (formData.images && !formData.images.includes("drive.google.com")) {
+      newErrors.images = "Image URL must be a valid Google Drive link";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -295,9 +328,9 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Category</label>
+        <label className="text-sm font-medium">Category ID</label>
         <Input
-          value={formData.category}
+          value={typeof formData.category === "object" ? formData.category._id : formData.category}
           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           className={errors.category ? "border-red-500" : ""}
         />
@@ -305,14 +338,14 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Stock</label>
+        <label className="text-sm font-medium">Image URL (Google Drive)</label>
         <Input
-          type="number"
-          value={formData.stock}
-          onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-          className={errors.stock ? "border-red-500" : ""}
+          value={formData.images}
+          onChange={(e) => setFormData({ ...formData, images: e.target.value })}
+          className={errors.images ? "border-red-500" : ""}
+          placeholder="Enter a Google Drive link if available"
         />
-        {errors.stock && <p className="text-red-500 text-sm">{errors.stock}</p>}
+        {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
       </div>
 
       <div className="flex items-center space-x-2">

@@ -30,7 +30,7 @@ const categories: Category[] = [
   {
     id: 1,
     name: "Classic Cupcakes",
-    image: "/images/classic-cupcakes.jpg",
+    image: "/images/drone_poster.png",
     description: "Timeless collection of traditional favorites",
     colors: {
       bgGradient: "from-[#FFE6E6] to-[#FFCCD6]",
@@ -45,7 +45,7 @@ const categories: Category[] = [
   {
     id: 2,
     name: "Specialty Flavors",
-    image: "/images/specialty-cupcakes.jpg",
+    image: "/images/AboutUs_header.png",
     description: "Unique and innovative combinations",
     colors: {
       bgGradient: "from-[#E0F4FF] to-[#B5E8FF]",
@@ -60,7 +60,7 @@ const categories: Category[] = [
   {
     id: 3,
     name: "Wedding Collections",
-    image: "/images/wedding-cupcakes.jpg",
+    image: "/images/leaves.png",
     description: "Elegant and sophisticated choices",
     colors: {
       bgGradient: "from-[#F3E8FF] to-[#E9D5FF]",
@@ -75,7 +75,7 @@ const categories: Category[] = [
   {
     id: 4,
     name: "Seasonal Specials",
-    image: "/images/seasonal-cupcakes.jpg",
+    image: "/images/drone_poster.png",
     description: "Limited edition seasonal delights",
     colors: {
       bgGradient: "from-[#FEF3C7] to-[#FDE68A]",

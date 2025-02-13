@@ -1,11 +1,12 @@
-import Landing from "./pages/Landing";
-import { InfiniteName } from "./pages/InfiniteName";
+import Landing from "../../components/HomeLanding";
+import { InfiniteName } from "../../components/HomeInfiniteName";
 import Navbar from "@/components/Navbar";
 // import Preloader from "@/components/Preloader";
-import FlowMenu from "./pages/FlowMenu";
-import TopCategories from "./pages/TopCategories";
-import ImageGallery from "./pages/ImageFallery";
-import CustomerReviews from "./pages/CustomerReviews";
+import FlowMenu from "../../components/HomeFlowMenu";
+import TopCategories from "../../components/HomeTopCategories";
+import ImageGallery from "../../components/HomeImageGallery";
+import CustomerReviews from "../../components/HomeCustomerReviews";
+import FAQs from "../../components/HomeFaqs";
 // import BlogsSection from "./pages/BlogsSection";
 
 export default function Page() {
@@ -19,6 +20,8 @@ export default function Page() {
       <ImageGallery />
       <CustomerReviews />
       {/* <BlogsSection /> */}
+      {/* <ImageGallery /> */}
+      <FAQs />
     </div>
   );
 }

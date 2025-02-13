@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 
 const reviews = [
@@ -38,55 +38,51 @@ const reviews = [
   }
 ];
 
+// Function to generate alternating Y offsets
 const generateAlternatingOffsets = (count: number) => {
   const offsets = [];
   let previousWasUp = false;
-  
+
   for (let i = 0; i < count; i++) {
-    // Alternate between up and down with smaller random variations
-    const baseOffset = previousWasUp ? 
-      Math.random() * 15 + 5 : // Down (5 to 20)
-      -(Math.random() * 15 + 5); // Up (-5 to -20)
-    
-    offsets.push({
-      translateY: baseOffset
-    });
-    
-    // Randomly decide next direction but avoid too many consecutive ups or downs
+    const baseOffset = previousWasUp
+      ? 10 + Math.random() * 10 // Down (10 to 20)
+      : -(10 + Math.random() * 10); // Up (-10 to -20)
+
+    offsets.push({ translateY: baseOffset });
+
     previousWasUp = !previousWasUp;
-    if (Math.random() > 0.7) { // 30% chance to break the pattern
-      previousWasUp = !previousWasUp;
-    }
   }
-  
+
   return offsets;
 };
 
 const CustomerReviews = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
-  
+
   const handleDrag = (event: any, info: any) => {
     if (!containerRef.current) return;
-    
+
     const containerWidth = containerRef.current.scrollWidth / 3;
     let newX = x.get() + info.delta.x;
-    
+
     if (newX < -containerWidth) {
       newX += containerWidth;
     } else if (newX > 0) {
       newX -= containerWidth;
     }
-    
+
     x.set(newX);
   };
 
   const allReviews = [...reviews, ...reviews, ...reviews];
-  // Use useMemo to ensure offsets don't change on re-renders
-  const verticalOffsets = useMemo(() => 
-    generateAlternatingOffsets(allReviews.length), 
-    [allReviews.length]
-  );
+
+  // Ensure random offsets are only calculated on the client
+  const [verticalOffsets, setVerticalOffsets] = useState<{ translateY: number }[]>([]);
+
+  useEffect(() => {
+    setVerticalOffsets(generateAlternatingOffsets(allReviews.length));
+  }, [allReviews.length]);
 
   return (
     <section className="bg-[#FCFBE4] pt-24 md:pt-32 lg:pt-40">
@@ -133,9 +129,9 @@ const CustomerReviews = () => {
                 <motion.div
                   key={`${review.id}-${index}`}
                   className="relative flex-shrink-0 group"
-                  initial={{ y: verticalOffsets[index].translateY }}
-                  // Remove animate prop to keep initial position
-                  style={{ y: verticalOffsets[index].translateY }}
+                  initial={{ y: 0 }} // Set to 0 to prevent SSR mismatches
+                  animate={{ y: verticalOffsets[index]?.translateY || 0 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
                   whileHover={{ 
                     scale: 1.02,
                     transition: { duration: 0.3 }
