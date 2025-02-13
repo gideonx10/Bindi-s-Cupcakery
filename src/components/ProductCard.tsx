@@ -1,4 +1,7 @@
 import Image from "next/image";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 
 interface Product {
   _id: string;
@@ -23,8 +26,35 @@ export function convertDriveLink(driveUrl: string): string {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: cardRef.current,
+            start: "top 95%",
+            end: "bottom 15%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
-    <div className="relative rounded-t-xl rounded-b-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow h-[25vh] sm:h-[40vh] flex flex-col gap-2">
+    <div
+      ref={cardRef}
+      className="product-card relative rounded-t-xl rounded-b-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow h-[25vh] sm:h-[40vh] flex flex-col gap-2"
+    >
       {/* Labels for Sugar-Free & Bestseller */}
       {product.isSugarFree && (
         <span className="absolute top-2 left-2 bg-green-600 text-black text-[10px] sm:text-xs font-semibold px-1 py-[0.15rem] sm:px-2 sm:py-1 rounded-md z-10 shadow-3xl">

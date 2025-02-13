@@ -97,19 +97,29 @@ export default function ProductsPage() {
   //   );
   // };
 
-  const addToCart = async (productId: string) => {
-    setUpdatingCart(productId);
+  const handleCartAction = async (
+    productId: string,
+    action: "add" | "update",
+    newQuantity?: number
+  ) => {
     if (status === "unauthenticated") {
       toast.error("Please sign in to add items to cart");
-      router.push(
-        `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
-      );
-
+      router.push("/signin");
       return;
     }
 
+    if (action === "add") {
+      await addToCart(productId);
+    } else if (action === "update" && typeof newQuantity === "number") {
+      await updateCartQuantity(productId, newQuantity);
+    }
+  };
+
+  const addToCart = async (productId: string) => {
+    setUpdatingCart(productId);
+
     try {
-      const userId = (session?.user as { id: string })?.id;
+      const userId = "67a893e17d6b92f96ee990bf";
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -145,7 +155,7 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id; // Your user ID
+      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -185,10 +195,7 @@ export default function ProductsPage() {
   useEffect(() => {
     async function fetchCartQuantities() {
       try {
-        const userId = (session?.user as { id: string })?.id;
-        if (!userId) {
-          return;
-        }
+        const userId = "67a893e17d6b92f96ee990bf";
         const response = await fetch(`/api/cart?userId=${userId}`);
         if (!response.ok) throw new Error("Failed to fetch cart");
 
@@ -297,17 +304,24 @@ export default function ProductsPage() {
 
   const filteredProducts = filterProducts(products);
 
+  useEffect(() => {
+    document.body.style.overflowX = "hidden";
+    return () => {
+      document.body.style.overflowX = "auto";
+    };
+  }, []);
+
   // Rest of your component remains the same...
   return (
-    <div className="w-screen min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%]">
+    <div className="max-w-screen overflow-x-hidden min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%] font-ancient text-[#08410c]">
       {/* Category Filter */}
       <div className="flex-1 ">
-        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-10 pt-[114px]">
+        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
             <button
               onClick={() => setIsMobileFilterOpen((prev) => !prev)}
-              className="flex items-center gap-2 p-2 bg-[#c0dbf4] rounded-2xl min-w-[100px] text-center justify-center font-semibold"
+              className="flex items-center gap-2 p-2 bg-[#d1eafe] shadow-xl rounded-2xl min-w-[100px] text-center justify-center font-semibold "
             >
               <Filter size={20} />
               <span>Filters</span>
@@ -319,7 +333,7 @@ export default function ProductsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#c0dbf4] font-semibold "
+                className="w-full p-2 pl-3 pr-10 border rounded-2xl bg-[#d1eafe] shadow-xl font-semibold "
               />
               <Search
                 className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -331,7 +345,7 @@ export default function ProductsPage() {
           {/* Mobile Filter Modal */}
           <div
             className={`
-              fixed left-1/2 -translate-x-[55%] top-[160px] w-[75%] duration-300 z-50 rounded-2xl
+              fixed left-1/2 -translate-x-[56%] top-[190px] w-[75%] duration-300 z-50 rounded-2xl
               ${
                 isMobileFilterOpen
                   ? "opacity-100"
@@ -356,8 +370,8 @@ export default function ProductsPage() {
                         onClick={() => toggleCategory(category._id)}
                         className={`p-2 rounded-xl ${
                           selectedCategories.includes(category._id)
-                            ? "bg-blue-500 text-white"
-                            : "bg-[#c0dbf4]"
+                            ? "border-2 border-black bg-[#d1eafe] shadow-xl"
+                            : "bg-[#d1eafe] shadow-xl"
                         }`}
                       >
                         {category.name}
@@ -368,7 +382,7 @@ export default function ProductsPage() {
                 {/* Price Sort */}
                 <div className="space-y-2">
                   <h3 className="font-semibold">Sort by Price</h3>
-                  <ul className="rounded-xl bg-[#c0dbf4] overflow-hidden">
+                  <ul className="rounded-xl bg-[#d1eafe] shadow-xl overflow-hidden">
                     <li>
                       <button
                         onClick={() => setSelectedPriceFilter(null)}
@@ -402,8 +416,8 @@ export default function ProductsPage() {
                     onClick={() => setFilterSugarFree((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
                       filterSugarFree
-                        ? "bg-lime-100 text-white"
-                        : "bg-[#c0dbf4]"
+                        ? "bg-green-200 border-2 border-black"
+                        : "bg-[#d1eafe] shadow-xl"
                     }`}
                   >
                     Sugar-Free
@@ -412,8 +426,8 @@ export default function ProductsPage() {
                     onClick={() => setFilterBestseller((prev) => !prev)}
                     className={`flex-1 p-2 rounded-xl ${
                       filterBestseller
-                        ? "bg-yellow-600 text-white"
-                        : "bg-[#c0dbf4]"
+                        ? "bg-amber-300 border-2 border-black"
+                        : "bg-[#d1eafe] shadow-xl"
                     }`}
                   >
                     Bestseller
@@ -426,14 +440,14 @@ export default function ProductsPage() {
 
           {/* Desktop View */}
           <div className="hidden md:block">
-            <div className="flex flex-wrap gap-5 items-center justify-center py-5">
+            <div className="flex flex-wrap lg:gap-5 gap-2 items-center justify-center py-5">
               {/* Categories Dropdown */}
               <div
                 className="relative group"
                 onMouseEnter={() => setCategoryDropdownOpen(true)}
                 onMouseLeave={() => setCategoryDropdownOpen(false)}
               >
-                <button className="p-2 rounded-2xl w-40 bg-[#c0dbf4] text-center font-semibold flex justify-center items-center">
+                <button className="py-2 rounded-2xl w-40 bg-[#d1eafe] shadow-xl text-center font-semibold flex justify-center items-center ">
                   Categories{" "}
                   {selectedCategories.length > 0 &&
                     `(${selectedCategories.length})`}
@@ -446,7 +460,7 @@ export default function ProductsPage() {
 
                 <div
                   className={`
-                    absolute z-50 bg-[#c0dbf4] rounded-md w-64 mt-2 shadow-md
+                    absolute z-50 bg-[#d1eafe] shadow-xl rounded-md w-64 mt-2 
                     transition-all duration-300 origin-top
                     ${
                       categoryDropdownOpen
@@ -463,7 +477,7 @@ export default function ProductsPage() {
                         className={`p-2 text-center font-medium rounded-lg transition-all duration-300 ${
                           selectedCategories.includes(category._id)
                             ? "border-2 border-black"
-                            : "bg-[#c0dbf4]"
+                            : "bg-[#d1eafe] shadow-xl"
                         }`}
                       >
                         {category.name}
@@ -478,7 +492,7 @@ export default function ProductsPage() {
                 onMouseEnter={() => setPriceDropdownOpen(true)}
                 onMouseLeave={() => setPriceDropdownOpen(false)}
               >
-                <button className="p-2 rounded-2xl w-40 bg-[#c0dbf4] text-center font-semibold flex justify-center">
+                <button className="py-2 rounded-2xl w-40 bg-[#d1eafe] shadow-xl text-center font-semibold flex justify-center">
                   Sort by Price
                   <ChevronRight
                     className={`h-5.5 w-5.5 translate-y-0.5 transition-transform duration-300 ${
@@ -489,7 +503,7 @@ export default function ProductsPage() {
 
                 <div
                   className={`
-                    absolute z-50 bg-[#c0dbf4] rounded-md w-48 mt-2 shadow-md
+                    absolute z-50 bg-[#d1eafe] shadow-xl rounded-md w-48 mt-2 
                     transition-all duration-300 origin-top
                     ${
                       priceDropdownOpen
@@ -524,8 +538,10 @@ export default function ProductsPage() {
               {/* Filter Tags */}
               <button
                 onClick={() => setFilterSugarFree((prev) => !prev)}
-                className={`px-4 py-2 rounded-2xl transition font-semibold ${
-                  filterSugarFree ? "bg-green-200" : "bg-[#c0dbf4]"
+                className={`px-4 py-2 rounded-2xl transition font-semibold  ${
+                  filterSugarFree
+                    ? "bg-green-200 border-2 border-black"
+                    : "bg-[#d1eafe] shadow-xl"
                 }`}
               >
                 Sugar-Free
@@ -534,7 +550,9 @@ export default function ProductsPage() {
               <button
                 onClick={() => setFilterBestseller((prev) => !prev)}
                 className={`px-4 py-2 rounded-2xl transition font-semibold ${
-                  filterBestseller ? "bg-amber-300" : "bg-[#c0dbf4]"
+                  filterBestseller
+                    ? "bg-amber-300 border-2 border-black"
+                    : "bg-[#d1eafe] shadow-xl"
                 }`}
               >
                 Bestseller
@@ -547,7 +565,7 @@ export default function ProductsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for products..."
-                  className="w-full p-2 pl-3 pr-10 rounded-2xl bg-[#c0dbf4] placeholder-black placeholder:font-semibold"
+                  className="w-full p-2 pl-3 pr-10 rounded-2xl bg-[#d1eafe] shadow-xl placeholder-[#08410c] placeholder:font-semibold"
                 />
                 <Search
                   className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -558,21 +576,22 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="w-full pt-[170px] md:pt-[180px] ">
-          <div ref={itemsRef} className="p-4 flex justify-center ">
+        <div className="w-full pt-[175px] md:pt-[185px] ">
+          <div ref={itemsRef} className="p-2 md:p-4 flex justify-center ">
             {error && <p className="text-red-500">{error}</p>}
 
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
                 {filteredProducts.map((product) => (
                   <div
                     key={product._id}
-                    className=".carts bg-[#e2edff] bg-opacity-50 backdrop-blur-3xl rounded-3xl p-4 shadow-lg max-w-[350px]"
+                    className=".carts bg-[#e2edff] bg-opacity-50 rounded-3xl p-4 shadow-lg max-w-[350px]"
                   >
                     <ProductCard product={product} />
                     <div className="mt-3 flex justify-center">
                       {cartQuantities[product._id] ? (
-                        <div className="flex items-center justify-between w-[50%] mx-4 shadow-lg hover:shadow-xl transition-shadow rounded-md">
+                        <div className="flex items-center justify-between w-[60%] sm:w-[50%] mx-4 shadow-lg hover:shadow-xl transition-shadow rounded-md">
+                          {/* Decrease Quantity Button */}
                           <button
                             onClick={() =>
                               updateCartQuantity(
@@ -581,19 +600,21 @@ export default function ProductsPage() {
                               )
                             }
                             disabled={updatingCart === product._id}
-                            className={`p-2 rounded-l-xl ${
+                            className={`p-2 sm:p-3 rounded-l-xl ${
                               updatingCart === product._id
                                 ? "animate-spin"
                                 : "text-black font-semibold"
                             }`}
                           >
-                            <Minus className="w-4 h-4 hover:scale-[130%] font-bold" />
+                            <Minus className="w-4 h-4 sm:w-5 sm:h-5 hover:scale-125 sm:hover:scale-[130%] font-bold" />
                           </button>
 
-                          <span className="px-4 py-2 bg-[#dcf5ff] font-medium">
+                          {/* Quantity Count */}
+                          <span className="px-3 sm:px-4 py-2 bg-[#dcf5ff] font-medium text-sm sm:text-base">
                             {cartQuantities[product._id]}
                           </span>
 
+                          {/* Increase Quantity Button */}
                           <button
                             onClick={() =>
                               updateCartQuantity(
@@ -602,20 +623,21 @@ export default function ProductsPage() {
                               )
                             }
                             disabled={updatingCart === product._id}
-                            className={`p-2 rounded-r-xl rounded-l-sm  ${
+                            className={`p-2 sm:p-3 rounded-r-xl rounded-l-sm ${
                               updatingCart === product._id
                                 ? "animate-spin"
                                 : "text-black font-semibold"
                             }`}
                           >
-                            <Plus className="w-4 h-4 hover:scale-[130%] font-bold" />
+                            <Plus className="w-4 h-4 sm:w-5 sm:h-5 hover:scale-125 sm:hover:scale-[130%] font-bold" />
                           </button>
                         </div>
                       ) : (
+                        /* Add to Cart Button */
                         <button
                           onClick={() => addToCart(product._id)}
                           disabled={updatingCart === product._id}
-                          className={`w-full p-2 shadow-lg hover:shadow-xl transition-shadow rounded-b-2xl rounded-t-xl ${
+                          className={`w-[80%] sm:w-[100%] p-2 sm:p-3 shadow-lg hover:shadow-xl transition-shadow rounded-b-2xl rounded-t-xl text-sm sm:text-base ${
                             updatingCart === product._id
                               ? "tracking-wider font-semibold"
                               : "bg-[#d6ebfc] hover:bg-[#d8edff] text-black font-semibold"

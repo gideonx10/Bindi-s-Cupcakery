@@ -1,87 +1,178 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ShoppingBag, Menu, X, Star } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import Cart from "./SidebarCart";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-// import { getServerSession } from "next-auth";
 
 const Navbar = () => {
-  // const session = await getServerSession(authOptions);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // New state for login status
-  const [userName, setUserName] = useState("John Doe"); // New state for user name
-  const waveRef = useRef(null);
   const [delayedOpen, setDelayedOpen] = useState(false);
-  const component = useRef(null);
+  const [currentDateTime, setCurrentDateTime] = useState("2025-02-13 09:51:17");
+  const [currentUser, setCurrentUser] = useState("Snehkaranjia");
+
+  const waveRef = useRef<HTMLDivElement>(null);
+  const componentRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLLIElement[]>([]);
+
   const { data: session } = useSession();
   const userId = (session?.user as { id: string })?.id;
   const pathname = usePathname();
-  gsap.set(component.current, {
-    opacity: 0,
-  });
-  gsap.set(".tabs", {
-    opacity: 0,
-  });
+
+  // ... (other state and refs)
+
+  // Update date and time
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const formatted = now.toISOString().replace("T", " ").split(".")[0];
+      setCurrentDateTime(formatted);
+    }, 2000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Handle link clicks to close menu
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
 
   useEffect(() => {
-    if (isMenuOpen) {
+    // Select all tab elements
+    const tabs = document.querySelectorAll(".tabs");
+
+    // Event handlers for hover
+    const handleMouseEnter = (e: Event) => {
+      const tab = e.currentTarget as HTMLElement;
+      gsap.to(tab, {
+        x: 20,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    const handleMouseLeave = (e: Event) => {
+      const tab = e.currentTarget as HTMLElement;
+      gsap.to(tab, {
+        x: 0,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    // Add event listeners to each tab
+    tabs.forEach((tab) => {
+      tab.addEventListener("mouseenter", handleMouseEnter);
+      tab.addEventListener("mouseleave", handleMouseLeave);
+    });
+
+    // Cleanup function
+    return () => {
+      tabs.forEach((tab) => {
+        tab.removeEventListener("mouseenter", handleMouseEnter);
+        tab.removeEventListener("mouseleave", handleMouseLeave);
+      });
+    };
+  }, [isMenuOpen]); // Re-run when menu opens/closes
+
+  useEffect(() => {
+    // Initial GSAP setup
+    if (componentRef.current) {
+      gsap.set(componentRef.current, { opacity: 0 });
+    }
+
+    // Set initial state for tabs
+    gsap.set(".tabs", {
+      opacity: 0,
+      y: 20,
+    });
+
+    if (isMenuOpen && componentRef.current) {
       const tl = gsap.timeline();
 
-      tl.to(
-        component.current,
-        {
-          opacity: 1,
-          duration: 1,
-          delay: 0.2,
-        },
-        "<"
-      );
-      tl.to(
-        ".tabs",
-        {
-          y: -20,
-          duration: 1,
-        },
-        "<"
-      );
-      tl.to(
+      tl.to(componentRef.current, {
+        opacity: 1,
+        duration: 1,
+        delay: 0.2,
+      }).to(
         ".tabs",
         {
           opacity: 1,
-          duration: 1,
-          stagger: 0.2,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power2.out",
         },
-        "<"
+        "-=0.5"
       );
-      // Show the element immediately
     }
   }, [isMenuOpen]);
 
+  // Initialize GSAP states and handle animations
   useEffect(() => {
-    if (isMenuOpen) {
-      setDelayedOpen(true); // Show the element immediately
-    } else {
-      setDelayedOpen(false);
+    // Initial GSAP setup
+    if (componentRef.current) {
+      gsap.set(componentRef.current, { opacity: 0 });
+    }
+
+    // Set initial state for tabs
+    gsap.set(".tabs", {
+      opacity: 0,
+      y: 20, // Start from below their final position
+    });
+
+    // Update animation when menu opens
+    if (isMenuOpen && componentRef.current) {
+      const tl = gsap.timeline();
+
+      // Animate the component first
+      tl.to(
+        componentRef.current,
+        {
+          opacity: 1,
+          duration: 2,
+          delay: 0.4,
+        },
+        "<"
+      )
+
+        // Animate tabs with stagger
+        .to(
+          ".tabs",
+          {
+            opacity: 1,
+            y: 0, // Move to their original position
+            duration: 0.5,
+            stagger: 0.1, // 0.1 second delay between each tab
+            ease: "power2.out",
+            delay: 0, // Smooth easing function
+          },
+          "<"
+        ); // Start slightly before the previous animation ends
     }
   }, [isMenuOpen]);
 
+  // Handle delayed open state
+  useEffect(() => {
+    setDelayedOpen(isMenuOpen);
+  }, [isMenuOpen]);
+
+  // Responsive circle count
   const [circleCount, setCircleCount] = useState(9);
   const [circleWidth, setCircleWidth] = useState("15%");
 
   useEffect(() => {
     const updateCircleCount = () => {
       if (window.innerWidth < 700) {
-        setCircleCount(5);
+        setCircleCount(4);
         setCircleWidth("20%");
       } else if (window.innerWidth < 1000) {
-        setCircleCount(7);
+        setCircleCount(6);
         setCircleWidth("15%");
       } else {
         setCircleCount(9);
@@ -89,22 +180,28 @@ const Navbar = () => {
       }
     };
 
-    // Run on mount
     updateCircleCount();
-
-    // Add event listener
     window.addEventListener("resize", updateCircleCount);
-
-    // Cleanup
     return () => window.removeEventListener("resize", updateCircleCount);
   }, []);
+
+  const menuItems = [
+    { href: "/user", text: "PROFILE" },
+    { href: "/Products", text: "PRODUCTS" },
+    { href: "/user?tab=cart", text: "CART" },
+    { href: "/aboutUs", text: "ABOUT US" },
+  ];
 
   return (
     <>
       {/* Main Navbar */}
       <nav className="w-full bg-transperent px-[5%] p-8 flex justify-between items-center fixed top-0 left-0 z-50">
         {/* Logo */}
-        <Link href="/" className="logo flex flex-col items-start leading-none">
+        <Link
+          href="/"
+          onClick={handleLinkClick}
+          className="logo flex flex-col items-start leading-none"
+        >
           <span className="text-[3.8rem] font-bold text-[#3b0017] transform translate-y-1">
             B
           </span>
@@ -133,19 +230,8 @@ const Navbar = () => {
               />
             </button>
           )}
-          {/* {isLoggedIn ? (
-            <div className="text-[#3b0017] px-4 py-3 bg-transparent rounded-xl border-[#3b0017] border-2 max-sm:px-2 max-sm:py-2 max-sm:text-sm">
-              {userName}
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsLoggedIn(true)}
-              className="text-[#3b0017] font-semibold px-4 py-3 bg-transparent border-[#3b0017] border-2 rounded-xl max-sm:px-2 max-sm:py-2 max-sm:text-sm"
-            >
-              Login/Signup
-            </button>
-          )} */}
 
+          {/* Menu Toggle Button */}
           <div
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`nav-toggler relative size-16 max-sm:size-12 grid place-items-center cursor-pointer transition-transform duration-300 ${
@@ -153,7 +239,7 @@ const Navbar = () => {
             }`}
           >
             <svg
-              className="absolute size-full text-[#3b0017] max-sm:size-10"
+              className="absolute size-full text-[#3b0017] max-sm:size-12"
               width="105"
               height="105"
               viewBox="0 0 105 105"
@@ -166,41 +252,32 @@ const Navbar = () => {
               />
             </svg>
 
-            {/* Hamburger & Close Icon */}
+            {/* Hamburger Icon */}
             <div className="absolute flex flex-col items-center w-6 max-sm:w-4">
-              <div
-                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
-                  isMenuOpen
-                    ? "bg-yellow-400"
-                    : pathname.startsWith("/Products")
-                    ? "bg-[#3e7496]"
-                    : "bg-yellow-400"
-                } rounded-full transition-all duration-300 ${
-                  isMenuOpen ? "rotate-45" : "translate-y-2"
-                }`}
-              ></div>
-              <div
-                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
-                  isMenuOpen
-                    ? "bg-yellow-400"
-                    : pathname.startsWith("/Products")
-                    ? "bg-[#3e7496]"
-                    : "bg-yellow-400"
-                } rounded-full transition-all duration-300 ${
-                  isMenuOpen ? "opacity-0 scale-0" : "opacity-100"
-                }`}
-              ></div>
-              <div
-                className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
-                  isMenuOpen
-                    ? "bg-yellow-400"
-                    : pathname.startsWith("/Products")
-                    ? "bg-[#3e7496]"
-                    : "bg-yellow-400"
-                } rounded-full transition-all duration-300 ${
-                  isMenuOpen ? "-rotate-45" : "-translate-y-2"
-                }`}
-              ></div>
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
+                    isMenuOpen
+                      ? "bg-yellow-400"
+                      : pathname.startsWith("/Products")
+                      ? "bg-[#3e7496]"
+                      : "bg-yellow-400"
+                  } rounded-full transition-all duration-300 ${
+                    isMenuOpen
+                      ? i === 1
+                        ? "opacity-0 scale-0"
+                        : i === 0
+                        ? "rotate-45"
+                        : "-rotate-45"
+                      : i === 0
+                      ? "translate-y-2"
+                      : i === 2
+                      ? "-translate-y-2"
+                      : ""
+                  }`}
+                ></div>
+              ))}
             </div>
           </div>
         </div>
@@ -212,20 +289,14 @@ const Navbar = () => {
           isMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <div className="h-full flex pt-[8%] ">
+        <div className="h-full flex pt-[8%]">
           {/* Large Logo Section */}
           <div
-            ref={component}
-            className="h-[70%] w-3/4 flex flex-col items-center justify-center component-section"
+            ref={componentRef}
+            className="h-[70%] w-3/4 flex flex-col items-center justify-center component-section "
           >
-            <div className="relative w-32 h-40">
-              {/* Roof image */}
-              <div
-                className="absolute top-0 left-0 w-full z-10"
-                style={{
-                  transition: "background-color 1s ease-in-out",
-                }}
-              >
+            <div className="relative w-32 h-40  hover:scale-[115%] duration-300">
+              <div className="absolute top-0 left-0 w-full z-10">
                 <Image
                   src="/images/roof.png"
                   alt="Bindi's Cupcakery Roof"
@@ -235,7 +306,6 @@ const Navbar = () => {
                 />
               </div>
 
-              {/* Storefront base */}
               <svg
                 viewBox="0 0 130 150"
                 className="w-full h-full absolute top-0 left-0"
@@ -277,9 +347,8 @@ const Navbar = () => {
               </svg>
             </div>
 
-            {/* Company name */}
             <div
-              className="bindi font-[pacifico]"
+              className="bindi font-[pacifico] hover:scale-105 duration-300"
               style={{
                 fontSize: "3rem",
                 letterSpacing: "0.05em",
@@ -292,30 +361,32 @@ const Navbar = () => {
           {/* Menu Items Section */}
           <div className="options w-1/2 h-full pt-[6%] pl-[5%]">
             <ul className="text-[#3b0017] text-6xl font-bold space-y-8">
-              <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                <Link href="/user">PROFILE</Link>
-              </li>
-              <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                <Link href="/Products">PRODUCTS</Link>
-              </li>
-              <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                <Link href="/user?tab=cart">CART</Link>
-              </li>
-              <li className="tabs hover:translate-x-4 transition-transform cursor-pointer">
-                ABOUT US
-              </li>
-              {/* {session?(
-                <Link href="/api/auth/signout?callbackUrl=/"> Logout</Link>
-              ):(
-                <Link href="/api/auth/signin">Login</Link>
-              )} */}
+              {menuItems.map((item, index) => (
+                <li
+                  key={index}
+                  className="tabs opacity-0 cursor-pointer"
+                  ref={(el) => {
+                    if (el) tabsRef.current[index] = el;
+                  }}
+                >
+                  <Link
+                    href={item.href}
+                    className="block"
+                    onClick={handleLinkClick} // Add click handler to each link
+                  >
+                    {item.text}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
+
+        {/* Wave Animation */}
         <div
           ref={waveRef}
           style={{
-            display: delayedOpen ? "flex" : "none", // Toggle visibility
+            display: delayedOpen ? "flex" : "none",
             position: "absolute",
             width: "200%",
             height: "30%",
@@ -337,8 +408,8 @@ const Navbar = () => {
           >
             {[...Array(2 * circleCount)].map((_, index) => (
               <div
-                className="circle"
                 key={index}
+                className="circle"
                 style={{
                   width: circleWidth,
                   height: "145px",
@@ -347,29 +418,29 @@ const Navbar = () => {
                   position: "relative",
                   top: "-65px",
                 }}
-              ></div>
+              />
             ))}
           </div>
         </div>
       </div>
 
-      {/* Cart sidebar */}
-      {/* <div
-        className={`fixed top-0 right-0 h-full w-1/3 bg-yellow-400 shadow-lg transition-transform duration-300 z-30 ${
-          isCartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="pt-24 px-8">
-          <h2 className="text-2xl font-bold text-[#3b0017] mb-6">Your Cart</h2> */}
+      {/* Cart Component */}
       <Cart
         userId={userId}
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
       />
-      {/* </div>
-      </div> */}
 
       <style jsx>{`
+        @keyframes moveWave {
+          0% {
+            transform: translateX(0%);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
         .rounded-star {
           clip-path: polygon(
             50% 0%,
@@ -384,6 +455,7 @@ const Navbar = () => {
             39% 35%
           );
         }
+
         @media (max-width: 800px) {
           .component-section {
             display: none;
@@ -396,16 +468,6 @@ const Navbar = () => {
             justify-content: center;
             align-items: center;
           }
-        }
-      `}</style>
-      <style jsx>{`
-        @keyframes moveWave {
-          0% {
-            transform: translateX(0%);
-          }
-          100% {
-            transform: translateX(-50%);
-          } /* Move left by half */
         }
       `}</style>
     </>
