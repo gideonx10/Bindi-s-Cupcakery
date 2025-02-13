@@ -6,7 +6,6 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import { useSession } from "next-auth/react";
 
 // ... (keep all interfaces the same)
@@ -30,10 +29,16 @@ interface CartQuantities {
   [key: string]: number;
 }
 
+// Add a new interface for cart items because of vercel deployment error
+interface CartItem {
+  product: Product; 
+  quantity: number;
+}
 export default function ProductsPage() {
   // ... (keep all existing refs and other state)
-  const contentRef = useRef<HTMLDivElement>(null);
-  const filterRef = useRef<HTMLDivElement>(null);
+
+  // const contentRef = useRef<HTMLDivElement>(null);
+  // const filterRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
@@ -43,7 +48,7 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  // const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   const initialSearchQuery = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
@@ -55,7 +60,7 @@ export default function ProductsPage() {
   const [cartQuantities, setCartQuantities] = useState<CartQuantities>({});
   const [updatingCart, setUpdatingCart] = useState<string | null>(null);
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  // const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPriceFilter, setSelectedPriceFilter] = useState<string | null>(
     null
   );
@@ -66,22 +71,22 @@ export default function ProductsPage() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isFilterSticky, setIsFilterSticky] = useState(false);
 
-  const filterContainerRef = useRef<HTMLDivElement>(null);
-  const productContainerRef = useRef<HTMLDivElement>(null);
+  // const filterContainerRef = useRef<HTMLDivElement>(null);
+  // const productContainerRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (filterContainerRef.current) {
-        const filterRect = filterContainerRef.current.getBoundingClientRect();
-        const shouldBeSticky = filterRect.top <= 20;
-        setIsFilterSticky(shouldBeSticky);
-      }
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (filterContainerRef.current) {
+  //       const filterRect = filterContainerRef.current.getBoundingClientRect();
+  //       const shouldBeSticky = filterRect.top <= 20;
+  //       setIsFilterSticky(shouldBeSticky);
+  //     }
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   // Handle category selection
   // const toggleCategory = (categoryId: string) => {
@@ -187,10 +192,10 @@ export default function ProductsPage() {
         const response = await fetch(`/api/cart?userId=${userId}`);
         if (!response.ok) throw new Error("Failed to fetch cart");
 
-        const cartData = await response.json();
+        const cartData:{products:CartItem[]} = await response.json();
         const quantities: CartQuantities = {};
 
-        cartData.products.forEach((item: any) => {
+        cartData.products.forEach((item) => {
           quantities[item.product._id] = item.quantity;
         });
 
@@ -201,7 +206,7 @@ export default function ProductsPage() {
     }
 
     fetchCartQuantities();
-  }, []);
+  }, [session?.user]);
 
   // Update fetchProducts to handle multiple categories
   useEffect(() => {

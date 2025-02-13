@@ -14,7 +14,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
   const secondText = useRef<HTMLParagraphElement>(null);
   const slider = useRef<HTMLDivElement>(null);
   let xPercent = 0;
-  let direction = -1;
+  const directionRef = useRef(-1); // Use useRef to store direction
 
   const { contextSafe } = useGSAP();
 
@@ -27,7 +27,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
       gsap.set(secondText.current, { xPercent });
     }
 
-    xPercent += speed * direction;
+    xPercent += speed * directionRef.current; // Use directionRef.current
     requestAnimationFrame(animate);
   });
 
@@ -40,7 +40,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
           trigger: document.documentElement,
           start: 0,
           scrub: 0.35,
-          onUpdate: (e) => (direction = e.direction * -1),
+          onUpdate: (e) => (directionRef.current = e.direction * -1), // Use directionRef.current
         },
         x: "-=300px",
       });
