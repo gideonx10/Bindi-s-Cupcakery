@@ -6,9 +6,6 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import Navbar from "@/components/Navbar";
 import { useSession } from "next-auth/react";
 
 // ... (keep all interfaces the same)
@@ -560,7 +557,7 @@ export default function ProductsPage() {
             {error && <p className="text-red-500">{error}</p>}
 
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                   <div
                     key={product._id}
