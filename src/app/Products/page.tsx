@@ -6,7 +6,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
-import Navbar from "@/components/Navbar";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 
 // ... (keep all interfaces the same)
 interface Product {
@@ -309,7 +310,7 @@ export default function ProductsPage() {
     <div className="max-w-screen overflow-x-hidden min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%] font-ancient text-[#08410c]">
       {/* Category Filter */}
       <div className="flex-1 ">
-        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-50 pt-[114px]">
+        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
             <button
@@ -578,7 +579,7 @@ export default function ProductsPage() {
                 {filteredProducts.map((product) => (
                   <div
                     key={product._id}
-                    className=".carts bg-[#e2edff] bg-opacity-50 rounded-3xl p-4 shadow-lg max-w-[350px]"
+                    className="carts bg-[#e2edff] bg-opacity-50 rounded-3xl p-4 shadow-lg max-w-[350px]"
                   >
                     <ProductCard product={product} />
                     <div className="mt-3 flex justify-center">

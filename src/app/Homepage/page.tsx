@@ -16,10 +16,9 @@ export default function Page() {
       {/* <InfiniteName /> */}
       {/* <FlowMenu /> */}
       <TopCategories />
+      <ImageGallery />
       <CustomerReviews />
       {/* <BlogsSection /> */}
-      <ImageGallery />
-    
     </div>
   );
 }
