@@ -19,13 +19,8 @@ export default function Page() {
       <TopCategories />
       <CustomerReviews />
       {/* <BlogsSection /> */}
-<<<<<<< HEAD
       {/* <ImageGallery /> */}
       <FAQs />
-=======
-      <ImageGallery />
-    
->>>>>>> f0d158ba21208a18133c17477a33469501306b8e
     </div>
   );
 }
