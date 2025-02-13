@@ -10,6 +10,7 @@ import connectDB from "@/lib/connectDB";
 
 async function ensureDBConnection() {
   try {
+    await connectDB();
     await clientPromise;
     console.log("Connected to MongoDB");
   } catch (error) {
