@@ -41,8 +41,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           duration: 1,
           scrollTrigger: {
             trigger: cardRef.current,
-            start: "top 85%",
-            end: "bottom 30%",
+            start: "top 95%",
+            end: "bottom 15%",
             toggleActions: "play none none reverse",
           },
         }
