@@ -1,38 +1,34 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
 
-interface Order {
+interface OrderProduct {
+  product: {
+    _id: string;
+    name: string;
+    category: string;
+  };
+  quantity: number;
+}
+
+interface User {
   _id: string;
-  customerName: string;
+  name: string;
   email: string;
+  phone: string;
+}
+
+export interface Order {
+  _id: string;
+  user: User;
+  products: OrderProduct[];
   totalAmount: number;
-  status: "cancelled" | "shipped" | "pending" | "delivered";
+  status: "pending" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
 }
 
-const orderStatusOptions = [
-  { value: "pending", label: "Pending" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
-  { value: "cancelled", label: "Cancelled" },
-];
-
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetchOrders();
@@ -40,118 +36,104 @@ export default function OrdersPage() {
 
   async function fetchOrders() {
     try {
-      setIsLoading(true);
-      const response = await fetch("/api/admin/orders", {
-        headers: { "Cache-Control": "no-cache" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const res = await fetch("/api/admin/orders", { cache: "no-cache" });
+      if (!res.ok) {
+        throw new Error("Failed to fetch orders");
       }
-      
-      const data = await response.json();
-      setOrders(Array.isArray(data) ? data : []);
+      const data = await res.json();
+      setOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch orders",
-        variant: "destructive",
-      });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
-  async function updateOrderStatus(orderId: string, newStatus: Order["status"]) {
+  async function updateOrderStatus(
+    orderId: string,
+    status: "pending" | "shipped" | "delivered" | "cancelled"
+  ) {
     try {
-      setUpdatingId(orderId);
-      const response = await fetch(`/api/admin/orders/${orderId}`, {
+      const res = await fetch(`/api/admin/orders?orderId=${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update order status");
+      if (!res.ok) {
+        throw new Error("Failed to update order status");
       }
-
-      toast({
-        title: "Success",
-        description: "Order status updated successfully",
-      });
       await fetchOrders();
     } catch (error) {
-      console.error("Error updating order status:", error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update order",
-        variant: "destructive",
-      });
-    } finally {
-      setUpdatingId(null);
+      console.error("Error updating order:", error);
     }
   }
 
-  if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading orders...</div>;
-  }
+  if (loading) return <div>Loading orders...</div>;
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Orders Management</h1>
-      {orders.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-gray-500">No orders found</p>
-        </div>
-      ) : (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Placed At</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow key={order._id}>
-                  <TableCell className="font-medium">{order._id}</TableCell>
-                  <TableCell>{order.customerName}</TableCell>
-                  <TableCell>{order.email}</TableCell>
-                  <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                  <TableCell>{order.status}</TableCell>
-                  <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
-                  <TableCell className="text-right">
-                    <Select
-                      value={order.status}
-                      onValueChange={(newStatus) =>
-                        updateOrderStatus(order._id, newStatus as Order["status"])
-                      }
-                      disabled={updatingId === order._id}
-                    >
-                      <SelectTrigger />
-                      <SelectContent>
-                        {orderStatusOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-4">Orders Management</h1>
+      <table className="min-w-full divide-y divide-gray-200 border">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-2 text-left">Order ID</th>
+            <th className="px-4 py-2 text-left">Customer Name</th>
+            <th className="px-4 py-2 text-left">Email</th>
+            <th className="px-4 py-2 text-left">Phone</th>
+            <th className="px-4 py-2 text-left">Products</th>
+            <th className="px-4 py-2 text-left">Total ($)</th>
+            <th className="px-4 py-2 text-left">Status</th>
+            <th className="px-4 py-2 text-left">Placed At</th>
+            <th className="px-4 py-2 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {orders.map((order) => (
+            <tr key={order._id}>
+              <td className="px-4 py-2 text-sm">{order._id}</td>
+              <td className="px-4 py-2 text-sm">{order.user.name}</td>
+              <td className="px-4 py-2 text-sm">{order.user.email}</td>
+              <td className="px-4 py-2 text-sm">{order.user.phone}</td>
+              <td className="px-4 py-2 text-sm">
+                {order.products.map((item, idx) => (
+                  <div key={idx}>
+                    <strong>{item.product.name}</strong> (Category:{" "}
+                    {item.product.category}) – Qty: {item.quantity}
+                  </div>
+                ))}
+              </td>
+              <td className="px-4 py-2 text-sm">
+                ${order.totalAmount.toFixed(2)}
+              </td>
+              <td className="px-4 py-2 text-sm">{order.status}</td>
+              <td className="px-4 py-2 text-sm">
+                {new Date(order.createdAt).toLocaleString()}
+              </td>
+              <td className="px-4 py-2 text-sm">
+                <select
+                  value={order.status}
+                  onChange={(e) =>
+                    updateOrderStatus(
+                      order._id,
+                      e.target.value as
+                        | "pending"
+                        | "shipped"
+                        | "delivered"
+                        | "cancelled"
+                    )
+                  }
+                  className="border rounded p-1"
+                >
+                  <option value="pending">pending</option>
+                  <option value="shipped">shipped</option>
+                  <option value="delivered">delivered</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
