@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, useMotionValue } from 'framer-motion';
+import { motion, useMotionValue, animate } from 'framer-motion';
 
 interface GalleryImage {
   id: number;
@@ -33,18 +33,63 @@ const galleryImages: GalleryImage[] = [
   }
 ];
 
-const generateStaticStyles = (count: number) => {
-  return Array(count).fill(0).map(() => ({
-    rotate: Math.random() * 12 - 6,
-    translateY: Math.random() * 40 - 20,
-  }));
+const generateOffset = (index: number) => {
+  const offsets = [0, -30, 20, -20, 30]; // Varying vertical positions
+  return offsets[index % offsets.length];
 };
 
 const ImageGallery = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
-  
-  const handleDragStart = () => {};
+  const [isDragging, setIsDragging] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const startAutoScroll = () => {
+      if (!containerRef.current || isDragging) return;
+
+      timeoutRef.current = setTimeout(() => {
+        const currentX = x.get();
+        const imageWidth = 340;
+
+        animate(x, currentX - imageWidth, {
+          duration: 0.8,
+          ease: "easeInOut",
+          onComplete: () => {
+            if (!containerRef.current) return;
+            const containerWidth = containerRef.current.scrollWidth / 3;
+            
+            if (currentX < -containerWidth) {
+              x.set(currentX + containerWidth);
+            }
+            
+            startAutoScroll();
+          }
+        });
+      }, 3000);
+    };
+
+    if (!isDragging) {
+      startAutoScroll();
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isDragging, x]);
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
   
   const handleDragEnd = () => {
     if (!containerRef.current) return;
@@ -57,6 +102,8 @@ const ImageGallery = () => {
     } else if (currentX > 0) {
       x.set(currentX - containerWidth);
     }
+    
+    setIsDragging(false);
   };
 
   const handleDrag = (event: MouseEvent | TouchEvent, info: { delta: { x: number } }) => {
@@ -75,22 +122,21 @@ const ImageGallery = () => {
   };
 
   const images = [...galleryImages, ...galleryImages, ...galleryImages, ...galleryImages, ...galleryImages];
-  const staticStyles = generateStaticStyles(images.length);
 
   return (
-    <section className="bg-[#3B0017] pt-24 md:pt-32 lg:pt-40">
-      <div className="flex flex-col gap-16 md:gap-20">
+    <section className="bg-[#F5F3FF] h-screen pt-16 md:pt-20 lg:pt-24">
+      <div className="flex flex-col gap-10 md:gap-12 h-full pb-8">
         {/* Header Section */}
         <div className="flex items-center justify-center">
           <div className="text-center px-4">
             <h1 
-              className="text-7xl sm:text-8xl md:text-9xl text-[#FFD7A3] uppercase tracking-tight leading-[1.1] font-black mb-6"
+              className="text-7xl sm:text-8xl md:text-9xl text-[#4C1D95] uppercase tracking-tight leading-[1.1] font-black mb-4"
               style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
             >
               Visual Wonders
             </h1>
             <div 
-              className="text-xl sm:text-2xl md:text-3xl text-[#F5CBA7] tracking-wider font-medium"
+              className="text-xl sm:text-2xl md:text-3xl text-[#6D28D9] tracking-wider font-medium"
               style={{ fontFamily: 'Barlow, sans-serif' }}
             >
               Experience Our Cinematic Magic 🎬
@@ -99,8 +145,8 @@ const ImageGallery = () => {
         </div>
 
         {/* Gallery Section */}
-        <div className="w-full">
-          <div className="relative overflow-hidden px-4">
+        <div className="w-full flex-1">
+          <div className="relative h-full px-4 overflow-visible">
             <motion.div
               ref={containerRef}
               style={{ x }}
@@ -120,53 +166,36 @@ const ImageGallery = () => {
               onDrag={handleDrag}
               className="flex gap-4 sm:gap-6 md:gap-8 cursor-grab active:cursor-grabbing py-8"
             >
-              {images.map((image, index) => {
-                const style = staticStyles[index];
-                return (
-                  <motion.div
-                    key={`${image.id}-${index}`}
-                    className="relative flex-shrink-0 group"
-                    animate={{ 
-                      rotate: style.rotate,
-                      y: style.translateY,
-                      scale: 1
-                    }}
-                    whileHover={{ 
-                      scale: 1.05,
-                      zIndex: 20,
-                      transition: { duration: 0.3 }
-                    }}
-                    transition={{ 
-                      duration: 0.3,
-                      type: "tween",
-                      ease: "easeOut"
-                    }}
-                  >
-                    <div className="w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] relative rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, 320px"
-                        draggable="false"
-                        priority={index < 8}
-                      />
-                      <div 
-                        className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      />
-                    </div>
-                  </motion.div>
-                );
-              })}
+              {images.map((image, index) => (
+                <motion.div
+                  key={`${image.id}-${index}`}
+                  className="relative flex-shrink-0"
+                  style={{
+                    y: generateOffset(index),
+                  }}
+                >
+                  <div className="w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] 
+                                relative rounded-xl overflow-hidden">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, 320px"
+                      draggable="false"
+                      priority={index < 8}
+                    />
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
         </div>
 
         {/* Footer Section */}
-        <div className="flex items-center justify-center px-4 pb-16">
+        <div className="flex items-center justify-center px-4 pb-4">
           <p 
-            className="text-2xl sm:text-3xl md:text-4xl text-[#E8C6A5] tracking-wider font-medium text-center"
+            className="text-2xl sm:text-3xl md:text-4xl text-[#5B21B6] tracking-wider font-medium text-center"
             style={{ fontFamily: 'Barlow, sans-serif' }}
           >
             Unveil The Stories That Move You
