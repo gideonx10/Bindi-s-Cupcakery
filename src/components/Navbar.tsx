@@ -13,7 +13,6 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
-  const [currentDateTime, setCurrentDateTime] = useState("2025-02-13 09:51:17");
 
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -26,15 +25,6 @@ const Navbar = () => {
   // ... (other state and refs)
 
   // Update date and time
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      const formatted = now.toISOString().replace("T", " ").split(".")[0];
-      setCurrentDateTime(formatted);
-    }, 2000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   // Handle link clicks to close menu
   const handleLinkClick = () => {
@@ -186,7 +176,7 @@ const Navbar = () => {
 
   const menuItems = [
     { href: "/user", text: "PROFILE" },
-    { href: "/products", text: "PRODUCTS" },
+    { href: "/Products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
     { href: "/aboutUs", text: "ABOUT US" },
   ];
@@ -206,7 +196,7 @@ const Navbar = () => {
           </span>
           <div className="absolute ml-[3.3rem]">
             <span className="text-[2.7rem] font-semibold text-[#3b0017]">
-              indi&apos;s
+              indi's
             </span>
           </div>
           <div className="absolute ml-[3.05rem] mt-[2.4rem]">
@@ -259,7 +249,7 @@ const Navbar = () => {
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
                     isMenuOpen
                       ? "bg-yellow-400"
-                      : pathname.startsWith("/products")
+                      : pathname.startsWith("/Products")
                       ? "bg-[#3e7496]"
                       : "bg-yellow-400"
                   } rounded-full transition-all duration-300 ${
@@ -353,7 +343,7 @@ const Navbar = () => {
                 letterSpacing: "0.05em",
               }}
             >
-              Bindi&apos;s Cupcakery
+              Bindi's Cupcakery
             </div>
           </div>
 
