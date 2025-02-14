@@ -1,4 +1,5 @@
-import { AuthOptions } from "next-auth";
+import { AuthOptions, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -9,6 +10,16 @@ import clientPromise from "@/lib/mongodb";
 import User from "@/models/User";
 import connectDB from "@/lib/connectDB";
 
+// Define database user type
+interface DatabaseUser {
+  _id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+  password?: string;
+  provider?: string | null;
+  emailVerified?: Date | null;
+}
 
 export const authOptions: AuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
@@ -23,7 +34,7 @@ export const authOptions: AuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: Record<"password" | "identifier", string> | undefined) {
+      async authorize(credentials) {
         if (!credentials?.identifier || !credentials.password) {
           throw new Error("Credentials not provided");
         }
@@ -33,9 +44,10 @@ export const authOptions: AuthOptions = {
 
         const user = await User.findOne({
           $or: [{ email: identifier }, { phone: identifier }],
-        }).select("+password");
+        }).select("+password") as DatabaseUser | null;
 
         if (!user) throw new Error("User not found");
+        if (!user.password) throw new Error("Invalid login method");
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) throw new Error("Invalid password");
@@ -45,6 +57,7 @@ export const authOptions: AuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
+          provider: "credentials"
         };
       },
     }),
@@ -58,23 +71,31 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session }: { session: any }) {
-      if (session?.user) {
-        await connectDB();
-        const dbUser = await User.findOne({ email: session.user.email });
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.provider = account?.provider || user.provider;
+      }
+      return token;
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user) {
+        session.user.id = token.id!;
+        session.user.role = token.role;
+        session.user.provider = token.provider;
 
+        // Fetch latest user data
+        await connectDB();
+        const dbUser = await User.findById(token.id) as DatabaseUser | null;
         if (dbUser) {
-          session.user.id = dbUser._id.toString();
           session.user.role = dbUser.role;
-          session.user.provider = dbUser.provider;
-        } else {
-          session.user.role = "user";
         }
       }
       return session;
     },
-    async signIn({ user, account }: { user: any; account: any }) {
-      if (account.provider === "google") {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "facebook") {
         await connectDB();
         const dbUser = await User.findOne({ email: user.email });
 
@@ -84,7 +105,8 @@ export const authOptions: AuthOptions = {
               email: user.email,
               name: user.name,
               role: "user",
-              emailVerified: user.emailVerified || new Date(),
+              provider: account.provider,
+              emailVerified: new Date(),
             });
           } catch (error) {
             console.error("Error creating user:", error);
@@ -94,8 +116,12 @@ export const authOptions: AuthOptions = {
       }
       return true;
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      return url.startsWith("/") ? `${baseUrl}${url}` : new URL(url).origin === baseUrl ? url : baseUrl;
+    async redirect({ url, baseUrl }) {
+      return url.startsWith("/") 
+        ? `${baseUrl}${url}` 
+        : new URL(url).origin === baseUrl 
+          ? url 
+          : baseUrl;
     },
   },
   pages: {
@@ -105,11 +131,10 @@ export const authOptions: AuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 1 month session
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-// Export NextAuth handler function
 export const authHandler = NextAuth(authOptions);
