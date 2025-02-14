@@ -31,7 +31,7 @@ interface CartQuantities {
 
 // Add a new interface for cart items because of vercel deployment error
 interface CartItem {
-  product: Product; 
+  product: Product;
   quantity: number;
 }
 export default function ProductsPage() {
@@ -119,7 +119,7 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = "67a893e17d6b92f96ee990bf";
+      const userId = (session?.user as { id: string })?.id;
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -155,7 +155,7 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = "67a893e17d6b92f96ee990bf"; // Your user ID
+      const userId = (session?.user as { id: string })?.id; // Your user ID
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -195,11 +195,11 @@ export default function ProductsPage() {
   useEffect(() => {
     async function fetchCartQuantities() {
       try {
-        const userId = "67a893e17d6b92f96ee990bf";
+        const userId = (session?.user as { id: string })?.id;
         const response = await fetch(`/api/cart?userId=${userId}`);
         if (!response.ok) throw new Error("Failed to fetch cart");
 
-        const cartData:{products:CartItem[]} = await response.json();
+        const cartData: { products: CartItem[] } = await response.json();
         const quantities: CartQuantities = {};
 
         cartData.products.forEach((item) => {
