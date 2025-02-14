@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Order from "@/models/Order"; // Import your Order model
-import { getServerSession } from "next-auth"; // If using authentication
+// import { getServerSession } from "next-auth"; // If using authentication
 import connectDB from "@/lib/connectDB";
-import Product from "@/models/Product";
+// import Product from "@/models/Product";
 
 export async function GET(req: NextRequest) {
   try {
@@ -96,3 +96,6 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
+
+
+// commented two lines at the top due to vercel deployment issue

@@ -45,10 +45,13 @@ export async function POST(request: Request) {
       { message: "User created successfully", user: newUser },
       { status: 201 }
     );
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Something went wrong" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    let errorMessage = "Something went wrong";
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
