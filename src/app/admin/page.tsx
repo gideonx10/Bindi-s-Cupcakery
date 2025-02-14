@@ -1,9 +1,8 @@
-// app/admin/dashboard/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { Card, CardContent } from "@/components/ui/card";
 // import Products from './components/Products';
 // import Categories from './components/Categories';
 // import Users from './components/Users';
@@ -11,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 // import Orders from './components/Orders';
 
 export default function AdminDashboard() {
-  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -26,8 +24,7 @@ export default function AdminDashboard() {
         router.push("/admin/login");
         return;
       }
-      const data = await response.json();
-      setSession(data.session);
+      await response.json();
     } catch (error) {
       console.error("Error fetching session:", error);
       router.push("/admin/login");

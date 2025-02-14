@@ -125,7 +125,7 @@ const Footer = () => {
               letterSpacing: "0.05em",
             }}
           >
-            Bindi's Cupcakery
+            Bindi&apos;s Cupcakery
           </div>
         </div>
         {/* Right Links */}
@@ -212,7 +212,7 @@ const Footer = () => {
       </div>
       <div className="text-center mt-8 absolute bottom-7 w-full flex flex-col md:flex-row justify-between items-center md:px-[13vw] px-4">
         <p className="text-[#EF9AAA] text-base md:text-xl mb-2 md:mb-0">
-          &copy; 2025 Bindi's Cupcakery. All rights reserved.
+          &copy; 2025 Bindi&apos;s Cupcakery. All rights reserved.
         </p>
         <p className="text-[#EF9AAA] text-base md:text-xl flex items-center">
           <svg

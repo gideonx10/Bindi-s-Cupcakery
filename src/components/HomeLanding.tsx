@@ -4,7 +4,6 @@
 import { useEffect, useRef } from "react";
 import lottie from "lottie-web";
 import Link from "next/link";
-import RotatingText from "../Effects/RotatingText";
 
 export default function Landing() {
   const lottieContainer = useRef<HTMLDivElement | null>(null);
@@ -39,7 +38,7 @@ export default function Landing() {
       <div className="w-1/2 flex flex-col justify-center items-start p-12 relative z-10">
         <div className="relative inline-block">
           <h1 className="font-['Teko'] text-9xl font-bold leading-none text-[#3D1C1A] drop-shadow-lg">
-            BINDI'S
+            BINDI&apos;S
             <span className="block text-9xl -mt-6 tracking-wide">
               CUPCAKERY
             </span>
@@ -63,27 +62,6 @@ export default function Landing() {
           >
             Order Now 🧁
           </Link>
-
-          <div className="inline-block">
-            <RotatingText
-              texts={[
-                "100% Pure Veg",
-                "⭐ Top Rated 4.9",
-                "Premium Quality",
-                "Freshly Baked",
-                "Made with Love",
-              ]}
-              mainClassName="inline-flex px-12 py-4 bg-[#F5E6D3] text-[#3D1C1A] overflow-hidden justify-center rounded-full text-2xl font-['Montserrat'] font-semibold whitespace-nowrap"
-              staggerFrom="last"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "-120%" }}
-              staggerDuration={0.025}
-              splitLevelClassName="overflow-hidden"
-              transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              rotationInterval={3000}
-            />
-          </div>
         </div>
       </div>
 

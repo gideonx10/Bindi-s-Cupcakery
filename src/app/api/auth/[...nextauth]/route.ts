@@ -10,6 +10,7 @@ import connectDB from "@/lib/connectDB";
 
 async function ensureDBConnection() {
   try {
+    await connectDB();
     await clientPromise;
     console.log("Connected to MongoDB");
   } catch (error) {
@@ -121,7 +122,6 @@ export const authOptions = {
     async signIn({
       user,
       account,
-      profile,
       isNewUser,
     }: {
       user: any;

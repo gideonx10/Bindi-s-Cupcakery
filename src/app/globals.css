@@ -10,15 +10,13 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
 @font-face {
   font-family: "Ananda";
   src: url("/fonts/Ananda.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
+
 .btn {
   @apply px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600;
 }
