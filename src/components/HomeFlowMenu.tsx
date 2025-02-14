@@ -28,7 +28,7 @@ const FlowMenu = () => {
               fontFamily: 'Barlow, sans-serif',
             }}
           >
-            NATURE'S FINEST SELECTION
+            NATURE&apos;S FINEST SELECTION
           </div>
         </div>
         <div className="flex-1 h-[calc(100vh-theme('spacing.28')-theme('spacing.16'))]">

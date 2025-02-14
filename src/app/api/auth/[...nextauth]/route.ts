@@ -122,7 +122,6 @@ export const authOptions = {
     async signIn({
       user,
       account,
-      profile,
       isNewUser,
     }: {
       user: any;

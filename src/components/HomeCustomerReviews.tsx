@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 
 const reviews = [
@@ -40,7 +40,7 @@ const reviews = [
 
 // Function to generate alternating Y offsets
 const generateAlternatingOffsets = (count: number) => {
-  const offsets = [];
+  const offsets: { translateY: number }[] = [];
   let previousWasUp = false;
 
   for (let i = 0; i < count; i++) {
@@ -60,7 +60,7 @@ const CustomerReviews = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
 
-  const handleDrag = (event: any, info: any) => {
+  const handleDrag = (event: MouseEvent | TouchEvent, info: { delta: { x: number } }) => {
     if (!containerRef.current) return;
 
     const containerWidth = containerRef.current.scrollWidth / 3;
@@ -145,7 +145,7 @@ const CustomerReviews = () => {
                     }}
                   >
                     <p className={`text-lg ${review.textColor} font-bold leading-tight tracking-wide`}>
-                      "{review.message}"
+                      &quot;{review.message}&quot;
                     </p>
                     <p className={`text-base ${review.textColor} font-medium mt-4`}>
                       -{review.author}

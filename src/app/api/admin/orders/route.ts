@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/connectDB";
 import Order from "@/models/Order";
-import Product from "@/models/Product"; // Import Product so its schema is registered
+// import Product from "@/models/Product"; // Import Product so its schema is registered
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await connectDB();
     const session = await getServerSession(authOptions);

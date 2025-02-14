@@ -14,7 +14,6 @@ const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState("2025-02-13 09:51:17");
-  const [currentUser, setCurrentUser] = useState("Snehkaranjia");
 
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -207,7 +206,7 @@ const Navbar = () => {
           </span>
           <div className="absolute ml-[3.3rem]">
             <span className="text-[2.7rem] font-semibold text-[#3b0017]">
-              indi's
+              indi&apos;s
             </span>
           </div>
           <div className="absolute ml-[3.05rem] mt-[2.4rem]">
@@ -354,7 +353,7 @@ const Navbar = () => {
                 letterSpacing: "0.05em",
               }}
             >
-              Bindi's Cupcakery
+              Bindi&apos;s Cupcakery
             </div>
           </div>
 

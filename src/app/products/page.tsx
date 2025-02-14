@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
@@ -41,7 +41,7 @@ export default function ProductsPage() {
   // const filterRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
-  const router = useRouter();
+//   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -73,7 +73,7 @@ export default function ProductsPage() {
 
   // const filterContainerRef = useRef<HTMLDivElement>(null);
   // const productContainerRef = useRef<HTMLDivElement>(null);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   // useEffect(() => {
   //   const handleScroll = () => {

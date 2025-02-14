@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -65,7 +65,7 @@ export default function SignInPage() {
         </button>
       </div>
       <p style={{ marginTop: "1rem" }}>
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <a href={`/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}>
           Sign Up
         </a>

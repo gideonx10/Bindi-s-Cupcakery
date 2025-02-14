@@ -38,7 +38,7 @@ export default function Landing() {
       <div className="w-1/2 flex flex-col justify-center items-start p-12 relative z-10">
         <div className="relative inline-block">
           <h1 className="font-['Teko'] text-9xl font-bold leading-none text-[#3D1C1A] drop-shadow-lg">
-            BINDI'S
+            BINDI&apos;S
             <span className="block text-9xl -mt-6 tracking-wide">
               CUPCAKERY
             </span>
