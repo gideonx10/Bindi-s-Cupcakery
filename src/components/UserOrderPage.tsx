@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 
 interface Product {
   _id: string;
@@ -20,7 +19,6 @@ interface Order {
 }
 
 export default function OrdersPage({ userId }: { userId: string }) {
-  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCanceling, setIsCanceling] = useState(false);
@@ -53,23 +51,6 @@ export default function OrdersPage({ userId }: { userId: string }) {
     fetchOrders();
   }, [userId]);
 
-  // Send WhatsApp Message
-  const sendWhatsAppMessage = useCallback(async (message: string) => {
-    try {
-      const res = await fetch("/api/send-whatsapp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: "+919876543210", message }),
-      });
-
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.error || "Failed to send WhatsApp message");
-      console.log("✅ WhatsApp message sent!");
-    } catch (error) {
-      console.error("WhatsApp error:", error);
-    }
-  }, []);
 
   // Handle Order Cancellation
   const handleCancelOrder = useCallback(
@@ -102,7 +83,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
           )
         );
 
-        // Fetch user details (Assuming you store user details)
+        // Fetch user details
         const userRes = await fetch(`/api/user/details?userId=${userId}`);
         if (!userRes.ok) throw new Error("Failed to fetch user details");
         const userData = await userRes.json();
@@ -117,7 +98,18 @@ export default function OrdersPage({ userId }: { userId: string }) {
           }),
         });
 
-        alert("Order has been cancelled successfully and notification sent.");
+        // Send Email Notification
+        await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: userData.email,
+            subject: "Order Cancellation Confirmation",
+            text: `Dear ${userData.name},\n\nYour order (Order ID: ${orderId}) has been successfully cancelled.\n\nIf this was done by mistake, please contact our support team immediately.\n\nBest regards,\nBindi's Cupcakery`,
+          }),
+        });
+
+        alert("Order has been cancelled successfully, and notifications sent.");
       } catch (error) {
         console.error(error);
         alert("Failed to cancel order. Please try again.");

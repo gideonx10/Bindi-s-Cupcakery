@@ -60,7 +60,7 @@ const CustomerReviews = () => {
     fetchReviews();
   }, []);
 
-  const handleDrag = (event: any, info: any) => {
+  const handleDrag = (event: MouseEvent | TouchEvent, info: { delta: { x: number } }) => {
     if (!containerRef.current) return;
 
     const containerWidth = containerRef.current.scrollWidth / 3;
@@ -133,7 +133,7 @@ const CustomerReviews = () => {
                     <p
                       className={`text-lg ${review.textColor} font-bold leading-tight tracking-wide`}
                     >
-                      "{review.message}"
+                      &ldquo;{review.message}&ldquo;
                     </p>
                     <p
                       className={`text-base ${review.textColor} font-medium mt-4`}

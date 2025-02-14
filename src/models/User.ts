@@ -8,7 +8,7 @@ export interface IUser extends Document {
   area: string;
   role: "user" | "admin";
   provider?: "google" | "facebook" | "credentials";
-  profileComplete: Boolean;
+  profileComplete: boolean;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
 }
