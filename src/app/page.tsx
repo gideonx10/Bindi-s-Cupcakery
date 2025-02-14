@@ -1,7 +1,7 @@
 import HomeLanding from "@/components/HomeLanding"; // Adjust the path as necessary
 import { InfiniteName } from "@/components/HomeInfiniteName";
 import TopCategories from "@/components/HomeTopCategories";
-import ImageGallery from "@/components/HomeImageGallery";
+// import ImageGallery from "@/components/HomeImageGallery";
 import CustomerReviews from "@/components/HomeCustomerReviews";
 import TopItems from "@/components/HomeTopItems";
 import FAQs from "@/components/HomeFaqs";
@@ -11,7 +11,7 @@ export default function Home() {
       <HomeLanding />
       <InfiniteName />
       <TopCategories />
-      <ImageGallery />
+      {/* <ImageGallery /> */}
       <TopItems />
       <CustomerReviews />
       <FAQs />
