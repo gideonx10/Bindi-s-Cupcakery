@@ -18,7 +18,20 @@ const ReviewForm = () => {
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const sendEmail = async () => {
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: formData.email,
+        subject: "FeedBack Form",
+        text: `Thank you ${formData.userName}, for filling feedback form`,
+      }),
+    });
 
+    // const data = await res.json();
+    // alert(data.message);
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -32,6 +45,7 @@ const ReviewForm = () => {
 
       if (res.ok) {
         alert("Review submitted successfully!");
+        sendEmail();
         setFormData({ userName: "", phone: "", email: "", comment: "" });
       } else {
         alert("Failed to submit review.");
