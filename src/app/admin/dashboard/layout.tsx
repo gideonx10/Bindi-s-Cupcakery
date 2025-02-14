@@ -1,4 +1,3 @@
-// app/admin/dashboard/layout.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -27,7 +26,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -42,8 +40,7 @@ export default function DashboardLayout({
         router.push("/admin/login");
         return;
       }
-      const data = await response.json();
-      setSession(data.session);
+      await response.json();
     } catch (error) {
       console.error("Error fetching session:", error);
       router.push("/admin/login");

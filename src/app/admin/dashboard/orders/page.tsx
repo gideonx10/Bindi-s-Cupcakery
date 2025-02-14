@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -10,28 +9,76 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
-interface Order {
+interface OrderProduct {
+  product: {
+    _id: string;
+    name: string;
+    category: string;
+  };
+  quantity: number;
+}
+
+interface User {
   _id: string;
-  customerName: string;
+  name: string;
   email: string;
+  phone: string;
+}
+
+export interface Order {
+  _id: string;
+  user: User;
+  products: OrderProduct[];
   totalAmount: number;
-  status: "cancelled" | "shipped" | "pending" | "delivered";
+  status: "pending" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
 }
 
-const orderStatusOptions = [
-  { value: "pending", label: "Pending" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
-  { value: "cancelled", label: "Cancelled" },
-];
+// New component for collapsible products list
+const ProductsList = ({ products }: { products: OrderProduct[] }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+      <CollapsibleTrigger className="flex items-center gap-2 text-sm">
+        <Badge variant="secondary">{products.length} items</Badge>
+        {isOpen ? (
+          <ChevronUp className="h-4 w-4" />
+        ) : (
+          <ChevronDown className="h-4 w-4" />
+        )}
+      </CollapsibleTrigger>
+      <CollapsibleContent className="mt-2">
+        <div className="space-y-2">
+          {products.map((item, idx) => (
+            <div
+              key={idx}
+              className="rounded-md border p-2 text-sm"
+            >
+              <div className="font-semibold">{item.product.name}</div>
+              <div className="text-gray-600">Category: {item.product.category}</div>
+              <div className="text-gray-600">Quantity: {item.quantity}</div>
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,17 +87,12 @@ export default function OrdersPage() {
 
   async function fetchOrders() {
     try {
-      setIsLoading(true);
-      const response = await fetch("/api/admin/orders", {
-        headers: { "Cache-Control": "no-cache" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const res = await fetch("/api/admin/orders", { cache: "no-cache" });
+      if (!res.ok) {
+        throw new Error("Failed to fetch orders");
       }
-      
-      const data = await response.json();
-      setOrders(Array.isArray(data) ? data : []);
+      const data = await res.json();
+      setOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast({
@@ -59,48 +101,46 @@ export default function OrdersPage() {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
-  async function updateOrderStatus(orderId: string, newStatus: Order["status"]) {
+  async function updateOrderStatus(orderId: string, status: "pending" | "shipped" | "delivered" | "cancelled") {
     try {
-      setUpdatingId(orderId);
-      const response = await fetch(`/api/admin/orders/${orderId}`, {
+      const res = await fetch(`/api/admin/orders?orderId=${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update order status");
+      if (!res.ok) {
+        throw new Error("Failed to update order status");
       }
-
       toast({
         title: "Success",
         description: "Order status updated successfully",
       });
       await fetchOrders();
     } catch (error) {
-      console.error("Error updating order status:", error);
+      console.error("Error updating order:", error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to update order",
         variant: "destructive",
       });
-    } finally {
-      setUpdatingId(null);
     }
   }
 
-  if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading orders...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading orders...
+      </div>
+    );
   }
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Orders Management</h1>
+      <h1 className="text-3xl font-bold mb-4">Orders Management</h1>
       {orders.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-gray-500">No orders found</p>
@@ -111,38 +151,44 @@ export default function OrdersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
+                <TableHead>Customer Name</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Total</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Products</TableHead>
+                <TableHead>Total ($)</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Placed At</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
                 <TableRow key={order._id}>
                   <TableCell className="font-medium">{order._id}</TableCell>
-                  <TableCell>{order.customerName}</TableCell>
-                  <TableCell>{order.email}</TableCell>
+                  <TableCell>{order.user.name}</TableCell>
+                  <TableCell>{order.user.email}</TableCell>
+                  <TableCell>{order.user.phone}</TableCell>
+                  <TableCell>
+                    <ProductsList products={order.products} />
+                  </TableCell>
                   <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                  <TableCell>{order.status}</TableCell>
+                  <TableCell className="capitalize">{order.status}</TableCell>
                   <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
-                  <TableCell className="text-right">
-                    <Select
+                  <TableCell>
+                    <Select 
                       value={order.status}
-                      onValueChange={(newStatus) =>
-                        updateOrderStatus(order._id, newStatus as Order["status"])
-                      }
-                      disabled={updatingId === order._id}
+                      onValueChange={(newStatus) => {
+                        updateOrderStatus(order._id, newStatus as "pending" | "shipped" | "delivered" | "cancelled");
+                      }}
                     >
-                      <SelectTrigger />
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
                       <SelectContent>
-                        {orderStatusOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="pending">pending</SelectItem>
+                        <SelectItem value="shipped">shipped</SelectItem>
+                        <SelectItem value="delivered">delivered</SelectItem>
+                        <SelectItem value="cancelled">cancelled</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>

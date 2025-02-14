@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,17 +37,14 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  async function fetchCategories() {
+  // used callback due to vercel deployment issue
+  const fetchCategories = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch("/api/admin/categories", {
-        headers: {
-          "Cache-Control": "no-cache",
-        },
+        headers: { "Cache-Control": "no-cache" },
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setCategories(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -60,13 +57,18 @@ export default function CategoriesPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
+  
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]); // Added fetchCategories as a dependency
 
+  
   async function handleSave(category: Category) {
     try {
       const method = category._id ? "PUT" : "POST";
       const url = category._id
-        ? `/api/admin/categories/${category._id}`
+        ? `/api/admin/categories?id=${category._id}`
         : "/api/admin/categories";
 
       const response = await fetch(url, {
@@ -106,7 +108,7 @@ export default function CategoriesPage() {
     }
 
     try {
-      const response = await fetch(`/api/admin/categories/${id}`, {
+      const response = await fetch(`/api/admin/categories?id=${id}`, {
         method: "DELETE",
       });
 
@@ -134,7 +136,11 @@ export default function CategoriesPage() {
   }
 
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading categories...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading categories...
+      </div>
+    );
   }
 
   return (
@@ -180,6 +186,7 @@ export default function CategoriesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -188,6 +195,7 @@ export default function CategoriesPage() {
             <TableBody>
               {categories.map((category) => (
                 <TableRow key={category._id}>
+                  <TableCell className="font-mono text-xs text-gray-500">{category._id}</TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell>{category.description}</TableCell>
                   <TableCell className="text-right space-x-2">

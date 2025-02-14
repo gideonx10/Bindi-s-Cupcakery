@@ -63,7 +63,7 @@ const FAQs = () => {
                 className="text-xl sm:text-2xl md:text-3xl text-[#B13D73] tracking-wider font-medium"
                 style={{ fontFamily: 'Barlow, sans-serif' }}
               >
-                Got Questions? We've Got Answers! 🎯
+                Got Questions? We&apos;ve Got Answers! 🎯
               </div>
             </div>
           </motion.div>

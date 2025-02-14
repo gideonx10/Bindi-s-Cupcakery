@@ -1,64 +1,64 @@
-'use client';
+"use client";
 
-import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { motion, useMotionValue } from 'framer-motion';
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import { motion, useMotionValue } from "framer-motion";
 
-const reviews = [
-  {
-    id: 1,
-    message: "THE BERRY BLISS FLAVOR IS A MUST-TRY! IT'S REFRESHING AND PACKED WITH NUTRIENTS.",
-    author: "Amit Patil",
-    color: "bg-[#81B5EE]",
-    textColor: "text-[#1A365D]",
-    shadow: "shadow-[rgba(129,181,238,0.3)]"
-  },
-  {
-    id: 2,
-    message: "THE TROPICAL TWIST PROTEIN POWDER IS FANTASTIC! IT ADDS A BURST OF FLAVOR TO MY MORNING ROUTINE.",
-    author: "Rina Desai",
-    color: "bg-[#FFDE17]",
-    textColor: "text-[#4A3F00]",
-    shadow: "shadow-[rgba(255,222,23,0.3)]"
-  },
-  {
-    id: 3,
-    message: "NICE PRODUCT DELIVERED AT REASONABLE PRICES. OAT MILK IS HEALTHY FOR EVERYONE. ALTCO IS DOING AMAZING WORK.",
-    author: "Rohit Jain",
-    color: "bg-[#EF9AAA]",
-    textColor: "text-[#4A1721]",
-    shadow: "shadow-[rgba(239,154,170,0.3)]"
-  },
-  {
-    id: 4,
-    message: "AS A VEGAN, I ENJOY DRINKING OAT MILK BECAUSE I LOVE THE FLAVOR. THANK YOU ALTCO FOR SUPPLYING ME WITH THIS 6-PACK COMBO PACK.",
-    author: "Deepshikha Modi",
-    color: "bg-[#B16CDF]",
-    textColor: "text-[#2D0F3F]",
-    shadow: "shadow-[rgba(177,108,223,0.3)]"
-  }
-];
+interface Review {
+  id: number;
+  message: string;
+  author: string;
+  color: string;
+  textColor: string;
+  shadow: string;
+  isApproved: boolean; // Added to filter approved reviews
+}
 
-// Function to generate alternating Y offsets
 const generateAlternatingOffsets = (count: number) => {
   const offsets = [];
   let previousWasUp = false;
 
   for (let i = 0; i < count; i++) {
     const baseOffset = previousWasUp
-      ? 10 + Math.random() * 10 // Down (10 to 20)
-      : -(10 + Math.random() * 10); // Up (-10 to -20)
-
+      ? Math.random() * 15 + 5
+      : -(Math.random() * 15 + 5);
     offsets.push({ translateY: baseOffset });
 
     previousWasUp = !previousWasUp;
+    if (Math.random() > 0.7) {
+      previousWasUp = !previousWasUp;
+    }
   }
 
   return offsets;
 };
 
 const CustomerReviews = () => {
+  const [reviews, setReviews] = useState<Review[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch("/api/reviews");
+        console.log("API Response Data:", response);
+
+        const data: Review[] = await response.json();
+        console.log(data);
+        const approvedReviews = data.filter((review) => review.isApproved); // Only include approved reviews
+        console.log(approvedReviews);
+        setReviews([
+          ...approvedReviews,
+          ...approvedReviews,
+          ...approvedReviews,
+        ]); // Tripling for infinite loop effect
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   const handleDrag = (event: any, info: any) => {
     if (!containerRef.current) return;
@@ -75,14 +75,10 @@ const CustomerReviews = () => {
     x.set(newX);
   };
 
-  const allReviews = [...reviews, ...reviews, ...reviews];
-
-  // Ensure random offsets are only calculated on the client
-  const [verticalOffsets, setVerticalOffsets] = useState<{ translateY: number }[]>([]);
-
-  useEffect(() => {
-    setVerticalOffsets(generateAlternatingOffsets(allReviews.length));
-  }, [allReviews.length]);
+  const verticalOffsets = useMemo(
+    () => generateAlternatingOffsets(reviews.length),
+    [reviews.length]
+  );
 
   return (
     <section className="bg-[#FCFBE4] pt-24 md:pt-32 lg:pt-40">
@@ -90,16 +86,13 @@ const CustomerReviews = () => {
         {/* Header Section */}
         <div className="flex items-center justify-center">
           <div className="text-center px-4">
-            <h2 
+            <h2
               className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-[#4A0D2C] uppercase tracking-tight leading-[1.1] font-black mb-6"
-              style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
             >
               HAPPY CUSTOMERS.
             </h2>
-            <div 
-              className="text-lg xs:text-xl sm:text-2xl md:text-3xl text-[#4A0D2C] tracking-wider font-medium"
-              style={{ fontFamily: 'Barlow, sans-serif' }}
-            >
+            <div className="text-lg xs:text-xl sm:text-2xl md:text-3xl text-[#4A0D2C] tracking-wider font-medium">
               Share Your Experience With Us
             </div>
           </div>
@@ -112,42 +105,39 @@ const CustomerReviews = () => {
               ref={containerRef}
               style={{ x }}
               drag="x"
-              dragConstraints={{
-                left: -Infinity,
-                right: Infinity
-              }}
+              dragConstraints={{ left: -Infinity, right: Infinity }}
               dragElastic={0.1}
-              dragTransition={{ 
-                bounceStiffness: 400, 
+              dragTransition={{
+                bounceStiffness: 400,
                 bounceDamping: 40,
-                power: 0.2
+                power: 0.2,
               }}
               onDrag={handleDrag}
               className="flex gap-6 cursor-grab active:cursor-grabbing py-12"
             >
-              {allReviews.map((review, index) => (
+              {reviews.map((review, index) => (
                 <motion.div
                   key={`${review.id}-${index}`}
                   className="relative flex-shrink-0 group"
-                  initial={{ y: 0 }} // Set to 0 to prevent SSR mismatches
-                  animate={{ y: verticalOffsets[index]?.translateY || 0 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  whileHover={{ 
-                    scale: 1.02,
-                    transition: { duration: 0.3 }
-                  }}
+                  initial={{ y: verticalOffsets[index]?.translateY }}
+                  style={{ y: verticalOffsets[index]?.translateY }}
+                  whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
                 >
-                  <div 
+                  <div
                     className={`w-[300px] h-[300px] ${review.color} rounded-[32px] p-8 flex flex-col justify-between shadow-lg ${review.shadow}`}
                     style={{
-                      fontFamily: 'Barlow, sans-serif',
-                      backdropFilter: 'blur(10px)',
+                      fontFamily: "Barlow, sans-serif",
+                      backdropFilter: "blur(10px)",
                     }}
                   >
-                    <p className={`text-lg ${review.textColor} font-bold leading-tight tracking-wide`}>
+                    <p
+                      className={`text-lg ${review.textColor} font-bold leading-tight tracking-wide`}
+                    >
                       "{review.message}"
                     </p>
-                    <p className={`text-base ${review.textColor} font-medium mt-4`}>
+                    <p
+                      className={`text-base ${review.textColor} font-medium mt-4`}
+                    >
                       -{review.author}
                     </p>
                   </div>

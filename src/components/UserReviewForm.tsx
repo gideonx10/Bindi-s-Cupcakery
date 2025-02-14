@@ -1,0 +1,114 @@
+"use client";
+
+import { useState } from "react";
+import { MoveUpRight } from "lucide-react";
+
+const ReviewForm = () => {
+  const [formData, setFormData] = useState({
+    userName: "",
+    phone: "",
+    email: "",
+    comment: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        alert("Review submitted successfully!");
+        setFormData({ userName: "", phone: "", email: "", comment: "" });
+      } else {
+        alert("Failed to submit review.");
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("An error occurred.");
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      {/* Name Input */}
+      <div>
+        <label className="block text-gray-700 mb-2">Name</label>
+        <input
+          type="text"
+          name="userName"
+          value={formData.userName}
+          onChange={handleChange}
+          className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 px-2"
+          required
+        />
+      </div>
+
+      {/* Email Input */}
+      <div>
+        <label className="block text-gray-700 mb-2">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 px-2"
+          required
+        />
+      </div>
+
+      {/* Phone Input */}
+      <div>
+        <label className="block text-gray-700 mb-2">Phone</label>
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 px-2"
+        />
+      </div>
+
+      {/* Message Input */}
+      <div>
+        <label className="block text-gray-700 mb-2">Message</label>
+        <textarea
+          name="comment"
+          value={formData.comment}
+          onChange={handleChange}
+          className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 min-h-[100px] resize-none px-2"
+          required
+        />
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-amber-400 text-black px-8 py-3 rounded-tl-xl rounded-br-xl font-medium hover:bg-amber-500 transition-colors duration-300 flex items-center gap-2 shadow-xl font-ancient"
+        >
+          {loading ? "Submitting..." : "Submit"}
+          <MoveUpRight className="h-4 w-4 inline-block rotate-90" />
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default ReviewForm;

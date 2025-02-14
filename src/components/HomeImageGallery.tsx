@@ -41,14 +41,12 @@ const generateStaticStyles = (count: number) => {
 };
 
 const ImageGallery = () => {
-  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   
-  const handleDragStart = () => setIsDragging(true);
+  const handleDragStart = () => {};
   
   const handleDragEnd = () => {
-    setIsDragging(false);
     if (!containerRef.current) return;
 
     const currentX = x.get();
@@ -61,7 +59,7 @@ const ImageGallery = () => {
     }
   };
 
-  const handleDrag = (event: any, info: any) => {
+  const handleDrag = (event: MouseEvent | TouchEvent, info: { delta: { x: number } }) => {
     if (!containerRef.current) return;
     
     const containerWidth = containerRef.current.scrollWidth / 3;

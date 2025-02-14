@@ -1,8 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import Order from "@/models/Order"; // Import your Order model
-import { getServerSession } from "next-auth"; // If using authentication
+// import { getServerSession } from "next-auth"; // If using authentication
 import connectDB from "@/lib/connectDB";
 import Product from "@/models/Product";
+import { Types } from "mongoose";
+
+interface Product {
+  productId: string;
+  quantity: number;
+  price: number;
+  // Add other product fields as needed
+}
+
+interface OrderRequest {
+  userId: string;
+  products: Product[];
+  totalAmount: number;
+  transactionId?: string;
+}
+
+interface OrderResponse {
+  success: boolean;
+  order: {
+    _id: Types.ObjectId;
+    user: string;
+    products: Product[];
+    totalAmount: number;
+    status: string;
+    transactionId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -34,9 +63,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   await connectDB();
-  try {
-    const { userId, products, totalAmount } = await req.json();
 
+  try {
+    const { userId, products, totalAmount, transactionId } =
+      (await req.json()) as OrderRequest;
+
+    // Validation
     if (!userId || !products || !totalAmount) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -44,17 +76,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Create new order
     const newOrder = await Order.create({
-      user: userId,
+      user: new Types.ObjectId(userId), // Convert userId to ObjectId
       products,
       totalAmount,
       status: "pending",
+      transactionId: transactionId || null,
     });
 
-    return NextResponse.json(
-      { success: true, order: newOrder },
-      { status: 201 }
-    );
+    // Format the response
+    const response: OrderResponse = {
+      success: true,
+      order: {
+        _id: newOrder._id,
+        user: newOrder.user.toString(), // Convert ObjectId to string
+        products: newOrder.products,
+        totalAmount: newOrder.totalAmount,
+        status: newOrder.status,
+        transactionId: newOrder.transactionId,
+        createdAt: newOrder.createdAt,
+        updatedAt: newOrder.updatedAt,
+      },
+    };
+
+    // You can access the ObjectId as response.order._id
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error("Error creating order:", error);
     return NextResponse.json(
@@ -63,6 +110,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 export async function PATCH(req: NextRequest) {
   try {
     await connectDB(); // Ensure database is connected
@@ -96,3 +144,5 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
+
+// commented two lines at the top due to vercel deployment issue

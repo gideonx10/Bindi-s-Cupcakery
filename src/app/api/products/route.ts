@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const categories = searchParams.getAll("categories[]"); // Get all selected categories
 
-    const query: any = {};
+    const query: Record<string, unknown> = {}; // Replaced 'any' with a stricter type
 
     // Handle search
     if (search) {
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
 
     const products = await Product.find(query);
     return NextResponse.json(products, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 }
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       { message: "Product added successfully", product: newProduct },
       { status: 201 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to add product" },
       { status: 500 }

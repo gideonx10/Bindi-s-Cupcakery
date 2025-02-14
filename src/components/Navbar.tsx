@@ -14,7 +14,6 @@ const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState("2025-02-13 09:51:17");
-  const [currentUser, setCurrentUser] = useState("Snehkaranjia");
 
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -187,7 +186,7 @@ const Navbar = () => {
 
   const menuItems = [
     { href: "/user", text: "PROFILE" },
-    { href: "/Products", text: "PRODUCTS" },
+    { href: "/products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
     { href: "/aboutUs", text: "ABOUT US" },
   ];
@@ -207,7 +206,7 @@ const Navbar = () => {
           </span>
           <div className="absolute ml-[3.3rem]">
             <span className="text-[2.7rem] font-semibold text-[#3b0017]">
-              indi's
+              indi&apos;s
             </span>
           </div>
           <div className="absolute ml-[3.05rem] mt-[2.4rem]">
@@ -219,7 +218,7 @@ const Navbar = () => {
 
         {/* Right side icons */}
         <div className="flex items-center gap-7 max-sm:gap-2 max-sm:scale-85">
-          {pathname.startsWith("/Products") && (
+          {pathname.startsWith("/products") && (
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
               className="text-[#3b0017] p-4 max-sm:p-2"
@@ -260,7 +259,7 @@ const Navbar = () => {
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
                     isMenuOpen
                       ? "bg-yellow-400"
-                      : pathname.startsWith("/Products")
+                      : pathname.startsWith("/products")
                       ? "bg-[#3e7496]"
                       : "bg-yellow-400"
                   } rounded-full transition-all duration-300 ${
@@ -354,7 +353,7 @@ const Navbar = () => {
                 letterSpacing: "0.05em",
               }}
             >
-              Bindi's Cupcakery
+              Bindi&apos;s Cupcakery
             </div>
           </div>
 

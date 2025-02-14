@@ -13,10 +13,10 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Review {
   _id: string;
-  customerName: string;
-  rating: number;
+  userName: string;
+  phone: string;
   comment: string;
-  featured: boolean;
+  isApproved: boolean;
   createdAt: string;
 }
 
@@ -53,13 +53,14 @@ export default function ReviewsPage() {
     }
   }
 
-  async function toggleFeatured(reviewId: string, currentFeatured: boolean) {
+  async function toggleisApproved(reviewId: string, currentisApproved: boolean) {
     try {
       setUpdatingId(reviewId);
-      const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+      // Updated URL: use query parameter rather than path parameter.
+      const response = await fetch(`/api/admin/reviews?reviewId=${reviewId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ featured: !currentFeatured }),
+        body: JSON.stringify({ isApproved: !currentisApproved }),
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -104,22 +105,24 @@ export default function ReviewsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Customer</TableHead>
-                <TableHead>Rating</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead>Comment</TableHead>
-                <TableHead>Featured</TableHead>
+                <TableHead>Approved</TableHead>
                 <TableHead className="text-right">Submitted On</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {reviews.map((review) => (
                 <TableRow key={review._id}>
-                  <TableCell className="font-medium">{review.customerName}</TableCell>
-                  <TableCell>{review.rating}</TableCell>
+                  <TableCell className="font-medium">{review.userName}</TableCell>
+                  <TableCell>{review.phone}</TableCell>
                   <TableCell>{review.comment}</TableCell>
                   <TableCell>
                     <Switch
-                      checked={review.featured}
-                      onCheckedChange={() => toggleFeatured(review._id, review.featured)}
+                      checked={review.isApproved}
+                      onCheckedChange={() =>
+                        toggleisApproved(review._id, review.isApproved)
+                      }
                       disabled={updatingId === review._id}
                     />
                   </TableCell>

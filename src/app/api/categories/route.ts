@@ -8,7 +8,7 @@ export async function GET() {
     await connectDB();
     const categories = await Category.find({}, "name _id"); // Fetch only relevant fields
     return NextResponse.json(categories, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch categories" },
       { status: 500 }
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     await newCategory.save();
 
     return NextResponse.json(newCategory, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to create category" },
       { status: 500 }

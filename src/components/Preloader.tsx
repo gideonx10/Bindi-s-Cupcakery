@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
-import { delay } from "framer-motion";
+// import { delay } from "framer-motion";
 
 const PreLoader = () => {
   const component = useRef(null);
@@ -206,7 +206,7 @@ const PreLoader = () => {
           letterSpacing: "0.05em",
         }}
       >
-        Bindi's Cupcakery
+        Bindi&apos;s Cupcakery
       </div>
 
       <div

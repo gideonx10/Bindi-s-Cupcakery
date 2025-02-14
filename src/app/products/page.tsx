@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
@@ -41,7 +41,7 @@ export default function ProductsPage() {
   // const filterRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
-  const router = useRouter();
+  //   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -69,11 +69,11 @@ export default function ProductsPage() {
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [isFilterSticky, setIsFilterSticky] = useState(false);
+  // const [isFilterSticky, setIsFilterSticky] = useState(false);
 
   // const filterContainerRef = useRef<HTMLDivElement>(null);
   // const productContainerRef = useRef<HTMLDivElement>(null);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   // useEffect(() => {
   //   const handleScroll = () => {
@@ -97,23 +97,23 @@ export default function ProductsPage() {
   //   );
   // };
 
-  const handleCartAction = async (
-    productId: string,
-    action: "add" | "update",
-    newQuantity?: number
-  ) => {
-    if (status === "unauthenticated") {
-      toast.error("Please sign in to add items to cart");
-      router.push("/signin");
-      return;
-    }
+  // const handleCartAction = async (
+  //   productId: string,
+  //   action: "add" | "update",
+  //   newQuantity?: number
+  // ) => {
+  //   if (status === "unauthenticated") {
+  //     toast.error("Please sign in to add items to cart");
+  //     router.push("/signin");
+  //     return;
+  //   }
 
-    if (action === "add") {
-      await addToCart(productId);
-    } else if (action === "update" && typeof newQuantity === "number") {
-      await updateCartQuantity(productId, newQuantity);
-    }
-  };
+  //   if (action === "add") {
+  //     await addToCart(productId);
+  //   } else if (action === "update" && typeof newQuantity === "number") {
+  //     await updateCartQuantity(productId, newQuantity);
+  //   }
+  // };
 
   const addToCart = async (productId: string) => {
     setUpdatingCart(productId);
