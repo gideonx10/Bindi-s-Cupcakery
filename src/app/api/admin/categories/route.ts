@@ -5,7 +5,7 @@ import connectDB from "@/lib/connectDB";
 import Category from "@/models/Category";
 
 // GET - Retrieve all categories (Admin only)
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await connectDB();
     const session = await getServerSession(authOptions);

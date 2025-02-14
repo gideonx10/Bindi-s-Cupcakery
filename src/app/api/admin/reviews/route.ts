@@ -5,7 +5,7 @@ import connectDB from "@/lib/connectDB";
 import Review from "@/models/Review";
 
 // GET - Retrieve all reviews (Admin only)
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await connectDB();
     const session = await getServerSession(authOptions);

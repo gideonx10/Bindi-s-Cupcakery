@@ -27,7 +27,7 @@ export default function CartPage() {
   const [customization, setCustomization] = useState("");
   const [showQR, setShowQR] = useState(false);
   const [transactionId, setTransactionId] = useState("");
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const userId = (session?.user as { id: string })?.id;
   const upiId = process.env.NEXT_PUBLIC_UPI_ID as string | "";
   const upiName = process.env.NEXT_PUBLIC_UPI_NAME;
@@ -82,9 +82,15 @@ export default function CartPage() {
       setCartItems((prev) =>
         prev.filter((item) => item.product._id !== productId)
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error:", error);
-      alert(error.message);
+
+      if(error instanceof Error){
+        alert(error.message);
+      }
+      else{
+        alert("An unexpected error occurred. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -303,3 +309,5 @@ export default function CartPage() {
     </div>
   );
 }
+
+// removed status from line 30 as it was not being used.

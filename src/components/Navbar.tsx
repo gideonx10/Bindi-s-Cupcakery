@@ -13,7 +13,6 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
-  const [currentDateTime, setCurrentDateTime] = useState("2025-02-13 09:51:17");
 
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -24,17 +23,6 @@ const Navbar = () => {
   const pathname = usePathname();
 
   // ... (other state and refs)
-
-  // Update date and time
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      const formatted = now.toISOString().replace("T", " ").split(".")[0];
-      setCurrentDateTime(formatted);
-    }, 2000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   // Handle link clicks to close menu
   const handleLinkClick = () => {
