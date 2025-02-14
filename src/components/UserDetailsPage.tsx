@@ -43,8 +43,11 @@ const UserDetails = ({ userId }: { userId: string }) => {
         const data = await res.json();
         setUser(data);
         setFormData(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if(err instanceof Error){
+          setError(err.message);
+        }
+       
       } finally {
         setLoading(false);
       }
@@ -75,8 +78,10 @@ const UserDetails = ({ userId }: { userId: string }) => {
       setUser(updatedUser);
       setIsEditing(false);
       alert("User details updated successfully!");
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      if(err instanceof Error){
+        alert(err.message);
+      }
     }
   };
 
@@ -124,8 +129,10 @@ const UserDetails = ({ userId }: { userId: string }) => {
         newPassword: "",
         confirmPassword: "",
       });
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      if(err instanceof Error){
+        alert(err.message);
+      }
     }
   };
 

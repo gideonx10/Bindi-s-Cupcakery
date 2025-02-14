@@ -40,7 +40,8 @@ export default function Cart({
       const response = await fetch(`/api/cart?userId=${userId}`);
       const data = await response.json();
       setCartItems(data.products || []);
-    } catch (err) {
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
       setError("Failed to load cart");
     }
     setLoading(false);

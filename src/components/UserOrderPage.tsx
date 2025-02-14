@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 
 interface Product {
   _id: string;
@@ -20,7 +19,6 @@ interface Order {
 }
 
 export default function OrdersPage({ userId }: { userId: string }) {
-  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCanceling, setIsCanceling] = useState(false);
@@ -53,23 +51,6 @@ export default function OrdersPage({ userId }: { userId: string }) {
     fetchOrders();
   }, [userId]);
 
-  // Send WhatsApp Message
-  const sendWhatsAppMessage = useCallback(async (message: string) => {
-    try {
-      const res = await fetch("/api/send-whatsapp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: "+919876543210", message }),
-      });
-
-      const data = await res.json();
-      if (!res.ok)
-        throw new Error(data.error || "Failed to send WhatsApp message");
-      console.log("✅ WhatsApp message sent!");
-    } catch (error) {
-      console.error("WhatsApp error:", error);
-    }
-  }, []);
 
   // Handle Order Cancellation
   const handleCancelOrder = useCallback(
