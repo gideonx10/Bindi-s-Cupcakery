@@ -68,7 +68,7 @@ export default function CategoriesPage() {
     try {
       const method = category._id ? "PUT" : "POST";
       const url = category._id
-        ? `/api/admin/categories/${category._id}`
+        ? `/api/admin/categories?id=${category._id}`
         : "/api/admin/categories";
 
       const response = await fetch(url, {
@@ -108,7 +108,7 @@ export default function CategoriesPage() {
     }
 
     try {
-      const response = await fetch(`/api/admin/categories/${id}`, {
+      const response = await fetch(`/api/admin/categories?id=${id}`, {
         method: "DELETE",
       });
 
@@ -136,7 +136,11 @@ export default function CategoriesPage() {
   }
 
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading categories...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading categories...
+      </div>
+    );
   }
 
   return (
@@ -182,6 +186,7 @@ export default function CategoriesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -190,6 +195,7 @@ export default function CategoriesPage() {
             <TableBody>
               {categories.map((category) => (
                 <TableRow key={category._id}>
+                  <TableCell className="font-mono text-xs text-gray-500">{category._id}</TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell>{category.description}</TableCell>
                   <TableCell className="text-right space-x-2">

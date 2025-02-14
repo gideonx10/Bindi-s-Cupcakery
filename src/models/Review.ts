@@ -2,8 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 // Define the interface for a Review document.
 export interface IReview extends Document {
-  userName: string;
-  rating: number;       // Rating out of 5.
+  userName: string;     
+  phone: string;
+  email: string;
   comment: string;
   isApproved: boolean;  // Indicates whether the admin has approved the review for display.
   createdAt: Date;
@@ -14,9 +15,10 @@ export interface IReview extends Document {
 const ReviewSchema: Schema = new Schema(
   {
     userName: { type: String, required: true },
-    rating: { type: Number, required: true, min: 1, max: 5 },
+    phone: { type: String, required: true },
+    email: { type: String, required: true },
     comment: { type: String, required: true },
-    isApproved: { type: Boolean, default: false },
+    isApproved: { type: Boolean, default: false},
   },
   { timestamps: true }
 );
