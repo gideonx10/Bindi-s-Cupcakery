@@ -29,8 +29,8 @@ export default function CartPage() {
   const [transactionId, setTransactionId] = useState("");
   const { data: session, status } = useSession();
   const userId = (session?.user as { id: string })?.id;
-  const upiId = process.env.UPI_ID as string | "";
-  const upiName = process.env.UPI_NAME;
+  const upiId = process.env.NEXT_PUBLIC_UPI_ID as string | "";
+  const upiName = process.env.NEXT_PUBLIC_UPI_NAME;
   useEffect(() => {
     if (userId) fetchCart();
   }, [userId]);
@@ -175,7 +175,6 @@ export default function CartPage() {
       setCheckingOut(false);
     }
   }
-
   return (
     <div className="p-4 max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">

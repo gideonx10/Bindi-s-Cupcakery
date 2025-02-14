@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
@@ -9,9 +7,7 @@ interface UPIQrCodeProps {
   amount?: number;
 }
 
-const UPIQrCode: React.FC<UPIQrCodeProps> = ({ amount }) => {
-  const upiId = "adityapanchal271004@okicici";
-  const name = process.env.UPI_NAME;
+const UPIQrCode: React.FC<UPIQrCodeProps> = ({ upiId, name, amount }) => {
   const upiUrl = `upi://pay?pa=${upiId}&pn=${name || "Merchant"}&am=${
     amount || 0
   }&cu=INR`;

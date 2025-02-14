@@ -165,7 +165,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
               <p className="text-gray-500">
                 Payment Mode:{" "}
                 <span className="font-semibold">
-                  {order.transactionId > 0 ? "Online" : "POD"}
+                  {order.transactionId > 0 ? "Online" : "Pay on take away"}
                 </span>
               </p>
 
@@ -176,7 +176,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
                 </p>
               )}
 
-              <p className="text-gray-500">
+              {/* <p className="text-gray-500">
                 Payment Status:{" "}
                 <span
                   className={`font-semibold ${
@@ -185,7 +185,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
                 >
                   {order.isPaymentVerified ? "Verified" : "Pending"}
                 </span>
-              </p>
+              </p> */}
 
               <ul className="mt-2 space-y-2">
                 {order.products.map(({ product, quantity }) =>

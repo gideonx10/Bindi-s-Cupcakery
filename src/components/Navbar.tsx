@@ -186,7 +186,7 @@ const Navbar = () => {
 
   const menuItems = [
     { href: "/user", text: "PROFILE" },
-    { href: "/Products", text: "PRODUCTS" },
+    { href: "/products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
     { href: "/aboutUs", text: "ABOUT US" },
   ];
@@ -218,7 +218,7 @@ const Navbar = () => {
 
         {/* Right side icons */}
         <div className="flex items-center gap-7 max-sm:gap-2 max-sm:scale-85">
-          {pathname.startsWith("/Products") && (
+          {pathname.startsWith("/products") && (
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
               className="text-[#3b0017] p-4 max-sm:p-2"
@@ -259,7 +259,7 @@ const Navbar = () => {
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
                     isMenuOpen
                       ? "bg-yellow-400"
-                      : pathname.startsWith("/Products")
+                      : pathname.startsWith("/products")
                       ? "bg-[#3e7496]"
                       : "bg-yellow-400"
                   } rounded-full transition-all duration-300 ${

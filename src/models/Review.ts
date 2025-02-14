@@ -1,12 +1,12 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 // Define the interface for a Review document.
 export interface IReview extends Document {
-  userName: string;     
+  userName: string;
   phone: string;
   email: string;
   comment: string;
-  isApproved: boolean;  // Indicates whether the admin has approved the review for display.
+  isApproved: boolean; // Indicates whether the admin has approved the review for display.
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,10 +18,11 @@ const ReviewSchema: Schema = new Schema(
     phone: { type: String, required: true },
     email: { type: String, required: true },
     comment: { type: String, required: true },
-    isApproved: { type: Boolean, default: false},
+    isApproved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
 // Export the model.
-export default mongoose.models.Review || mongoose.model<IReview>('Review', ReviewSchema);
+export default mongoose.models.Review ||
+  mongoose.model<IReview>("Review", ReviewSchema);

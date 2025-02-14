@@ -9,6 +9,7 @@ import Link from "next/link";
 
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Banknote, Award } from "lucide-react";
+import UserReviewForm from "@/components/UserReviewForm";
 
 export default function About() {
   const promises = [
@@ -132,9 +133,9 @@ export default function About() {
               {/* Text Content - Left Side */}
               <div className="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left xl:-translate-y-[3rem]">
                 <p className="text-lg lg:text-2xl md:text-xl text-gray-700 leading-relaxed font-semibold drop-shadow-2xl">
-                  Bindi&apos;s Cupcakery was born out of a passion for baking and a
-                  commitment to providing high-quality, homemade desserts that
-                  everyone can enjoy. Located in the heart of Parle Point,
+                  Bindi&apos;s Cupcakery was born out of a passion for baking
+                  and a commitment to providing high-quality, homemade desserts
+                  that everyone can enjoy. Located in the heart of Parle Point,
                   Surat, our cloud kitchen serves as a haven for dessert lovers
                   looking for fresh, natural, and preservative-free goodies.
                 </p>
@@ -224,56 +225,7 @@ export default function About() {
 
             {/* Right side - Form */}
             <div className="md:w-1/2 w-full">
-              <form className="space-y-6">
-                {/* Name Input */}
-                <div>
-                  <label className="block text-gray-700 mb-2">Name</label>
-                  <input
-                    type="text"
-                    className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 px-2"
-                    required
-                  />
-                </div>
-
-                {/* Email Input */}
-                <div>
-                  <label className="block text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email"
-                    className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 px-2"
-                    required
-                  />
-                </div>
-
-                {/* Phone Input */}
-                <div>
-                  <label className="block text-gray-700 mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 px-2"
-                  />
-                </div>
-
-                {/* Message Input */}
-                <div>
-                  <label className="block text-gray-700 mb-2">Message</label>
-                  <textarea
-                    className="w-full border-b border-gray-300 focus:border-gray-500 outline-none py-2 min-h-[100px] resize-none px-2"
-                    required
-                  />
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    className="bg-amber-400 text-black px-8 py-3 rounded-tl-xl rounded-br-xl font-medium hover:bg-amber-500 transition-colors duration-300 flex items-center gap-2 shadow-xl font-ancient"
-                  >
-                    Submit
-                    <MoveUpRight className="h-4 w-4 inline-block rotate-90" />
-                  </button>
-                </div>
-              </form>
+              <UserReviewForm />
             </div>
           </div>
         </div>
