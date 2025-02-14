@@ -18,6 +18,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 interface Category {
@@ -30,11 +37,9 @@ export interface Product {
   name: string;
   price: number;
   description: string;
-  // product.category is expected to be either a string (the category id) or an object (populated category)
   category: Category | string;
   isFeatured: boolean;
   isSugarFree: boolean;
-  // Adding images field. This field represents a Google Drive image URL.
   images?: string;
 }
 
@@ -43,6 +48,7 @@ export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -77,14 +83,13 @@ export default function ProductsPage() {
   async function handleSave(product: Product) {
     try {
       const method = product._id ? "PUT" : "POST";
-      // For updating, send ?id=<productID> as search parameter
       const url = product._id
         ? `/api/admin/products?id=${product._id}`
         : "/api/admin/products";
 
       const response = await fetch(url, {
         method,
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(product),
@@ -97,7 +102,9 @@ export default function ProductsPage() {
 
       toast({
         title: "Success",
-        description: `Product ${product._id ? "updated" : "created"} successfully`,
+        description: `Product ${
+          product._id ? "updated" : "created"
+        } successfully`,
       });
 
       setIsDialogOpen(false);
@@ -107,7 +114,8 @@ export default function ProductsPage() {
       console.error("Error saving product:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save product",
+        description:
+          error instanceof Error ? error.message : "Failed to save product",
         variant: "destructive",
       });
     }
@@ -138,23 +146,63 @@ export default function ProductsPage() {
       console.error("Error deleting product:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete product",
+        description:
+          error instanceof Error ? error.message : "Failed to delete product",
         variant: "destructive",
       });
     }
   }
 
+  const filteredProducts = products.filter((product) => {
+    const search = searchTerm.toLowerCase();
+    if (product.name.toLowerCase().includes(search)) {
+      return true;
+    }
+
+    if (
+      typeof product.category === "object" &&
+      product.category !== null &&
+      product.category.name.toLowerCase().includes(search)
+    ) {
+      return true;
+    }
+
+    if (
+      typeof product.category === "string" &&
+      product.category.toLowerCase().includes(search)
+    ) {
+      return true;
+    }
+
+    return false;
+  });
+
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading products...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading products...
+      </div>
+    );
   }
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Products Management</h1>
+        <Input
+          placeholder="Search by name or category..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md"
+        />
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingProduct(null); setIsDialogOpen(true); }}>
+            <Button
+              onClick={() => {
+                setEditingProduct(null);
+                setIsDialogOpen(true);
+              }}
+            >
               Add Product
             </Button>
           </DialogTrigger>
@@ -165,16 +213,18 @@ export default function ProductsPage() {
               </DialogTitle>
             </DialogHeader>
             <ProductForm
-              product={editingProduct || {
-                _id: "",
-                name: "",
-                price: 0,
-                description: "",
-                category: "",
-                isFeatured: false,
-                isSugarFree: false,
-                images: ""
-              }}
+              product={
+                editingProduct || {
+                  _id: "",
+                  name: "",
+                  price: 0,
+                  description: "",
+                  category: "",
+                  isFeatured: false,
+                  isSugarFree: false,
+                  images: "",
+                }
+              }
               onSave={handleSave}
               onCancel={() => {
                 setIsDialogOpen(false);
@@ -185,9 +235,13 @@ export default function ProductsPage() {
         </Dialog>
       </div>
 
-      {products.length === 0 ? (
+      {filteredProducts.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-gray-500">No products found</p>
+          <p className="text-gray-500">
+            {products.length === 0
+              ? "No products found"
+              : "No products match your search"}
+          </p>
         </div>
       ) : (
         <div className="border rounded-lg">
@@ -204,13 +258,14 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <TableRow key={product._id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell>
-                    {typeof product.category === "object" && product.category !== null
+                    {typeof product.category === "object" &&
+                    product.category !== null
                       ? (product.category as Category).name
                       : product.category}
                   </TableCell>
@@ -250,7 +305,6 @@ interface ProductFormProps {
 }
 
 function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
-  // If product.category is populated as an object, extract its _id for the form input
   const initialCategory =
     typeof product.category === "object" && product.category !== null
       ? product.category._id
@@ -261,7 +315,7 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     name: string;
     price: number;
     description: string;
-    category: Category | string;
+    category: string;
     isFeatured: boolean;
     isSugarFree: boolean;
     images?: string;
@@ -270,17 +324,41 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     category: initialCategory,
     images: product.images || "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof Product, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof Product, string>>>(
+    {}
+  );
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  async function fetchCategories() {
+    try {
+      setIsLoadingCategories(true);
+      const response = await fetch("/api/admin/categories");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setCategories(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  }
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof Product, string>> = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (formData.price <= 0) newErrors.price = "Price must be greater than 0";
-    if (!formData.description.trim()) newErrors.description = "Description is required";
-    if (!formData.category || typeof formData.category !== "string" || !formData.category.trim()) {
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    if (!formData.category) {
       newErrors.category = "Category is required";
     }
-    // Validate images if provided: must be a Google Drive link.
     if (formData.images && !formData.images.includes("drive.google.com")) {
       newErrors.images = "Image URL must be a valid Google Drive link";
     }
@@ -313,7 +391,9 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
           type="number"
           step="0.01"
           value={formData.price}
-          onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+          onChange={(e) =>
+            setFormData({ ...formData, price: Number(e.target.value) })
+          }
           className={errors.price ? "border-red-500" : ""}
         />
         {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
@@ -323,18 +403,38 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         <label className="text-sm font-medium">Description</label>
         <Textarea
           value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Category ID</label>
-        <Input
-          value={typeof formData.category === "object" ? formData.category._id : formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-          className={errors.category ? "border-red-500" : ""}
-        />
-        {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
+        <label className="text-sm font-medium">Category</label>
+        {isLoadingCategories ? (
+          <p>Loading categories...</p>
+        ) : (
+          <Select
+            value={formData.category}
+            onValueChange={(value) =>
+              setFormData({ ...formData, category: value })
+            }
+          >
+            <SelectTrigger className={errors.category ? "border-red-500" : ""}>
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category._id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        {errors.category && (
+          <p className="text-red-500 text-sm">{errors.category}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -345,7 +445,9 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
           className={errors.images ? "border-red-500" : ""}
           placeholder="Enter a Google Drive link if available"
         />
-        {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
+        {errors.images && (
+          <p className="text-red-500 text-sm">{errors.images}</p>
+        )}
       </div>
 
       <div className="flex items-center space-x-2">
@@ -353,7 +455,9 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         <input
           type="checkbox"
           checked={formData.isFeatured}
-          onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+          onChange={(e) =>
+            setFormData({ ...formData, isFeatured: e.target.checked })
+          }
           className="h-4 w-4"
         />
       </div>
@@ -363,7 +467,9 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         <input
           type="checkbox"
           checked={formData.isSugarFree}
-          onChange={(e) => setFormData({ ...formData, isSugarFree: e.target.checked })}
+          onChange={(e) =>
+            setFormData({ ...formData, isSugarFree: e.target.checked })
+          }
           className="h-4 w-4"
         />
       </div>
