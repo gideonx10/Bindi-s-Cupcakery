@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import CartItem from "./CartItem";
+import CartItem from "@/components/CartItem";
+import { useSession } from "next-auth/react";
+
+import UPIQrCode from "./UPIQrCode";
 
 interface Product {
   _id: string;
@@ -16,13 +19,18 @@ interface CartItem {
   quantity: number;
 }
 
-export default function CartPage({ userId }: { userId: string }) {
+export default function CartPage() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
-  const [isHamper, setIsHamper] = useState(false); // Toggle State
-
+  const [customization, setCustomization] = useState("");
+  const [showQR, setShowQR] = useState(false);
+  const [transactionId, setTransactionId] = useState("");
+  const { data: session, status } = useSession();
+  const userId = (session?.user as { id: string })?.id;
+  const upiId = process.env.UPI_ID as string | "";
+  const upiName = process.env.UPI_NAME;
   useEffect(() => {
     if (userId) fetchCart();
   }, [userId]);
@@ -97,22 +105,35 @@ export default function CartPage({ userId }: { userId: string }) {
     }
   }
 
-  async function handleCheckout() {
+  async function handleCheckout(paymentMethod: "Pay on Takeway" | "Online") {
     if (cartItems.length === 0) return alert("Your cart is empty!");
+
+    if (paymentMethod === "Online" && !transactionId) {
+      return alert("Please enter the transaction ID.");
+    }
 
     setCheckingOut(true);
     try {
+      const userRes = await fetch(`/api/user/details?userId=${userId}`);
+      if (!userRes.ok) throw new Error("Failed to fetch user details");
+      const userData = await userRes.json();
+
       const orderData = {
         userId,
+        userName: userData.name,
+        userPhone: userData.phoneNumber,
         products: cartItems.map(({ product, quantity }) => ({
           product: product._id,
+          name: product.name,
           quantity,
         })),
         totalAmount: cartItems.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0
         ),
-        isHamper, // Include hamper state
+        customization,
+        paymentMethod,
+        transactionId: paymentMethod === "Online" ? transactionId : null,
       };
 
       const res = await fetch("/api/orders", {
@@ -122,6 +143,27 @@ export default function CartPage({ userId }: { userId: string }) {
       });
 
       if (!res.ok) throw new Error("Failed to place order");
+      const orderResponse = await res.json();
+      const orderId = orderResponse.order._id; // Get the order ID
+
+      // Send WhatsApp message with order details
+      await fetch("/api/send-message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: "+917600960068", // Send to user's phone number
+          message: `Order Confirmed! 📦\n\nOrder ID: ${orderId}\nUser ID: ${userId}\n📞 *Contact:* ${
+            userData.phone
+          }\n
+          👤 *Customer:* ${userData.name}\nItems:\n${orderData.products
+            .map((p) => `- ${p.name} x${p.quantity}`)
+            .join("\n")}\n\nTotal: ₹${orderData.totalAmount}\nCustomization:${
+            customization || "N/A"
+          }\nPayment: ${paymentMethod}\nTransaction ID: ${
+            transactionId || "N/A"
+          }`,
+        }),
+      });
 
       await clearCart();
       alert("Order placed successfully!");
@@ -131,22 +173,6 @@ export default function CartPage({ userId }: { userId: string }) {
       alert("Checkout failed, please try again.");
     } finally {
       setCheckingOut(false);
-    }
-  }
-
-  async function toggleHamper() {
-    setIsHamper((prev) => !prev);
-
-    try {
-      await fetch("/api/orders/update-hamper", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, isHamper: !isHamper }),
-      });
-    } catch (error) {
-      console.error(error);
-      alert("Failed to update hamper status.");
-      setIsHamper((prev) => !prev);
     }
   }
 
@@ -180,20 +206,29 @@ export default function CartPage({ userId }: { userId: string }) {
           ))}
 
           {/* Toggle Switch for Hamper */}
-          <div className="mt-6 flex items-center">
-            <span className="mr-2 text-lg font-semibold">
-              Make it a Hamper?
-            </span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isHamper}
-                onChange={toggleHamper}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          <div className="mt-6">
+            <label className="block text-lg font-semibold mb-2">
+              Add Customization (Optional):
             </label>
+            <textarea
+              value={customization}
+              onChange={(e) => setCustomization(e.target.value)}
+              className="w-full p-3 border rounded-lg"
+              placeholder="Enter any customization details for your order..."
+              rows={3}
+            />
           </div>
+
+          {cartItems.length > 0 && (
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={() => router.push("/products")}
+                className="px-6 py-3 bg-black text-white font-semibold rounded-lg"
+              >
+                Missing Something?
+              </button>
+            </div>
+          )}
 
           <div className="mt-6 flex justify-between items-center">
             <h2 className="text-xl font-semibold">
@@ -205,26 +240,65 @@ export default function CartPage({ userId }: { userId: string }) {
                 )
                 .toFixed(2)}
             </h2>
-            <button
-              onClick={handleCheckout}
-              disabled={checkingOut || loading}
-              className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 disabled:opacity-50"
-            >
-              {checkingOut ? "Processing..." : "Checkout"}
-            </button>
-          </div>
-        </div>
-      )}
+            <div className="mt-4 flex flex-col space-y-3">
+              <button
+                onClick={() => handleCheckout("Pay on Takeway")}
+                disabled={checkingOut || loading}
+                className="px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50"
+              >
+                Pay on Takeway
+              </button>
 
-      {/* Redirect to Products Page */}
-      {cartItems.length > 0 && (
-        <div className="mt-6 flex justify-center">
-          <button
-            onClick={() => router.push("/products")}
-            className="px-6 py-3 bg-black text-white font-semibold rounded-lg"
-          >
-            Missing Something?
-          </button>
+              <button
+                onClick={() => setShowQR(true)}
+                className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
+              >
+                Pay Online
+              </button>
+
+              {showQR && (
+                <div className="mt-4 text-center">
+                  <UPIQrCode
+                    upiId={upiId}
+                    name={upiName}
+                    amount={Number(
+                      cartItems
+                        .reduce(
+                          (total, item) =>
+                            total + item.product.price * item.quantity,
+                          0
+                        )
+                        .toFixed(2)
+                    )}
+                  />
+                  <p className="text-gray-600 mt-2">
+                    Scan the QR and pay ₹
+                    {cartItems
+                      .reduce(
+                        (total, item) =>
+                          total + item.product.price * item.quantity,
+                        0
+                      )
+                      .toFixed(2)}
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Enter Transaction ID"
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
+                    className="mt-2 w-full p-2 border rounded"
+                  />
+                  <button
+                    onClick={() => handleCheckout("Online")}
+                    disabled={checkingOut || loading}
+                    className="mt-3 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 disabled:opacity-50"
+                  >
+                    Confirm Payment
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
