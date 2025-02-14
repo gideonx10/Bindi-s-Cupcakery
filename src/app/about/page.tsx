@@ -124,7 +124,7 @@ export default function About() {
     <>
       <main className="bg-[#F4EADE] min-h-screen max-w-[100vw]">
         {/* About Us Hero Section */}
-        <section className="w-full pt-16 flex">
+        <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto">
           <div className="container mx-auto px-4 translate-y-10 fade-up">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-[6vh] text-center md:text-left lg:translate-y-10 drop-shadow-2xl font-ancient">
               About Us
@@ -143,8 +143,8 @@ export default function About() {
                 {/* Responsive Shop Now Button */}
                 <Link
                   href="/Products"
-                  className="bg-[#fdecd8] text-black px-6 py-3 rounded-full text-lg font-semibold duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
-                max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-ancient"
+                  className="bg-[#fdecd8] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
+                max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-mono"
                 >
                   Shop Now
                   <MoveUpRight className="h-5 w-5 inline-block translate-x-2 -translate-y-0.5" />

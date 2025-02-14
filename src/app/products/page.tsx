@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-// ... (keep all interfaces the same)
 interface Product {
   _id: string;
   name: string;
@@ -29,97 +28,172 @@ interface CartQuantities {
   [key: string]: number;
 }
 
-// Add a new interface for cart items because of vercel deployment error
 interface CartItem {
   product: Product;
   quantity: number;
 }
+
 export default function ProductsPage() {
-  // ... (keep all existing refs and other state)
-
-  // const contentRef = useRef<HTMLDivElement>(null);
-  // const filterRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
-
-  //   const router = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
+  // State variables
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   const initialSearchQuery = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const [filterSugarFree, setFilterSugarFree] = useState<boolean>(false);
   const [filterBestseller, setFilterBestseller] = useState<boolean>(false);
-
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const [cartQuantities, setCartQuantities] = useState<CartQuantities>({});
-  const [updatingCart, setUpdatingCart] = useState<string | null>(null);
-
-  // const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceFilter, setSelectedPriceFilter] = useState<string | null>(
     null
   );
+
+  const [cartQuantities, setCartQuantities] = useState<CartQuantities>({});
+  const [updatingCart, setUpdatingCart] = useState<string | null>(null);
+
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
-
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  // const [isFilterSticky, setIsFilterSticky] = useState(false);
 
-  // const filterContainerRef = useRef<HTMLDivElement>(null);
-  // const productContainerRef = useRef<HTMLDivElement>(null);
-  const { data: session } = useSession();
+  // Fetch products when filter conditions change
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      setError(null);
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     if (filterContainerRef.current) {
-  //       const filterRect = filterContainerRef.current.getBoundingClientRect();
-  //       const shouldBeSticky = filterRect.top <= 20;
-  //       setIsFilterSticky(shouldBeSticky);
-  //     }
-  //   };
+      try {
+        // Build query parameters
+        const queryParams = new URLSearchParams();
 
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
+        if (debouncedSearchQuery) {
+          queryParams.append("search", debouncedSearchQuery);
+        }
 
-  // Handle category selection
-  // const toggleCategory = (categoryId: string) => {
-  //   setSelectedCategories((prev) =>
-  //     prev.includes(categoryId)
-  //       ? prev.filter((id) => id !== categoryId)
-  //       : [...prev, categoryId]
-  //   );
-  // };
+        // Add selected categories
+        selectedCategories.forEach((categoryId) => {
+          queryParams.append("categories[]", categoryId);
+        });
 
-  // const handleCartAction = async (
-  //   productId: string,
-  //   action: "add" | "update",
-  //   newQuantity?: number
-  // ) => {
-  //   if (status === "unauthenticated") {
-  //     toast.error("Please sign in to add items to cart");
-  //     router.push("/signin");
-  //     return;
-  //   }
+        // Add price filter
+        if (selectedPriceFilter) {
+          queryParams.append("priceFilter", selectedPriceFilter);
+        }
 
-  //   if (action === "add") {
-  //     await addToCart(productId);
-  //   } else if (action === "update" && typeof newQuantity === "number") {
-  //     await updateCartQuantity(productId, newQuantity);
-  //   }
-  // };
+        // Add sugar-free filter
+        if (filterSugarFree) {
+          queryParams.append("isSugarFree", "true");
+        }
 
+        // Add bestseller/featured filter
+        if (filterBestseller) {
+          queryParams.append("isFeatured", "true");
+        }
+
+        const response = await fetch(`/api/products?${queryParams.toString()}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          throw new Error("Invalid response format");
+        }
+
+        setProducts(data);
+      } catch (err) {
+        setError((err as Error).message);
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, [
+    debouncedSearchQuery,
+    selectedCategories,
+    selectedPriceFilter,
+    filterSugarFree,
+    filterBestseller,
+  ]);
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch("/api/categories");
+        if (!response.ok) throw new Error("Failed to fetch categories");
+
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+
+  // Fetch cart quantities when user session changes
+  useEffect(() => {
+    async function fetchCartQuantities() {
+      const userId = (session?.user as { id: string })?.id;
+      if (!userId) {
+        setCartQuantities({});
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/cart?userId=${userId}`);
+        if (!response.ok) throw new Error("Failed to fetch cart");
+
+        const cartData: { products: CartItem[] } = await response.json();
+        const quantities: CartQuantities = {};
+
+        cartData.products.forEach((item) => {
+          quantities[item.product._id] = item.quantity;
+        });
+
+        setCartQuantities(quantities);
+      } catch (err) {
+        console.error("Error fetching cart quantities:", err);
+      }
+    }
+
+    fetchCartQuantities();
+  }, [session?.user]);
+
+  // Set body overflow to prevent horizontal scroll
+  useEffect(() => {
+    document.body.style.overflowX = "hidden";
+    return () => {
+      document.body.style.overflowX = "auto";
+    };
+  }, []);
+
+  // Add to cart function
   const addToCart = async (productId: string) => {
     setUpdatingCart(productId);
 
     try {
       const userId = (session?.user as { id: string })?.id;
+      if (!userId) {
+        router.push(
+          `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+        return;
+      }
+
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -150,12 +224,21 @@ export default function ProductsPage() {
       setUpdatingCart(null);
     }
   };
+
+  // Update cart quantity function
   const updateCartQuantity = async (productId: string, newQuantity: number) => {
     if (newQuantity < 0) return;
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id; // Your user ID
+      const userId = (session?.user as { id: string })?.id;
+
+      if (!userId) {
+        router.push(
+          `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+        return;
+      }
 
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -165,7 +248,7 @@ export default function ProductsPage() {
         body: JSON.stringify({
           userId,
           productId,
-          quantity: 1, // We'll always send 1 as we're incrementing/decrementing
+          quantity: 1,
           action:
             newQuantity > (cartQuantities[productId] || 0)
               ? "increase"
@@ -177,10 +260,18 @@ export default function ProductsPage() {
         throw new Error("Failed to update cart");
       }
 
-      setCartQuantities((prev) => ({
-        ...prev,
-        [productId]: newQuantity,
-      }));
+      if (newQuantity === 0) {
+        setCartQuantities((prev) => {
+          const newQuantities = { ...prev };
+          delete newQuantities[productId];
+          return newQuantities;
+        });
+      } else {
+        setCartQuantities((prev) => ({
+          ...prev,
+          [productId]: newQuantity,
+        }));
+      }
 
       toast.success("Cart updated successfully!");
     } catch (err) {
@@ -191,84 +282,7 @@ export default function ProductsPage() {
     }
   };
 
-  // ... (keep all other functions and useEffects the same)
-  useEffect(() => {
-    async function fetchCartQuantities() {
-      try {
-        const userId = (session?.user as { id: string })?.id;
-        const response = await fetch(`/api/cart?userId=${userId}`);
-        if (!response.ok) throw new Error("Failed to fetch cart");
-
-        const cartData: { products: CartItem[] } = await response.json();
-        const quantities: CartQuantities = {};
-
-        cartData.products.forEach((item) => {
-          quantities[item.product._id] = item.quantity;
-        });
-
-        setCartQuantities(quantities);
-      } catch (err) {
-        console.error("Error fetching cart quantities:", err);
-      }
-    }
-
-    fetchCartQuantities();
-  }, [session?.user]);
-
-  // Update fetchProducts to handle multiple categories
-  useEffect(() => {
-    async function fetchProducts() {
-      setLoading(true);
-      try {
-        const queryParams = new URLSearchParams();
-
-        if (debouncedSearchQuery) {
-          queryParams.append("search", debouncedSearchQuery);
-        }
-
-        // Add selected categories to query params
-        if (selectedCategories.length > 0) {
-          selectedCategories.forEach((categoryId) => {
-            queryParams.append("categories[]", categoryId);
-          });
-        }
-
-        if (selectedPriceFilter) {
-          queryParams.append("priceFilter", selectedPriceFilter);
-        }
-
-        const response = await fetch(`/api/products?${queryParams.toString()}`);
-        if (!response.ok) throw new Error("Failed to fetch products");
-
-        const data: Product[] = await response.json();
-        setProducts(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProducts();
-  }, [debouncedSearchQuery, selectedCategories, selectedPriceFilter]);
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await fetch("/api/categories");
-        if (!response.ok) throw new Error("Failed to fetch categories");
-
-        const data: Category[] = await response.json();
-        setCategories(data);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      }
-    }
-
-    fetchCategories();
-  }, []);
-
-  // Update toggleCategory function
+  // Toggle category selection
   const toggleCategory = (categoryId: string) => {
     setSelectedCategories((prev) => {
       if (prev.includes(categoryId)) {
@@ -279,44 +293,106 @@ export default function ProductsPage() {
     });
   };
 
-  // Filter and sort functions
-  const sortByPrice = (products: Product[]) => {
-    if (selectedPriceFilter === "high-low") {
-      return [...products].sort((a, b) => b.price - a.price);
-    } else if (selectedPriceFilter === "low-high") {
-      return [...products].sort((a, b) => a.price - b.price);
+  // Render function for product cards
+  const renderProductCards = () => {
+    if (loading) {
+      return (
+        <div className="col-span-2 sm:col-span-2 lg:col-span-3 flex justify-center items-center min-h-[200px]">
+          <p>Loading products...</p>
+        </div>
+      );
     }
-    return products;
+
+    if (error) {
+      return (
+        <div className="col-span-2 sm:col-span-2 lg:col-span-3 flex justify-center items-center min-h-[200px]">
+          <p className="text-red-500">{error}</p>
+        </div>
+      );
+    }
+
+    if (products.length === 0) {
+      return (
+        <div className="col-span-2 sm:col-span-2 lg:col-span-3 flex justify-center items-center min-h-[200px]">
+          <p>No products available. Try changing your filters.</p>
+        </div>
+      );
+    }
+
+    return products.map((product) => (
+      <div
+        key={product._id}
+        className=".carts bg-[#e2edff] bg-opacity-50 rounded-3xl p-4 shadow-lg max-w-[350px]"
+      >
+        <ProductCard product={product} />
+        <div className="mt-3 flex justify-center">
+          {cartQuantities[product._id] ? (
+            <div className="flex items-center justify-between w-[60%] sm:w-[50%] mx-4 shadow-lg hover:shadow-xl transition-shadow rounded-md">
+              {/* Decrease Quantity Button */}
+              <button
+                onClick={() =>
+                  updateCartQuantity(
+                    product._id,
+                    Math.max((cartQuantities[product._id] || 0) - 1, 0)
+                  )
+                }
+                disabled={updatingCart === product._id}
+                className={`p-2 sm:p-3 rounded-l-xl ${
+                  updatingCart === product._id
+                    ? "opacity-50"
+                    : "text-black font-semibold"
+                }`}
+              >
+                <Minus className="w-4 h-4 sm:w-5 sm:h-5 hover:scale-125 sm:hover:scale-[130%] font-bold" />
+              </button>
+
+              {/* Quantity Count */}
+              <span className="px-3 sm:px-4 py-2 bg-[#dcf5ff] font-medium text-sm sm:text-base">
+                {cartQuantities[product._id]}
+              </span>
+
+              {/* Increase Quantity Button */}
+              <button
+                onClick={() =>
+                  updateCartQuantity(
+                    product._id,
+                    (cartQuantities[product._id] || 0) + 1
+                  )
+                }
+                disabled={updatingCart === product._id}
+                className={`p-2 sm:p-3 rounded-r-xl rounded-l-sm ${
+                  updatingCart === product._id
+                    ? "opacity-50"
+                    : "text-black font-semibold"
+                }`}
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 hover:scale-125 sm:hover:scale-[130%] font-bold" />
+              </button>
+            </div>
+          ) : (
+            /* Add to Cart Button */
+            <button
+              onClick={() => addToCart(product._id)}
+              disabled={updatingCart === product._id}
+              className={`w-[80%] sm:w-[100%] p-2 sm:p-3 shadow-lg hover:shadow-xl transition-shadow rounded-b-2xl rounded-t-xl text-sm sm:text-base ${
+                updatingCart === product._id
+                  ? "opacity-50 tracking-wider font-semibold"
+                  : "bg-[#d6ebfc] hover:bg-[#d8edff] text-black font-semibold"
+              }`}
+            >
+              {updatingCart === product._id ? "Adding..." : "Add to Cart"}
+            </button>
+          )}
+        </div>
+      </div>
+    ));
   };
 
-  const filterProducts = (products: Product[]) => {
-    let filtered = sortByPrice([...products]);
-
-    if (filterSugarFree) {
-      filtered = filtered.filter((product) => product.isSugarFree);
-    }
-    if (filterBestseller) {
-      filtered = filtered.filter((product) => product.isFeatured);
-    }
-
-    return filtered;
-  };
-
-  const filteredProducts = filterProducts(products);
-
-  useEffect(() => {
-    document.body.style.overflowX = "hidden";
-    return () => {
-      document.body.style.overflowX = "auto";
-    };
-  }, []);
-
-  // Rest of your component remains the same...
   return (
     <div className="max-w-screen overflow-x-hidden min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%] font-ancient text-[#08410c]">
       {/* Category Filter */}
       <div className="flex-1 ">
-        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
+        <div className="absolute top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
             <button
@@ -433,7 +509,6 @@ export default function ProductsPage() {
                     Bestseller
                   </button>
                 </div>
-                {/* Rest of the mobile filter modal remains the same... */}
               </div>
             </div>
           </div>
@@ -538,7 +613,7 @@ export default function ProductsPage() {
               {/* Filter Tags */}
               <button
                 onClick={() => setFilterSugarFree((prev) => !prev)}
-                className={`px-4 py-2 rounded-2xl transition font-semibold  ${
+                className={`px-4 py-2 rounded-2xl transition font-semibold ${
                   filterSugarFree
                     ? "bg-green-200 border-2 border-black"
                     : "bg-[#d1eafe] shadow-xl"
@@ -578,81 +653,9 @@ export default function ProductsPage() {
 
         <div className="w-full pt-[175px] md:pt-[185px] ">
           <div ref={itemsRef} className="p-2 md:p-4 flex justify-center ">
-            {error && <p className="text-red-500">{error}</p>}
-
-            {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product._id}
-                    className=".carts bg-[#e2edff] bg-opacity-50 rounded-3xl p-4 shadow-lg max-w-[350px]"
-                  >
-                    <ProductCard product={product} />
-                    <div className="mt-3 flex justify-center">
-                      {cartQuantities[product._id] ? (
-                        <div className="flex items-center justify-between w-[60%] sm:w-[50%] mx-4 shadow-lg hover:shadow-xl transition-shadow rounded-md">
-                          {/* Decrease Quantity Button */}
-                          <button
-                            onClick={() =>
-                              updateCartQuantity(
-                                product._id,
-                                (cartQuantities[product._id] || 0) - 1
-                              )
-                            }
-                            disabled={updatingCart === product._id}
-                            className={`p-2 sm:p-3 rounded-l-xl ${
-                              updatingCart === product._id
-                                ? "animate-spin"
-                                : "text-black font-semibold"
-                            }`}
-                          >
-                            <Minus className="w-4 h-4 sm:w-5 sm:h-5 hover:scale-125 sm:hover:scale-[130%] font-bold" />
-                          </button>
-
-                          {/* Quantity Count */}
-                          <span className="px-3 sm:px-4 py-2 bg-[#dcf5ff] font-medium text-sm sm:text-base">
-                            {cartQuantities[product._id]}
-                          </span>
-
-                          {/* Increase Quantity Button */}
-                          <button
-                            onClick={() =>
-                              updateCartQuantity(
-                                product._id,
-                                (cartQuantities[product._id] || 0) + 1
-                              )
-                            }
-                            disabled={updatingCart === product._id}
-                            className={`p-2 sm:p-3 rounded-r-xl rounded-l-sm ${
-                              updatingCart === product._id
-                                ? "animate-spin"
-                                : "text-black font-semibold"
-                            }`}
-                          >
-                            <Plus className="w-4 h-4 sm:w-5 sm:h-5 hover:scale-125 sm:hover:scale-[130%] font-bold" />
-                          </button>
-                        </div>
-                      ) : (
-                        /* Add to Cart Button */
-                        <button
-                          onClick={() => addToCart(product._id)}
-                          disabled={updatingCart === product._id}
-                          className={`w-[80%] sm:w-[100%] p-2 sm:p-3 shadow-lg hover:shadow-xl transition-shadow rounded-b-2xl rounded-t-xl text-sm sm:text-base ${
-                            updatingCart === product._id
-                              ? "tracking-wider font-semibold"
-                              : "bg-[#d6ebfc] hover:bg-[#d8edff] text-black font-semibold"
-                          }`}
-                        >
-                          Add to Cart
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              !loading && <p>No products available.</p>
-            )}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
+              {renderProductCards()}
+            </div>
           </div>
         </div>
       </div>

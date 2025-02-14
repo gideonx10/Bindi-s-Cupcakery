@@ -1,23 +1,30 @@
-// src/lib/mongodb.ts
-import { MongoClient } from "mongodb";
+import { MongoClient, MongoClientOptions } from "mongodb";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable in your .env.local file");
 }
 
 const uri: string = process.env.MONGODB_URI;
-const options = {};
+const options: MongoClientOptions = {};
+
+interface GlobalWithMongo {
+  _mongoClientPromise?: Promise<MongoClient>;
+}
+
+declare global {
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+}
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
   // In development mode, use a global variable to preserve the value across module reloads caused by HMR
-  if (!(global as any)._mongoClientPromise) {
+  if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    (global as any)._mongoClientPromise = client.connect();
+    global._mongoClientPromise = client.connect();
   }
-  clientPromise = (global as any)._mongoClientPromise;
+  clientPromise = global._mongoClientPromise;
 } else {
   // In production mode, it's best not to use a global variable.
   client = new MongoClient(uri, options);

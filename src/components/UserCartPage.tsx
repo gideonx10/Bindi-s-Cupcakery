@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CartItem from "@/components/CartItem";
-import { useSession } from "next-auth/react";
-
+import WhatsAppQR from "./WhatsAppQR";
 import UPIQrCode from "./UPIQrCode";
+// import Alert from "./Alert";
 
 interface Product {
   _id: string;
@@ -19,7 +19,7 @@ interface CartItem {
   quantity: number;
 }
 
-export default function CartPage() {
+export default function CartPage({ userId }: { userId: string }) {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -27,8 +27,9 @@ export default function CartPage() {
   const [customization, setCustomization] = useState("");
   const [showQR, setShowQR] = useState(false);
   const [transactionId, setTransactionId] = useState("");
-  const { data: session } = useSession();
-  const userId = (session?.user as { id: string })?.id;
+  const [showWhatsAppQR, setShowWhatsAppQR] = useState(false);
+  const [whatsAppMessage, setWhatsAppMessage] = useState("");
+  const [isHamper, setIsHamper] = useState(false);
   const upiId = process.env.NEXT_PUBLIC_UPI_ID as string | "";
   const upiName = process.env.NEXT_PUBLIC_UPI_NAME;
   useEffect(() => {
@@ -85,10 +86,9 @@ export default function CartPage() {
     } catch (error: unknown) {
       console.error("Error:", error);
 
-      if(error instanceof Error){
+      if (error instanceof Error) {
         alert(error.message);
-      }
-      else{
+      } else {
         alert("An unexpected error occurred. Please try again later.");
       }
     } finally {
@@ -128,6 +128,7 @@ export default function CartPage() {
         userId,
         userName: userData.name,
         userPhone: userData.phoneNumber,
+        userEmail: userData.email, // Ensure email is available
         products: cartItems.map(({ product, quantity }) => ({
           product: product._id,
           name: product.name,
@@ -142,6 +143,7 @@ export default function CartPage() {
         transactionId: paymentMethod === "Online" ? transactionId : null,
       };
 
+      // Place order
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -150,16 +152,16 @@ export default function CartPage() {
 
       if (!res.ok) throw new Error("Failed to place order");
       const orderResponse = await res.json();
-      const orderId = orderResponse.order._id; // Get the order ID
+      const orderId = orderResponse.order._id;
 
-      // Send WhatsApp message with order details
+      // Send WhatsApp Message
       await fetch("/api/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phoneNumber: "+917600960068", // Send to user's phone number
+          phoneNumber: "+917600960068",
           message: `Order Confirmed! 📦\n\nOrder ID: ${orderId}\nUser ID: ${userId}\n📞 *Contact:* ${
-            userData.phone
+            userData.phoneNumber
           }\n
           👤 *Customer:* ${userData.name}\nItems:\n${orderData.products
             .map((p) => `- ${p.name} x${p.quantity}`)
@@ -171,8 +173,31 @@ export default function CartPage() {
         }),
       });
 
+      // Send Order Confirmation Email
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: userData.email,
+          subject: "Order Confirmation - Your Order is Placed!",
+          text: `Dear ${
+            userData.name
+          },\n\nThank you for your order! Your order has been placed successfully. Below are the details:\n\nOrder ID: ${orderId}\nTotal Amount: ₹${
+            orderData.totalAmount
+          }\nPayment Method: ${paymentMethod}\nTransaction ID: ${
+            transactionId || "N/A"
+          }\nCustomization: ${
+            customization || "N/A"
+          }\n\nItems Ordered:\n${orderData.products
+            .map((p) => `- ${p.name} x${p.quantity}`)
+            .join(
+              "\n"
+            )}\n\nWe will notify you once your order is ready.\n\nBest regards,\nYour Store Name`,
+        }),
+      });
+
       await clearCart();
-      alert("Order placed successfully!");
+      alert("Order placed successfully! A confirmation email has been sent.");
       router.push("/user?tab=orders");
     } catch (error) {
       console.error(error);
@@ -181,6 +206,35 @@ export default function CartPage() {
       setCheckingOut(false);
     }
   }
+
+  const generateWhatsAppOrderMessage = async () => {
+    try {
+      const userRes = await fetch(`/api/user/details?userId=${userId}`);
+      if (!userRes.ok) throw new Error("Failed to fetch user details");
+      const userData = await userRes.json();
+
+      const message = `Order Details:
+🛍️ Order from: Bindi's Cupcakery
+👤 Customer: ${userData.name}
+📞 Contact: ${userData.phoneNumber}
+📦 Items:
+${cartItems
+  .map((item) => `- ${item.product.name} x${item.quantity}`)
+  .join("\n")}
+💰 Total Amount: ₹${cartItems.reduce(
+        (total, item) => total + item.product.price * item.quantity,
+        0
+      )}
+📝 Customization: ${customization || "N/A"}
+💳 Payment Method: Pay on Takeaway`;
+
+      setWhatsAppMessage(message);
+      setShowWhatsAppQR(true);
+    } catch (error) {
+      console.error("Failed to fetch user details for WhatsApp order.");
+    }
+  };
+
   return (
     <div className="p-4 max-w-3xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -300,6 +354,22 @@ export default function CartPage() {
                   >
                     Confirm Payment
                   </button>
+                </div>
+              )}
+
+              <button
+                onClick={generateWhatsAppOrderMessage}
+                className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700"
+              >
+                Place Order via WhatsApp
+              </button>
+
+              {showWhatsAppQR && (
+                <div className="mt-4 text-center">
+                  <WhatsAppQR
+                    phoneNumber="+917600960068"
+                    message={whatsAppMessage}
+                  />
                 </div>
               )}
             </div>

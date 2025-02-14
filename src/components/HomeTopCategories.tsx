@@ -126,7 +126,7 @@ const TopCategories = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   useEffect(() => {
-    cardsRef.current.forEach((card, _) => {
+    cardsRef.current.forEach((card) => {
       if (!card) return;
 
       gsap.set(card, {

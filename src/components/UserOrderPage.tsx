@@ -83,7 +83,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
           )
         );
 
-        // Fetch user details (Assuming you store user details)
+        // Fetch user details
         const userRes = await fetch(`/api/user/details?userId=${userId}`);
         if (!userRes.ok) throw new Error("Failed to fetch user details");
         const userData = await userRes.json();
@@ -98,7 +98,18 @@ export default function OrdersPage({ userId }: { userId: string }) {
           }),
         });
 
-        alert("Order has been cancelled successfully and notification sent.");
+        // Send Email Notification
+        await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: userData.email,
+            subject: "Order Cancellation Confirmation",
+            text: `Dear ${userData.name},\n\nYour order (Order ID: ${orderId}) has been successfully cancelled.\n\nIf this was done by mistake, please contact our support team immediately.\n\nBest regards,\nBindi's Cupcakery`,
+          }),
+        });
+
+        alert("Order has been cancelled successfully, and notifications sent.");
       } catch (error) {
         console.error(error);
         alert("Failed to cancel order. Please try again.");
