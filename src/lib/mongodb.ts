@@ -12,10 +12,12 @@ let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
   // In development mode, use a global variable to preserve the value across module reloads
-  if (!(globalThis as any)._mongoClientPromise) {
-    (globalThis as any)._mongoClientPromise = client.connect();
+  const globalScope = globalThis as unknown as GlobalWithMongoDB;
+  
+  if (!globalScope._mongoClientPromise) {
+    globalScope._mongoClientPromise = client.connect();
   }
-  clientPromise = (globalThis as any)._mongoClientPromise || client.connect();
+  clientPromise = globalScope._mongoClientPromise || client.connect();
 } else {
   // In production mode, it's best not to use a global variable
   clientPromise = client.connect();

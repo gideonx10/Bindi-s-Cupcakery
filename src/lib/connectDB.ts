@@ -16,7 +16,7 @@ interface GlobalWithMongooseCache extends globalThis.Global {
   _mongooseConnection?: MongooseCache;
 }
 
-const globalWithMongooseCache: GlobalWithMongooseCache = globalThis as GlobalWithMongooseCache;
+const globalWithMongooseCache: GlobalWithMongooseCache = globalThis as unknown as GlobalWithMongooseCache;
 
 const cached: MongooseCache = globalWithMongooseCache._mongooseConnection || { 
   conn: null, 
@@ -24,8 +24,8 @@ const cached: MongooseCache = globalWithMongooseCache._mongooseConnection || {
 };
 
 // Set the global cache
-if (!(globalThis as GlobalWithMongooseCache)._mongooseConnection) {
-  (globalThis as GlobalWithMongooseCache)._mongooseConnection = cached;
+if (!((globalThis as unknown) as GlobalWithMongooseCache)._mongooseConnection) {
+  (globalThis as unknown as GlobalWithMongooseCache)._mongooseConnection = cached;
 }
 
 async function connectDB(retries = 3): Promise<Connection> {
