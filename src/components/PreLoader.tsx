@@ -124,7 +124,7 @@ const PreLoader = () => {
           opacity: 0,
         }}
       >
-        Bindi's Cupcakery
+        Bindi&apos;s Cupcakery
       </div>
     </div>
   );
