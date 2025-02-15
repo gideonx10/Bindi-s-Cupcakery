@@ -18,12 +18,12 @@ type ToasterToast = ToastProps & {
 }
 
 // Convert actionTypes to a type instead of a const object
-type ActionType = {
-  ADD_TOAST: "ADD_TOAST"
-  UPDATE_TOAST: "UPDATE_TOAST"
-  DISMISS_TOAST: "DISMISS_TOAST"
-  REMOVE_TOAST: "REMOVE_TOAST"
-}
+// type ActionType = {
+//   ADD_TOAST: "ADD_TOAST"
+//   UPDATE_TOAST: "UPDATE_TOAST"
+//   DISMISS_TOAST: "DISMISS_TOAST"
+//   REMOVE_TOAST: "REMOVE_TOAST"
+// }
 
 let count = 0
 
