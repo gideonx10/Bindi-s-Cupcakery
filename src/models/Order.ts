@@ -7,6 +7,7 @@ export interface IOrder extends Document {
   totalAmount: number;
   createdAt: Date;
   status: "pending" | "shipped" | "delivered" | "cancelled";
+  isHamper: boolean;
   isPaymentVerified: boolean;
   transactionId?: string;
   customization?: string;
@@ -33,6 +34,7 @@ const OrderSchema: Schema = new Schema(
       enum: ["pending", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
+    isHamper: { type: Boolean, default: false },
     isPaymentVerified: { type: Boolean, default: false }, // Added field
     transactionId: { type: String, default: null }, // Optional field
     customization: { type: String, default: null },
