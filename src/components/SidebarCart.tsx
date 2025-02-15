@@ -129,7 +129,7 @@ export default function Cart({
           )}
         </div>
       </div>
-      <style jsx>{`
+      <style>{`
         .shiny-background {
           background: linear-gradient(
             135deg,
