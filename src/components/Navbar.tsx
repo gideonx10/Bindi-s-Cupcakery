@@ -420,7 +420,7 @@ const Navbar = () => {
         onClose={() => setIsCartOpen(false)}
       />
 
-      <style jsx>{`
+      <style>{`
         @keyframes moveWave {
           0% {
             transform: translateX(0%);
