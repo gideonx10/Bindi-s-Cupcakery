@@ -62,7 +62,7 @@ const ReviewForm = () => {
     <form className="space-y-6" onSubmit={handleSubmit}>
       {/* Name Input */}
       <div>
-        <label className="block text-gray-700 mb-2">Name</label>
+        <label className="block text-gray-700 mb-2 font-ancient">Name</label>
         <input
           type="text"
           name="userName"
@@ -75,7 +75,7 @@ const ReviewForm = () => {
 
       {/* Email Input */}
       <div>
-        <label className="block text-gray-700 mb-2">Email</label>
+        <label className="block text-gray-700 mb-2 font-ancient">Email</label>
         <input
           type="email"
           name="email"
@@ -88,7 +88,7 @@ const ReviewForm = () => {
 
       {/* Phone Input */}
       <div>
-        <label className="block text-gray-700 mb-2">Phone</label>
+        <label className="block text-gray-700 mb-2 font-ancient">Phone</label>
         <input
           type="tel"
           name="phone"
@@ -100,7 +100,7 @@ const ReviewForm = () => {
 
       {/* Message Input */}
       <div>
-        <label className="block text-gray-700 mb-2">Message</label>
+        <label className="block text-gray-700 mb-2 font-ancient">Message</label>
         <textarea
           name="comment"
           value={formData.comment}
@@ -115,7 +115,7 @@ const ReviewForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-amber-400 text-black px-8 py-3 rounded-tl-xl rounded-br-xl font-medium hover:bg-amber-500 transition-colors duration-300 flex items-center gap-2 shadow-xl font-ancient"
+          className="bg-amber-400 text-black px-8 py-3 rounded-tl-xl rounded-br-xl font-medium hover:bg-amber-500 transition-colors duration-700 flex items-center gap-2 shadow-xl font-ancient"
         >
           {loading ? "Submitting..." : "Submit"}
           <MoveUpRight className="h-4 w-4 inline-block rotate-90" />
