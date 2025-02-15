@@ -34,7 +34,7 @@ const galleryImages: GalleryImage[] = [
 ];
 
 const generateOffset = (index: number) => {
-  const offsets = [0, -30, 20, -20, 30]; // Varying vertical positions
+  const offsets = [0, -10, 10, -10, 10]; // Reduced randomness in vertical positions
   return offsets[index % offsets.length];
 };
 
@@ -43,7 +43,6 @@ const ImageGallery = () => {
   const x = useMotionValue(0);
   const [isDragging, setIsDragging] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const startAutoScroll = () => {
@@ -77,9 +76,6 @@ const ImageGallery = () => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
-      }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
       }
     };
   }, [isDragging, x]);
@@ -121,8 +117,6 @@ const ImageGallery = () => {
     x.set(newX);
   };
 
-  const images = [...galleryImages, ...galleryImages, ...galleryImages, ...galleryImages, ...galleryImages];
-
   return (
     <section className="bg-[#F5F3FF] h-screen pt-16 md:pt-20 lg:pt-24">
       <div className="flex flex-col gap-10 md:gap-12 h-full pb-8">
@@ -146,7 +140,7 @@ const ImageGallery = () => {
 
         {/* Gallery Section */}
         <div className="w-full flex-1">
-          <div className="relative h-full px-4 overflow-visible">
+          <div className="relative h-full px-4 overflow-hidden">
             <motion.div
               ref={containerRef}
               style={{ x }}
@@ -166,7 +160,7 @@ const ImageGallery = () => {
               onDrag={handleDrag}
               className="flex gap-4 sm:gap-6 md:gap-8 cursor-grab active:cursor-grabbing py-8"
             >
-              {images.map((image, index) => (
+              {[...galleryImages, ...galleryImages, ...galleryImages].map((image, index) => (
                 <motion.div
                   key={`${image.id}-${index}`}
                   className="relative flex-shrink-0"
@@ -183,7 +177,7 @@ const ImageGallery = () => {
                       className="object-cover"
                       sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, 320px"
                       draggable="false"
-                      priority={index < 8}
+                      priority={index < 4}
                     />
                   </div>
                 </motion.div>

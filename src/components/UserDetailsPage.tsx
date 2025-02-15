@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { User, KeyRound, Phone, MapPin, Mail } from "lucide-react";
 
-interface User {
+interface UserData {
   name: string;
   email: string;
   phone: string;
@@ -10,12 +12,12 @@ interface User {
 }
 
 const UserDetails = ({ userId }: { userId: string }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState<UserData>({
     name: "",
     email: "",
     phone: "",
@@ -37,17 +39,12 @@ const UserDetails = ({ userId }: { userId: string }) => {
     const fetchUserDetails = async () => {
       try {
         const res = await fetch(`/api/user/details?userId=${userId}`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch user details");
-        }
+        if (!res.ok) throw new Error("Failed to fetch user details");
         const data = await res.json();
         setUser(data);
         setFormData(data);
       } catch (err: unknown) {
-        if(err instanceof Error){
-          setError(err.message);
-        }
-       
+        if (err instanceof Error) setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -64,24 +61,18 @@ const UserDetails = ({ userId }: { userId: string }) => {
     try {
       const res = await fetch(`/api/user/details`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...formData }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to update user details");
-      }
+      if (!res.ok) throw new Error("Failed to update user details");
 
       const updatedUser = await res.json();
       setUser(updatedUser);
       setIsEditing(false);
       alert("User details updated successfully!");
     } catch (err: unknown) {
-      if(err instanceof Error){
-        alert(err.message);
-      }
+      if (err instanceof Error) alert(err.message);
     }
   };
 
@@ -107,9 +98,7 @@ const UserDetails = ({ userId }: { userId: string }) => {
     try {
       const res = await fetch(`/api/user/change-password`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...passwordData }),
       });
 
@@ -130,153 +119,216 @@ const UserDetails = ({ userId }: { userId: string }) => {
         confirmPassword: "",
       });
     } catch (err: unknown) {
-      if(err instanceof Error){
-        alert(err.message);
-      }
+      if (err instanceof Error) alert(err.message);
     }
   };
 
-  if (loading) return <p>Loading user details...</p>;
-  if (error) return <p className="text-red-500">Error: {error}</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600 font-medium">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white">
-      <h2 className="text-lg font-semibold mb-2">User Details</h2>
-      {user ? (
-        <div className="space-y-4">
-          {isEditing ? (
-            <>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="text"
-                name="area"
-                value={formData.area}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-              />
-              <button
-                onClick={handleUpdate}
-                className="bg-green-500 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <>
-              <p>
-                <strong>Name:</strong> {user.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {user.email}
-              </p>
-              <p>
-                <strong>Phone:</strong> {user.phone}
-              </p>
-              <p>
-                <strong>Area:</strong> {user.area}
-              </p>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => setShowChangePassword(!showChangePassword)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded ml-2"
-              >
-                Change Password
-              </button>
-            </>
-          )}
-
-          {showChangePassword && (
-            <div className="mt-4 p-4 border rounded-lg bg-gray-100">
-              <h3 className="text-md font-semibold mb-2">Change Password</h3>
-              <input
-                type="password"
-                name="oldPassword"
-                placeholder="Old Password"
-                value={passwordData.oldPassword}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    oldPassword: e.target.value,
-                  })
-                }
-                className="border p-2 w-full rounded mb-2"
-              />
-              <input
-                type="password"
-                name="newPassword"
-                placeholder="New Password"
-                value={passwordData.newPassword}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    newPassword: e.target.value,
-                  })
-                }
-                className="border p-2 w-full rounded mb-2"
-              />
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm New Password"
-                value={passwordData.confirmPassword}
-                onChange={(e) =>
-                  setPasswordData({
-                    ...passwordData,
-                    confirmPassword: e.target.value,
-                  })
-                }
-                className="border p-2 w-full rounded mb-2"
-              />
-              <button
-                onClick={handlePasswordChange}
-                className="bg-green-500 text-white px-4 py-2 rounded"
-              >
-                Save Password
-              </button>
-              <button
-                onClick={() => setShowChangePassword(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+    <Card className="max-w-2xl mx-auto">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <User className="w-6 h-6 text-blue-500" />
+          <h2 className="text-2xl font-bold text-gray-800">User Details</h2>
         </div>
-      ) : (
-        <p>No user data found.</p>
-      )}
-    </div>
+      </CardHeader>
+      <CardContent>
+        {user ? (
+          <div className="space-y-6">
+            {isEditing ? (
+              <div className="space-y-4">
+                <div className="relative">
+                  <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Name"
+                  />
+                </div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Email"
+                  />
+                </div>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Phone"
+                  />
+                </div>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="area"
+                    value={formData.area}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Area"
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <button
+                    onClick={handleUpdate}
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="grid gap-4">
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <User className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Name</p>
+                      <p className="font-medium">{user.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Mail className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Email</p>
+                      <p className="font-medium">{user.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Phone className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Phone</p>
+                      <p className="font-medium">{user.phone}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <MapPin className="w-5 h-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Area</p>
+                      <p className="font-medium">{user.area}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-6">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Edit Profile
+                  </button>
+                  <button
+                    onClick={() => setShowChangePassword(!showChangePassword)}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Change Password
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showChangePassword && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <KeyRound className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-lg font-semibold">Change Password</h3>
+                </div>
+                <div className="space-y-4">
+                  <input
+                    type="password"
+                    placeholder="Current Password"
+                    value={passwordData.oldPassword}
+                    onChange={(e) =>
+                      setPasswordData({
+                        ...passwordData,
+                        oldPassword: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={passwordData.newPassword}
+                    onChange={(e) =>
+                      setPasswordData({
+                        ...passwordData,
+                        newPassword: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) =>
+                      setPasswordData({
+                        ...passwordData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      onClick={handlePasswordChange}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    >
+                      Update Password
+                    </button>
+                    <button
+                      onClick={() => setShowChangePassword(false)}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">No user data found.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

@@ -196,7 +196,7 @@ const Navbar = () => {
           </span>
           <div className="absolute ml-[3.3rem]">
             <span className="text-[2.7rem] font-semibold text-[#3b0017]">
-              indi's
+              indi&apos;s
             </span>
           </div>
           <div className="absolute ml-[3.05rem] mt-[2.4rem]">
@@ -343,7 +343,7 @@ const Navbar = () => {
                 letterSpacing: "0.05em",
               }}
             >
-              Bindi's Cupcakery
+              Bindi&apos;s Cupcakery
             </div>
           </div>
 

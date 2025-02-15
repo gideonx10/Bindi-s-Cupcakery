@@ -1,6 +1,7 @@
-"use client";
-
 import { useEffect, useState, useCallback } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Clock, Package, CreditCard, AlertCircle } from "lucide-react";
 
 interface Product {
   _id: string;
@@ -16,6 +17,7 @@ interface Order {
   status: string;
   transactionId: number;
   isPaymentVerified: boolean;
+  isHamper: boolean;
 }
 
 export default function OrdersPage({ userId }: { userId: string }) {
@@ -51,8 +53,6 @@ export default function OrdersPage({ userId }: { userId: string }) {
     fetchOrders();
   }, [userId]);
 
-
-  // Handle Order Cancellation
   const handleCancelOrder = useCallback(
     async (orderId: string, createdAt: string) => {
       const orderTime = new Date(createdAt).getTime();
@@ -83,22 +83,19 @@ export default function OrdersPage({ userId }: { userId: string }) {
           )
         );
 
-        // Fetch user details
         const userRes = await fetch(`/api/user/details?userId=${userId}`);
         if (!userRes.ok) throw new Error("Failed to fetch user details");
         const userData = await userRes.json();
 
-        // Send WhatsApp message
         await fetch("/api/send-message", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            phoneNumber: "+917600960068", // Send to the user's registered phone number
+            phoneNumber: "+917600960068",
             message: `🚫 *Order Cancelled!*\n\n📦 *Order ID:* ${orderId}\n👤 *Customer:* ${userData.name}\n📞 *Contact:* ${userData.phone}\n\nYour order has been successfully cancelled. If this was a mistake, please contact support.`,
           }),
         });
 
-        // Send Email Notification
         await fetch("/api/send-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -120,98 +117,159 @@ export default function OrdersPage({ userId }: { userId: string }) {
     []
   );
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeProps = (status: string) => {
     switch (status) {
       case "delivered":
-        return "text-green-500 font-bold";
+        return {
+          variant: "success" as const,
+          className: "bg-green-100 text-green-800",
+        };
       case "pending":
-        return "text-yellow-500 font-bold";
+        return {
+          variant: "warning" as const,
+          className: "bg-yellow-100 text-yellow-800",
+        };
       case "cancelled":
-        return "text-red-500 font-bold";
+        return {
+          variant: "destructive" as const,
+          className: "bg-red-100 text-red-800",
+        };
       default:
-        return "text-gray-500";
+        return {
+          variant: "secondary" as const,
+          className: "bg-gray-100 text-gray-800",
+        };
     }
   };
 
-  if (loading) return <p className="text-center mt-4">Loading orders...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">My Orders</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">My Orders</h1>
       {orders.length === 0 ? (
-        <p>No orders found.</p>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-8">
+            <Package className="w-16 h-16 text-gray-400 mb-4" />
+            <p className="text-lg text-gray-600">No orders found.</p>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {orders.map((order) => (
-            <div key={order._id} className="border p-4 rounded-lg shadow">
-              <p className="font-semibold">Order ID: {order._id}</p>
-              <p className={`text-gray-500 ${getStatusColor(order.status)}`}>
-                Status: {order.status}
-              </p>
-              <p className="text-gray-500">
-                Total Amount: ₹{order.totalAmount.toFixed(2)}
-              </p>
-              <p className="text-gray-500">
-                Placed On: {new Date(order.createdAt).toLocaleString()}
-              </p>
-              <p className="text-gray-500">
-                Payment Mode:{" "}
-                <span className="font-semibold">
-                  {order.transactionId > 0 ? "Online" : "Pay on take away"}
-                </span>
-              </p>
+            <Card
+              key={order._id}
+              className={`transform transition-all duration-200 hover:shadow-lg ${
+                order.isHamper ? "bg-purple-50" : ""
+              }`}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Order ID</p>
+                  <p className="text-lg font-semibold">{order._id}</p>
+                </div>
+                <div className="flex gap-2">
+                  {order.isHamper && (
+                    <Badge className="bg-purple-100 text-purple-800">
+                      Hamper
+                    </Badge>
+                  )}
+                  <Badge {...getStatusBadgeProps(order.status)}>
+                    {order.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Payment Mode
+                        </p>
+                        <p className="font-semibold">
+                          {order.transactionId > 0
+                            ? "Online"
+                            : "Pay on take away"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Placed On
+                        </p>
+                        <p className="font-semibold">
+                          {new Date(order.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-gray-500" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Total Amount
+                        </p>
+                        <p className="font-semibold">
+                          ₹{order.totalAmount.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-              {order.transactionId > 0 && (
-                <p className="text-gray-500">
-                  Transaction ID:{" "}
-                  <span className="font-semibold">{order.transactionId}</span>
-                </p>
-              )}
+                  <div className="mt-4">
+                    <p className="text-sm font-medium text-gray-500 mb-2">
+                      Products
+                    </p>
+                    <div className="grid gap-2">
+                      {order.products.map(({ product, quantity }) =>
+                        product ? (
+                          <div
+                            key={product._id}
+                            className="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200"
+                          >
+                            <span className="font-medium">{product.name}</span>
+                            <div className="flex items-center gap-4">
+                              <span className="text-gray-600">x{quantity}</span>
+                              <span className="font-semibold">
+                                ₹{(product.price * quantity).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            key={quantity}
+                            className="p-3 bg-red-50 text-red-700 rounded-lg border border-red-200"
+                          >
+                            Product details unavailable
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
 
-              {/* <p className="text-gray-500">
-                Payment Status:{" "}
-                <span
-                  className={`font-semibold ${
-                    order.isPaymentVerified ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {order.isPaymentVerified ? "Verified" : "Pending"}
-                </span>
-              </p> */}
-
-              <ul className="mt-2 space-y-2">
-                {order.products.map(({ product, quantity }) =>
-                  product ? (
-                    <li
-                      key={product._id}
-                      className="border p-2 rounded bg-gray-100"
+                  {order.status === "pending" && (
+                    <button
+                      className="mt-4 w-full md:w-auto px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() =>
+                        handleCancelOrder(order._id, order.createdAt)
+                      }
+                      disabled={isCanceling}
                     >
-                      <p>
-                        {product.name} (x{quantity}) - ₹
-                        {(product.price * quantity).toFixed(2)}
-                      </p>
-                    </li>
-                  ) : (
-                    <li
-                      key={quantity}
-                      className="border p-2 rounded bg-gray-100 text-red-500"
-                    >
-                      <p>Product details unavailable</p>
-                    </li>
-                  )
-                )}
-              </ul>
-
-              {order.status === "pending" && (
-                <button
-                  className="mt-2 bg-red-500 text-white py-1 px-3 rounded hover:bg-red-700 disabled:opacity-50"
-                  onClick={() => handleCancelOrder(order._id, order.createdAt)}
-                  disabled={isCanceling}
-                >
-                  {isCanceling ? "Cancelling..." : "Cancel Order"}
-                </button>
-              )}
-            </div>
+                      {isCanceling ? "Cancelling..." : "Cancel Order"}
+                    </button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}

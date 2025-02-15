@@ -7,6 +7,15 @@ import HomeTab from "@/components/Hometab";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import {
+  Home,
+  User,
+  ShoppingBag,
+  ShoppingCart,
+  Settings,
+  LogOut,
+  ChevronLeft,
+} from "lucide-react";
 
 const UserPage = () => {
   const { data: session, status } = useSession();
@@ -15,11 +24,10 @@ const UserPage = () => {
   const pathname = usePathname();
   const userId = (session?.user as { id: string })?.id;
 
-  // Get tab from URL, default to "home"
   const initialTab = searchParams.get("tab") || "home";
   const [activeTab, setActiveTab] = useState<string>(initialTab);
+  const [isHovered, setIsHovered] = useState<string | null>(null);
 
-  // Redirect to sign-in page if not authenticated
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push(
@@ -28,7 +36,6 @@ const UserPage = () => {
     }
   }, [status, router]);
 
-  // Sync state with URL parameters
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
     if (tabFromUrl !== activeTab) {
@@ -36,9 +43,12 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  // Handle loading state
   if (status === "loading") {
-    return <p className="text-center text-lg">Checking authentication...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+      </div>
+    );
   }
 
   const handleTabChange = (tab: string) => {
@@ -47,6 +57,23 @@ const UserPage = () => {
       router.push(tab === "home" ? "/user" : `/user?tab=${tab}`, {
         scroll: false,
       });
+    }
+  };
+
+  const getTabIcon = (tab: string) => {
+    switch (tab) {
+      case "home":
+        return <Home className="w-5 h-5" />;
+      case "details":
+        return <User className="w-5 h-5" />;
+      case "orders":
+        return <ShoppingBag className="w-5 h-5" />;
+      case "cart":
+        return <ShoppingCart className="w-5 h-5" />;
+      case "general":
+        return <Settings className="w-5 h-5" />;
+      default:
+        return null;
     }
   };
 
@@ -74,44 +101,63 @@ const UserPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Left Sidebar */}
-      <div className="w-64 fixed left-0 top-16 h-full bg-gray-100 shadow-lg p-4">
-        <h2 className="text-xl font-semibold mb-4">User Menu</h2>
-        <div className="space-y-4">
+      <div className="w-72 fixed left-0 top-16 h-full bg-white shadow-xl p-6 transition-all duration-300 border-r border-gray-100">
+        <h2 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight">
+          Dashboard
+        </h2>
+        <div className="space-y-2">
           {["home", "details", "orders", "cart", "general"].map((tab) => (
             <button
               key={tab}
-              className={`w-full text-left px-4 py-2 rounded-lg ${
-                activeTab === tab ? "bg-blue-500 text-white" : "bg-gray-200"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                activeTab === tab
+                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105"
+                  : "text-gray-600 hover:bg-gray-100"
+              } ${
+                isHovered === tab && activeTab !== tab
+                  ? "bg-gray-100 transform scale-102"
+                  : ""
               }`}
               onClick={() => handleTabChange(tab)}
+              onMouseEnter={() => setIsHovered(tab)}
+              onMouseLeave={() => setIsHovered(null)}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {getTabIcon(tab)}
+              <span className="font-medium">
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </span>
             </button>
           ))}
         </div>
         {pathname === "/user" && (
           <button
             onClick={() => signOut()}
-            className="w-full mt-6 bg-red-500 text-white px-4 py-2 rounded"
+            className="w-full mt-8 flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors duration-200"
           >
-            Logout
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Logout</span>
           </button>
         )}
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-10 pt-20 ml-64">
+      <div className="flex-1 ml-72 p-8 pt-20">
         {activeTab !== "home" && (
           <button
-            className="mb-4 px-4 py-2 bg-gray-300 rounded-lg"
+            className="mb-6 px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
             onClick={() => handleTabChange("home")}
           >
-            ← Back to Home
+            <ChevronLeft className="w-5 h-5" />
+            <span>Back to Home</span>
           </button>
         )}
-        <div className="w-full max-w-3xl">{renderContent()}</div>
+        <div className="w-full max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-6 transition-all duration-300 hover:shadow-2xl">
+            {renderContent()}
+          </div>
+        </div>
       </div>
     </div>
   );
