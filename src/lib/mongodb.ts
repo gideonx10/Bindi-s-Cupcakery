@@ -1,11 +1,8 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
 
-interface GlobalWithMongoDB {
-  _mongoClientPromise?: Promise<MongoClient>;
+declare global {
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
-
-// Ensure globalThis has the correct type
-const globalScope = globalThis as GlobalWithMongoDB;
 
 if (!process.env.MONGODB_URI) {
   throw new Error(
@@ -20,10 +17,10 @@ const client: MongoClient = new MongoClient(uri, options);
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
-  if (!globalScope._mongoClientPromise) {
-    globalScope._mongoClientPromise = client.connect();
+  if (!global._mongoClientPromise) {
+    global._mongoClientPromise = client.connect();
   }
-  clientPromise = globalScope._mongoClientPromise;
+  clientPromise = global._mongoClientPromise;
 } else {
   clientPromise = client.connect();
 }
