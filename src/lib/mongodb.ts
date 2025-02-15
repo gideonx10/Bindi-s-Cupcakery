@@ -1,5 +1,4 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
-import type { GlobalWithMongoDB } from '@/types/mongoClientTypes';
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable in your .env.local file");
