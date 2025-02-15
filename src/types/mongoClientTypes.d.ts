@@ -1,13 +1,10 @@
 import { MongoClient } from 'mongodb';
 
 declare global {
-  interface GlobalWithMongoDB {
-    _mongoClientPromise: Promise<MongoClient> | undefined;
+    interface Global {
+      _mongoClientPromise?: Promise<MongoClient>;
+    }
   }
-
-  // Extend the global scope
-  interface Global extends GlobalWithMongoDB {}
-}
-
-// Ensure this file is treated as a module
-export {};
+  
+  export {};
+  
