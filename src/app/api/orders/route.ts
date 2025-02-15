@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import Order from "@/models/Order"; // Import your Order model
-// import { getServerSession } from "next-auth"; // If using authentication
+import Order from "@/models/Order";
 import connectDB from "@/lib/connectDB";
-import Product from "@/models/Product";
 import { Types } from "mongoose";
 
 interface Product {
-  productId: string;
+  product: string;
   quantity: number;
-  price: number;
-  // Add other product fields as needed
+  name: string;
 }
 
 interface OrderRequest {
@@ -17,6 +14,9 @@ interface OrderRequest {
   products: Product[];
   totalAmount: number;
   transactionId?: string;
+  customization?: string;
+  isHamper: boolean;
+  isPaymentVerified: boolean;
 }
 
 interface OrderResponse {
@@ -28,6 +28,9 @@ interface OrderResponse {
     totalAmount: number;
     status: string;
     transactionId: string | null;
+    customization: string | null;
+    isHamper: boolean;
+    isPaymentVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -35,7 +38,7 @@ interface OrderResponse {
 
 export async function GET(req: NextRequest) {
   try {
-    await connectDB(); // Connect to the database
+    await connectDB();
 
     const url = new URL(req.url);
     const userId = url.searchParams.get("userId");
@@ -65,8 +68,15 @@ export async function POST(req: NextRequest) {
   await connectDB();
 
   try {
-    const { userId, products, totalAmount, transactionId } =
-      (await req.json()) as OrderRequest;
+    const {
+      userId,
+      products,
+      totalAmount,
+      transactionId,
+      customization,
+      isHamper,
+      isPaymentVerified,
+    } = (await req.json()) as OrderRequest;
 
     // Validation
     if (!userId || !products || !totalAmount) {
@@ -78,11 +88,14 @@ export async function POST(req: NextRequest) {
 
     // Create new order
     const newOrder = await Order.create({
-      user: new Types.ObjectId(userId), // Convert userId to ObjectId
+      user: new Types.ObjectId(userId),
       products,
       totalAmount,
       status: "pending",
       transactionId: transactionId || null,
+      customization: customization || null,
+      isHamper,
+      isPaymentVerified,
     });
 
     // Format the response
@@ -90,17 +103,19 @@ export async function POST(req: NextRequest) {
       success: true,
       order: {
         _id: newOrder._id,
-        user: newOrder.user.toString(), // Convert ObjectId to string
+        user: newOrder.user.toString(),
         products: newOrder.products,
         totalAmount: newOrder.totalAmount,
         status: newOrder.status,
         transactionId: newOrder.transactionId,
+        customization: newOrder.customization,
+        isHamper: newOrder.isHamper,
+        isPaymentVerified: newOrder.isPaymentVerified,
         createdAt: newOrder.createdAt,
         updatedAt: newOrder.updatedAt,
       },
     };
 
-    // You can access the ObjectId as response.order._id
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error("Error creating order:", error);
@@ -113,9 +128,9 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    await connectDB(); // Ensure database is connected
+    await connectDB();
 
-    const { orderId } = await req.json(); // Get order ID from request body
+    const { orderId } = await req.json();
 
     if (!orderId) {
       return NextResponse.json(
@@ -129,8 +144,8 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    order.status = "cancelled"; // Update order status
-    await order.save(); // Save changes to the database
+    order.status = "cancelled";
+    await order.save();
 
     return NextResponse.json(
       { success: true, message: "Order cancelled successfully" },
@@ -144,5 +159,3 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
-
-// commented two lines at the top due to vercel deployment issue

@@ -4,24 +4,52 @@ import Product from "@/models/Product";
 import { Types } from "mongoose";
 import connectDB from "@/lib/connectDB";
 
-// GET request remains the same
+interface ProductCategory {
+  _id: Types.ObjectId;
+  isHamperAble: boolean;
+}
+
+interface ProductItem {
+  _id: Types.ObjectId;
+  category?: ProductCategory;
+  equals: (id: Types.ObjectId) => boolean;
+}
+
+interface CartProduct {
+  product: ProductItem;
+  quantity: number;
+}
+
+// GET request with hamper filtering
 export async function GET(req: Request) {
   await connectDB();
 
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
+    const isHamper = searchParams.get("isHamper") === "true";
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
-    const cart = await Cart.findOne({ user: userId }).populate(
-      "products.product"
-    );
+    const cart = await Cart.findOne({ user: userId }).populate({
+      path: "products.product",
+      populate: {
+        path: "category",
+        select: "isHamperAble",
+      },
+    });
 
     if (!cart) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
+    }
+
+    // If hamper mode is enabled, filter out non-hamperable products
+    if (isHamper) {
+      cart.products = cart.products.filter(
+        (item: CartProduct) => item.product.category?.isHamperAble === true
+      );
     }
 
     return NextResponse.json(cart, { status: 200 });
@@ -38,17 +66,25 @@ export async function POST(req: Request) {
   await connectDB();
 
   try {
-    const { userId, productId, quantity, action } = await req.json();
+    const { userId, productId, quantity, action, isHamper } = await req.json();
 
     // Validate input data
     if (!userId || !productId || !action) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
-    // Check if the product exists
-    const product = await Product.findById(productId);
+    // Check if the product exists and populate its category
+    const product = await Product.findById(productId).populate("category");
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // If hamper mode is enabled, check if the product is hamper-able
+    if (isHamper && !product.category?.isHamperAble) {
+      return NextResponse.json(
+        { error: "This product cannot be added to a hamper" },
+        { status: 400 }
+      );
     }
 
     // Find the user's cart
@@ -65,8 +101,9 @@ export async function POST(req: Request) {
       });
     } else {
       // Find the product in the cart
-      const existingProductIndex = cart.products.findIndex((item: any) =>
-        item.product.equals(productId)
+      const existingProductIndex = cart.products.findIndex(
+        (item: CartProduct) =>
+          item.product._id.equals(Types.ObjectId.createFromHexString(productId))
       );
 
       if (existingProductIndex !== -1) {
@@ -97,10 +134,21 @@ export async function POST(req: Request) {
     // Save the updated cart
     await cart.save();
 
-    // Fetch the updated cart with populated product details
-    const updatedCart = await Cart.findOne({ user: userId }).populate(
-      "products.product"
-    );
+    // Fetch the updated cart with populated product details and categories
+    const updatedCart = await Cart.findOne({ user: userId }).populate({
+      path: "products.product",
+      populate: {
+        path: "category",
+        select: "isHamperAble",
+      },
+    });
+
+    // If hamper mode is enabled, filter the response
+    if (isHamper) {
+      updatedCart.products = updatedCart.products.filter(
+        (item: CartProduct) => item.product?.category?.isHamperAble === true
+      );
+    }
 
     return NextResponse.json(
       {
@@ -117,6 +165,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
 export async function DELETE(req: Request) {
   await connectDB();
 
@@ -124,12 +173,19 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const productId = searchParams.get("productId");
+    const isHamper = searchParams.get("isHamper") === "true";
 
     if (!userId || !Types.ObjectId.isValid(userId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ user: userId }).populate({
+      path: "products.product",
+      populate: {
+        path: "category",
+        select: "isHamperAble",
+      },
+    });
 
     if (!cart) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
@@ -138,7 +194,12 @@ export async function DELETE(req: Request) {
     if (productId) {
       // Remove only the specified product
       cart.products = cart.products.filter(
-        (item: any) => item.product.toString() !== productId
+        (item: CartProduct) => item.product._id.toString() !== productId
+      );
+    } else if (isHamper) {
+      // Remove all non-hamperable products
+      cart.products = cart.products.filter(
+        (item: CartProduct) => item.product?.category?.isHamperAble === true
       );
     } else {
       // Clear the entire cart
@@ -151,6 +212,8 @@ export async function DELETE(req: Request) {
       {
         message: productId
           ? "Product removed from cart"
+          : isHamper
+          ? "Non-hamperable products removed from cart"
           : "Cart cleared successfully",
       },
       { status: 200 }
