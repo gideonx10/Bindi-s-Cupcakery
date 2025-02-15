@@ -153,3 +153,66 @@
     transform: translateY(0);
   }
 }
+
+/* for landing page */
+@font-face {
+  font-family: "Tuskar";
+  src: url("/fonts/TuskerGrotesk.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.maintext h1{
+  font-family: "Tuskar", serif;
+  letter-spacing: -3px;
+}
+
+.maintext h2{
+  font-family: "Ananda", serif;
+  letter-spacing: 5px;
+}
+
+
+.specialty-text {
+  opacity: 1;
+  transform: translateY(0);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@layer utilities {
+  .glass-card {
+    position: relative;
+  }
+  
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: -1;
+  }
+}
+
+
+.path-animate {
+  animation: dash 10s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 1000;
+  }
+}
+
+.floating-heart {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
