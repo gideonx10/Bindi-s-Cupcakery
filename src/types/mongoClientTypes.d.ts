@@ -5,7 +5,8 @@ declare global {
     _mongoClientPromise?: Promise<MongoClient>;
   }
 
-  const globalThis: GlobalWithMongoDB; // Explicitly extend the global scope
+  // Extend the global interface without using var/const
+  interface Global extends GlobalWithMongoDB {}
 }
 
 // Ensure this file is treated as a module
