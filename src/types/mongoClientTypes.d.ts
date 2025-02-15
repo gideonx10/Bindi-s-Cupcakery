@@ -1,9 +1,14 @@
-export interface GlobalWithMongoDB {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+import { MongoClient } from "mongodb";
+
+export interface GlobalWithMongoDB extends NodeJS.Global {
   _mongoClientPromise?: Promise<MongoClient>;
 }
 
 declare global {
-  let _mongoClientPromise: Promise<MongoClient> | undefined;
+  namespace NodeJS {
+    interface Global extends GlobalWithMongoDB {}
+  }
 }
 
 export {};
