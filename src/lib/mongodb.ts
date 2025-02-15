@@ -1,8 +1,5 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
-
-declare global {
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
-}
+import type { GlobalWithMongoDB } from "@/types/mongoClientTypes";
 
 if (!process.env.MONGODB_URI) {
   throw new Error(
@@ -17,11 +14,15 @@ const client: MongoClient = new MongoClient(uri, options);
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
-  if (!global._mongoClientPromise) {
-    global._mongoClientPromise = client.connect();
+  // In development mode, use a global variable to preserve the value across module reloads
+  const globalScope = globalThis as unknown as GlobalWithMongoDB;
+
+  if (!globalScope._mongoClientPromise) {
+    globalScope._mongoClientPromise = client.connect();
   }
-  clientPromise = global._mongoClientPromise;
+  clientPromise = globalScope._mongoClientPromise || client.connect();
 } else {
+  // In production mode, it's best not to use a global variable
   clientPromise = client.connect();
 }
 
