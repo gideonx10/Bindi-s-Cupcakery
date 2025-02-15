@@ -168,7 +168,7 @@ export default function About() {
       <section className="py-16 bg-[#EDF6F5]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
-            <h2 className="font-bold text-amber-700 mb-4 font-ancient text-7xl md:text-8xl">
+            <h2 className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif">
               Our Promise
             </h2>
             <div className="flex justify-center">
@@ -199,7 +199,7 @@ export default function About() {
           </div>
         </div>
       </section>
-      <div className="w-full flex justify-center mb-8 fade-up">
+      <div className="w-full flex justify-center mb-8 ">
         <Image
           src="/images/about-section.png"
           alt="Bindi's Cupcakery aboutus"
@@ -258,10 +258,10 @@ export default function About() {
                 <div className="flex items-start gap-4">
                   <MapPin className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 font-ancient">
+                    <h3 className="font-semibold text-xl text-gray-800 mb-2 font-ancient">
                       Our Location
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed font-ancient font-semibold">
                       Cloud Kitchen at Parle Point
                       <br />
                       Surat - 395007,
@@ -275,13 +275,13 @@ export default function About() {
                 <div className="flex items-start gap-4">
                   <Phone className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 font-ancient">
+                    <h3 className="text-xl text-gray-800 mb-2 font-ancient font-semibold">
                       Phone
                     </h3>
                     <p className="text-gray-600">
                       <a
                         href="tel:+919876543210"
-                        className="hover:text-amber-700 transition-colors"
+                        className="hover:text-amber-700 transition-colors font-ancient font-semibold"
                       >
                         +91 8849130189
                       </a>
@@ -293,13 +293,13 @@ export default function About() {
                 <div className="flex items-start gap-4">
                   <Mail className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 font-ancient">
+                    <h3 className="text-xl text-gray-800 mb-2 font-ancient font-semibold">
                       Email
                     </h3>
                     <p className="text-gray-600">
                       <a
                         href="mailto:info@bindiscupcakery.com"
-                        className="hover:text-amber-700 transition-colors"
+                        className="hover:text-amber-700 transition-colors font-ancient font-semibold"
                       >
                         bindis_cupcakery@gmail.com
                       </a>
@@ -309,10 +309,10 @@ export default function About() {
 
                 {/* Business Hours */}
                 <div className="mt-8 pt-6 border-t border-amber-700">
-                  <h3 className="font-semibold text-lg text-gray-800 mb-3 font-ancient">
+                  <h3 className="text-xl text-gray-800 mb-3 font-ancient font-semibold">
                     Business Hours
                   </h3>
-                  <div className="space-y-2 text-gray-600">
+                  <div className="space-y-2 text-gray-600 font-ancient font-semibold">
                     <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
                     <p>Sunday: 10:00 AM - 6:00 PM</p>
                   </div>

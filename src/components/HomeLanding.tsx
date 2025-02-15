@@ -313,10 +313,10 @@ export default function HomeLanding() {
 
         {/* Center Text */}
         <div className="maintext absolute left-1/2 top-[60%] md:top-[48%] -translate-x-1/2 -translate-y-[35%] whitespace-nowrap text-center">
-          <h1 className="text-[160px] font-semibold leading-none text-gray-800 scale-x-[0.7] scale-y-[1.1] md:scale-y-[1.2] md:scale-x-100 transform-gpu">
+          <h1 className="text-[160px] font-semibold leading-none text-[#c23471] scale-x-[0.7] scale-y-[1.1] md:scale-y-[1.2] md:scale-x-100 transform-gpu">
             BINDI&apos;S
           </h1>
-          <h2 className="text-[85px] font-light font-Ananda text-gray-800 text-center mt-6 scale-x-[0.7] scale-y-[0.9] md:scale-x-100 transform-gpu">
+          <h2 className="text-[85px] font-light font-Ananda text-[#c23471] text-center mt-6 scale-x-[0.7] scale-y-[0.9] md:scale-x-100 transform-gpu">
             Cupcakery
           </h2>
 
