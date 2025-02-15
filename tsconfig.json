@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "typeRoots": [
       "./node_modules/@types",
+      "./src/types",
       "./types"
     ],
     "module": "esnext",
@@ -35,6 +36,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/api/cart/removeItem",
+    "src/types/**/*.d.ts",
     "types/**/*.d.ts"
   ],
   "exclude": ["node_modules"]

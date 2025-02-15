@@ -26,6 +26,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(cart, { status: 200 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Failed to fetch cart items" },
       { status: 500 }

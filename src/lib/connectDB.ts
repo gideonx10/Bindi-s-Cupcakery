@@ -1,28 +1,31 @@
-import mongoose, { Connection, ConnectOptions } from 'mongoose';
+import mongoose, { Connection } from 'mongoose';
+import type { MongoDBConnectionOptions, ExtendedError } from '../types/mongodb';
+import type { MongooseCache } from '../types/global';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
+if (!process.env.MONGODB_URI) {
   throw new Error(
     'Please define the MONGODB_URI environment variable inside .env.local'
   );
 }
 
-interface CachedConnection {
-  conn: mongoose.Connection | null;
-  promise: Promise<mongoose.Connection> | null;
+// Ensure MONGODB_URI is string
+const MONGODB_URI: string = process.env.MONGODB_URI;
+
+// Initialize the cached connection with type safety
+interface GlobalWithMongooseCache extends globalThis.Global {
+  _mongooseConnection?: MongooseCache;
 }
 
+const globalWithMongooseCache: GlobalWithMongooseCache = globalThis as GlobalWithMongooseCache;
 
-// Declare global type
-declare global {
-  var mongoose: CachedConnection | undefined;
-}
+const cached: MongooseCache = globalWithMongooseCache._mongooseConnection || { 
+  conn: null, 
+  promise: null 
+};
 
-let cached: CachedConnection = global.mongoose || { conn: null, promise: null };
-
-if (!global.mongoose) {
-  global.mongoose = cached;
+// Set the global cache
+if (!(globalThis as GlobalWithMongooseCache)._mongooseConnection) {
+  (globalThis as GlobalWithMongooseCache)._mongooseConnection = cached;
 }
 
 async function connectDB(retries = 3): Promise<Connection> {
@@ -31,7 +34,7 @@ async function connectDB(retries = 3): Promise<Connection> {
       return cached.conn;
     }
 
-    const opts: ConnectOptions = {
+    const opts: MongoDBConnectionOptions = {
       serverSelectionTimeoutMS: 30000,
       connectTimeoutMS: 30000,
       socketTimeoutMS: 45000,
@@ -50,7 +53,7 @@ async function connectDB(retries = 3): Promise<Connection> {
     // If there's no existing connection attempt
     if (!cached.promise) {
       console.log('Attempting to connect to MongoDB...');
-      cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => mongoose.connection);
+      cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => mongoose.connection);
     }
 
     try {
@@ -68,12 +71,6 @@ async function connectDB(retries = 3): Promise<Connection> {
       }
 
       if (error instanceof Error) {
-        interface ExtendedError extends Error {
-          cause?: {
-            message: string;
-          };
-        }
-
         const extendedError = error as ExtendedError;
         console.error('MongoDB Connection Error Details:', {
           message: error.message,

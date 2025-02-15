@@ -231,6 +231,7 @@ ${cartItems
       setWhatsAppMessage(message);
       setShowWhatsAppQR(true);
     } catch (error) {
+      console.log(error);
       console.error("Failed to fetch user details for WhatsApp order.");
     }
   };
