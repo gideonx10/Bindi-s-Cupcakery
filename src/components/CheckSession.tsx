@@ -1,16 +1,27 @@
-'use client';
+"use client";
 
-import { useSession, signOut } from 'next-auth/react';
-import { DefaultSession } from 'next-auth';
+import { useSession, signOut } from "next-auth/react";
+import { DefaultSession } from "next-auth";
 
-declare module 'next-auth' {
+// Extend next-auth types properly
+
+declare module "next-auth" {
+  interface User {
+    id: string; // Required field
+    role?: string | null;
+    provider?: string | null;
+  }
+
   interface Session {
-    user?: {
+    user: {
+      id: string;
       role?: string | null;
-    } & DefaultSession['user'];
+      provider?: string | null;
+    } & DefaultSession["user"];
   }
 }
-import Link from 'next/link';
+
+import Link from "next/link";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -24,11 +35,14 @@ export default function Navbar() {
               Home
             </Link>
             {session && (
-              <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">
+              <Link
+                href="/dashboard"
+                className="text-gray-700 hover:text-gray-900"
+              >
                 Dashboard
               </Link>
             )}
-            {session?.user?.role === 'admin' && (
+            {session?.user?.role === "admin" && (
               <Link href="/admin" className="text-gray-700 hover:text-gray-900">
                 Admin Panel
               </Link>
@@ -42,14 +56,14 @@ export default function Navbar() {
                   {session.user?.name} ({session.user?.role})
                 </span>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
+                  onClick={() => signOut({ callbackUrl: "/" })}
                   className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
-              <Link 
+              <Link
                 href="/signin"
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
