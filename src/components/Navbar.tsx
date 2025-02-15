@@ -24,6 +24,8 @@ const Navbar = () => {
 
   // ... (other state and refs)
 
+  // Update date and time
+
   // Handle link clicks to close menu
   const handleLinkClick = () => {
     setIsMenuOpen(false);
@@ -174,7 +176,7 @@ const Navbar = () => {
 
   const menuItems = [
     { href: "/user", text: "PROFILE" },
-    { href: "/products", text: "PRODUCTS" },
+    { href: "/Products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
     { href: "/aboutUs", text: "ABOUT US" },
   ];
@@ -247,7 +249,7 @@ const Navbar = () => {
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
                     isMenuOpen
                       ? "bg-yellow-400"
-                      : pathname.startsWith("/products")
+                      : pathname.startsWith("/Products")
                       ? "bg-[#3e7496]"
                       : "bg-yellow-400"
                   } rounded-full transition-all duration-300 ${

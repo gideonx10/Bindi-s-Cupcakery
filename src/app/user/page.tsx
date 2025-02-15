@@ -31,7 +31,7 @@ const UserPage = () => {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push(
-        `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+        `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
       );
     }
   }, [status, router]);

@@ -1,27 +1,27 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { AuthOptions, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
-import UserModel from "@/models/User";
+import User from "@/models/User";
 import connectDB from "@/lib/connectDB";
 
-// Ensure database connection is established
-async function ensureDBConnection() {
-  try {
-    await connectDB();
-    await clientPromise;
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
-    throw new Error("Unable to connect to database");
-  }
+// Define database user type
+interface DatabaseUser {
+  _id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+  password?: string;
+  provider?: string | null;
+  emailVerified?: Date | null;
 }
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: AuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
     CredentialsProvider({
@@ -35,18 +35,19 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await ensureDBConnection();
-        if (!credentials?.identifier || !credentials?.password) {
+        if (!credentials?.identifier || !credentials.password) {
           throw new Error("Credentials not provided");
         }
 
+        await connectDB();
         const { identifier, password } = credentials;
 
-        const user = await UserModel.findOne({
+        const user = await User.findOne({
           $or: [{ email: identifier }, { phone: identifier }],
-        }).select("+password");
+        }).select("+password") as DatabaseUser | null;
 
         if (!user) throw new Error("User not found");
+        if (!user.password) throw new Error("Invalid login method");
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) throw new Error("Invalid password");
@@ -56,71 +57,56 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
+          provider: "credentials"
         };
       },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
     }),
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
   ],
-
   callbacks: {
-    async jwt({ token, user, account }: { token: JWT; user?: any; account?: any }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id || account?.providerAccountId;
-        token.role = user.role || "user";
-        token.email = user.email;
+        token.id = user.id;
+        token.role = user.role;
+        token.provider = account?.provider || user.provider;
       }
-
-      if (account) {
-        token.provider = account.provider;
-        token.accessToken = account.access_token;
-      }
-
       return token;
     },
-
-    async session({ session, token }: { session: any; token: JWT }) {
-      await ensureDBConnection();
-
-      if (session?.user) {
-        // Fetch latest user data from database
-        const dbUser = await UserModel.findOne({ email: session.user.email });
-        
-        session.user.id = token.id as string;
-        session.user.role = dbUser?.role || token.role as string;
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user) {
+        session.user.id = token.id!;
+        session.user.role = token.role;
         session.user.provider = token.provider;
-        session.user.email = token.email as string;
-      }
 
+        // Fetch latest user data
+        await connectDB();
+        const dbUser = await User.findById(token.id) as DatabaseUser | null;
+        if (dbUser) {
+          session.user.role = dbUser.role;
+        }
+      }
       return session;
     },
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "facebook") {
+        await connectDB();
+        const dbUser = await User.findOne({ email: user.email });
 
-    async signIn({ user, account, profile }: { user: any; account: any; profile?: any }) {
-      await ensureDBConnection();
-      
-      if (account.provider === "google" || account.provider === "facebook") {
-        const dbUser = await UserModel.findOne({ email: user.email });
         if (!dbUser) {
           try {
-            await UserModel.create({
+            await User.create({
               email: user.email,
               name: user.name,
               role: "user",
               provider: account.provider,
-              emailVerified: user.emailVerified || new Date(),
+              emailVerified: new Date(),
             });
           } catch (error) {
             console.error("Error creating user:", error);
@@ -130,28 +116,25 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-  },
-
-  events: {
-    async signIn({ user, account, profile, isNewUser }) {
-      console.log("Sign in attempt:", { user, account, isNewUser });
+    async redirect({ url, baseUrl }) {
+      return url.startsWith("/") 
+        ? `${baseUrl}${url}` 
+        : new URL(url).origin === baseUrl 
+          ? url 
+          : baseUrl;
     },
   },
-
   pages: {
     signIn: "/signin",
     signOut: "/signout",
     error: "/signin",
   },
-
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-
   debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export const authHandler = NextAuth(authOptions);

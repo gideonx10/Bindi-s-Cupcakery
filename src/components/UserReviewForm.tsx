@@ -19,7 +19,7 @@ const ReviewForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const sendEmail = async () => {
-    const res = await fetch("/api/send-email", {
+    await fetch("/api/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

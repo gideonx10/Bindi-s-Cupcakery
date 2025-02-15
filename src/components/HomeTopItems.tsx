@@ -29,39 +29,9 @@ interface Category {
 const categories: Category[] = [
   {
     id: 1,
-    name: "Classic Cupcakes",
+    name: "Classic Items",
     image: "/images/drone_poster.png",
     description: "Timeless collection of traditional favorites",
-    colors: {
-      bgGradient: "from-[#FFE6E6] to-[#FFCCD6]",
-      buttonBg: "bg-[#FF8B9C]",
-      buttonText: "text-white",
-      buttonHoverBg: "hover:bg-[#FF7088]",
-      buttonHoverText: "hover:text-white",
-      title: "text-[#D23F57]",
-      description: "text-[#FF6B8B]/80"
-    }
-  },
-  {
-    id: 2,
-    name: "Specialty Flavors",
-    image: "/images/AboutUs_header.png",
-    description: "Unique and innovative combinations",
-    colors: {
-      bgGradient: "from-[#E0F4FF] to-[#B5E8FF]",
-      buttonBg: "bg-[#5AAFDB]",
-      buttonText: "text-white",
-      buttonHoverBg: "hover:bg-[#4A9CC7]",
-      buttonHoverText: "hover:text-white",
-      title: "text-[#2B6CB0]",
-      description: "text-[#3182CE]/80"
-    }
-  },
-  {
-    id: 3,
-    name: "Wedding Collections",
-    image: "/images/leaves.png",
-    description: "Elegant and sophisticated choices",
     colors: {
       bgGradient: "from-[#F3E8FF] to-[#E9D5FF]",
       buttonBg: "bg-[#9F7AEA]",
@@ -73,10 +43,10 @@ const categories: Category[] = [
     }
   },
   {
-    id: 4,
-    name: "Seasonal Specials",
-    image: "/images/drone_poster.png",
-    description: "Limited edition seasonal delights",
+    id: 2,
+    name: "Specialty Items",
+    image: "/images/AboutUs_header.png",
+    description: "Unique and innovative combinations",
     colors: {
       bgGradient: "from-[#FEF3C7] to-[#FDE68A]",
       buttonBg: "bg-[#F59E0B]",
@@ -85,6 +55,36 @@ const categories: Category[] = [
       buttonHoverText: "hover:text-white",
       title: "text-[#92400E]",
       description: "text-[#B45309]/80"
+    }
+  },
+  {
+    id: 3,
+    name: "Premium Selection",
+    image: "/images/leaves.png",
+    description: "Elegant and sophisticated choices",
+    colors: {
+      bgGradient: "from-[#FFE6E6] to-[#FFCCD6]",
+      buttonBg: "bg-[#FF8B9C]",
+      buttonText: "text-white",
+      buttonHoverBg: "hover:bg-[#FF7088]",
+      buttonHoverText: "hover:text-white",
+      title: "text-[#D23F57]",
+      description: "text-[#FF6B8B]/80"
+    }
+  },
+  {
+    id: 4,
+    name: "Seasonal Items",
+    image: "/images/drone_poster.png",
+    description: "Limited edition seasonal delights",
+    colors: {
+      bgGradient: "from-[#E0F4FF] to-[#B5E8FF]",
+      buttonBg: "bg-[#5AAFDB]",
+      buttonText: "text-white",
+      buttonHoverBg: "hover:bg-[#4A9CC7]",
+      buttonHoverText: "hover:text-white",
+      title: "text-[#2B6CB0]",
+      description: "text-[#3182CE]/80"
     }
   }
 ];
@@ -113,7 +113,7 @@ const oddFloatingAnimation = {
   }
 };
 
-const TopCategories = () => {
+const TopItems = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -155,7 +155,7 @@ const TopCategories = () => {
   return (
     <section 
       ref={sectionRef} 
-      className="py-20 px-4 bg-[#E6F7FF] relative overflow-hidden min-h-screen"
+      className="py-20 px-4 bg-[#F1F5ED] relative overflow-hidden min-h-screen"
     >
       <motion.div
         style={{ y, opacity }}
@@ -163,13 +163,13 @@ const TopCategories = () => {
       >
         <div className="pt-12 pb-16 flex-shrink-0">
           <h1 
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl text-center text-[#2B4C7E] uppercase tracking-tight leading-none font-black"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl text-center text-[#445D48] uppercase tracking-tight leading-none font-black"
             style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
           >
-            TOP CATEGORIES
+            TOP ITEMS
           </h1>
           <div 
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#4A739B] tracking-wider font-medium"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#588157] tracking-wider font-medium"
             style={{ fontFamily: 'Barlow, sans-serif' }}
           >
             EXPLORE OUR HANDCRAFTED COLLECTION
@@ -188,7 +188,7 @@ const TopCategories = () => {
               animate="animate"
               initial="initial"
             >
-              <div className="relative bg-gradient-to-b from-[#F0FAFF] to-[#e3f6ff] rounded-xl shadow-2xl h-full flex flex-col transform transition-all duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.15)]">
+              <div className="relative bg-gradient-to-b from-[#FAFDF6] to-[#F1F5ED] rounded-xl shadow-2xl h-full flex flex-col transform transition-all duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.15)]">
                 <div className="relative h-[250px] rounded-t-xl overflow-hidden flex-shrink-0">
                   <Image
                     src={category.image}
@@ -217,7 +217,7 @@ const TopCategories = () => {
                     ${category.colors.buttonHoverBg} ${category.colors.buttonHoverText}
                     hover:shadow-md
                   `}>
-                    Explore Collection
+                    View Details
                   </button>
                 </div>
               </div>
@@ -229,4 +229,4 @@ const TopCategories = () => {
   );
 };
 
-export default TopCategories;
+export default TopItems;

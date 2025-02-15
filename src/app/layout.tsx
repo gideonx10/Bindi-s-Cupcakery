@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "@/components/Navbar";
+// import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 // export const metadata: Metadata = {
@@ -15,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          {/* <Navbar/> */}
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

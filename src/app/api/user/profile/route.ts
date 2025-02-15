@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/connectDB";
 import User from "@/models/User";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -17,6 +17,7 @@ export async function GET() {
 
     return NextResponse.json(user);
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Error fetching profile" },
       { status: 500 }
@@ -60,6 +61,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(updatedUser);
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Error updating profile" },
       { status: 500 }
