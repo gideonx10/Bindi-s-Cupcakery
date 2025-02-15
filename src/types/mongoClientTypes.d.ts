@@ -1,13 +1,12 @@
+// types/mongodb.d.ts
 import { MongoClient } from "mongodb";
 
-declare global {
-  interface GlobalWithMongoDB {
-    _mongoClientPromise?: Promise<MongoClient>;
-  }
-
-  // Extend the global interface without using var/const
-  interface Global extends GlobalWithMongoDB {}
+export interface GlobalWithMongoDB {
+  _mongoClientPromise?: Promise<MongoClient>;
 }
 
-// Ensure this file is treated as a module
-export {};
+declare global {
+  namespace NodeJS {
+    interface Global extends GlobalWithMongoDB {}
+  }
+}
