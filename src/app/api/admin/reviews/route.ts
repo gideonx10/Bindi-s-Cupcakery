@@ -97,3 +97,36 @@ export async function PUT(request: Request) {
     );
   }
 }
+
+// DELETE - Delete a review (Admin only)
+export async function DELETE(request: Request) {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions);
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const { searchParams } = new URL(request.url);
+    const reviewId = searchParams.get("reviewId");
+    if (!reviewId) {
+      return NextResponse.json(
+        { error: "Review ID is required" },
+        { status: 400 }
+      );
+    }
+    const deletedReview = await Review.findByIdAndDelete(reviewId);
+    if (!deletedReview) {
+      return NextResponse.json(
+        { error: "Review not found" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json({ message: "Review deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
