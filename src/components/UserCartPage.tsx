@@ -220,9 +220,18 @@ export default function CartPage({ userId }: { userId: string }) {
       setCheckingOut(false);
     }
   }
+  const handlePayOnlineClick = () => {
+    setShowQR(!showQR); // Toggle QR visibility
+    if (showWhatsAppQR) setShowWhatsAppQR(false); // Hide WhatsApp QR if showing
+  };
   const generateWhatsAppOrderMessage = async () => {
     if (isHamper && getTotalQuantity() > 6) {
       alert("Hamper orders cannot exceed 6 items in total!");
+      return;
+    }
+
+    if (showWhatsAppQR) {
+      setShowWhatsAppQR(false);
       return;
     }
     try {
@@ -244,7 +253,7 @@ ${displayedCartItems
       )}
 📝 Customization: ${customization || "N/A"}
 🎁 Is Hamper: ${isHamper ? "Yes" : "No"}
-💳 Payment Method: Pay on Takeaway`;
+💳 Payment Method: Pay on Takeaway\nIf you already paid online,share the Transaction ID in next message `;
 
       setWhatsAppMessage(message);
       setShowWhatsAppQR(true);
@@ -256,8 +265,8 @@ ${displayedCartItems
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#FFF0F7] rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
               Your Cart
@@ -274,7 +283,7 @@ ${displayedCartItems
           </div>
 
           {/* Hamper Toggle with enhanced styling */}
-          <div className="mb-6 bg-gray-50 p-4 rounded-xl">
+          <div className="mb-6 bg-gray-50 p-4 rounded-xl shadow-xl">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -369,19 +378,23 @@ ${displayedCartItems
                   </button>
 
                   <button
-                    onClick={() => setShowQR(true)}
+                    onClick={handlePayOnlineClick}
                     disabled={isQuantityExceeded}
-                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl transform hover:-translate-y-1 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:transform-none"
+                    className={`w-full sm:w-auto px-8 py-3 ${
+                      showQR ? "bg-red-600" : "bg-blue-600"
+                    } text-white font-semibold rounded-xl transform hover:-translate-y-1 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:transform-none`}
                   >
-                    Pay Online
+                    {showQR ? "Hide Payment QR" : "Pay Online"}
                   </button>
 
                   <button
                     onClick={generateWhatsAppOrderMessage}
                     disabled={isQuantityExceeded}
-                    className="w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl transform hover:-translate-y-1 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:transform-none"
+                    className={`w-full sm:w-auto px-8 py-3 ${
+                      showWhatsAppQR ? "bg-red-600" : "bg-green-600"
+                    } text-white font-semibold rounded-xl transform hover:-translate-y-1 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:transform-none`}
                   >
-                    Order via WhatsApp
+                    {showWhatsAppQR ? "Hide WhatsApp QR" : "Order via WhatsApp"}
                   </button>
                 </div>
               </div>

@@ -14,7 +14,6 @@ import {
   ShoppingCart,
   Settings,
   LogOut,
-  ChevronLeft,
 } from "lucide-react";
 
 const UserPage = () => {
@@ -63,15 +62,15 @@ const UserPage = () => {
   const getTabIcon = (tab: string) => {
     switch (tab) {
       case "home":
-        return <Home className="w-5 h-5" />;
+        return <Home className="w-5 h-5 lg:w-5 lg:h-5" />;
       case "details":
-        return <User className="w-5 h-5" />;
+        return <User className="w-5 h-5 lg:w-5 lg:h-5" />;
       case "orders":
-        return <ShoppingBag className="w-5 h-5" />;
+        return <ShoppingBag className="w-5 h-5 lg:w-5 lg:h-5" />;
       case "cart":
-        return <ShoppingCart className="w-5 h-5" />;
+        return <ShoppingCart className="w-5 h-5 lg:w-5 lg:h-5" />;
       case "general":
-        return <Settings className="w-5 h-5" />;
+        return <Settings className="w-5 h-5 lg:w-5 lg:h-5" />;
       default:
         return null;
     }
@@ -101,65 +100,76 @@ const UserPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Left Sidebar */}
-      <div className="w-72 fixed left-0 top-16 h-full bg-white shadow-xl p-6 transition-all duration-300 border-r border-gray-100">
-        <h2 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight">
-          Dashboard
-        </h2>
-        <div className="space-y-2">
-          {["home", "details", "orders", "cart", "general"].map((tab) => (
-            <button
-              key={tab}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === tab
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105"
-                  : "text-gray-600 hover:bg-gray-100"
-              } ${
-                isHovered === tab && activeTab !== tab
-                  ? "bg-gray-100 transform scale-102"
-                  : ""
-              }`}
-              onClick={() => handleTabChange(tab)}
-              onMouseEnter={() => setIsHovered(tab)}
-              onMouseLeave={() => setIsHovered(null)}
-            >
-              {getTabIcon(tab)}
-              <span className="font-medium">
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </span>
-            </button>
-          ))}
-        </div>
-        {pathname === "/user" && (
-          <button
-            onClick={() => signOut()}
-            className="w-full mt-8 flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors duration-200"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
-          </button>
-        )}
-      </div>
+    <>
+      <div className="fixed top-0 left-0 w-full h-[14vh] shadow-xl bg-[#F1F5ED] z-20"></div>
+      <div className="min-h-screen bg-gray-100">
+        {/* Responsive Sidebar/Bottom Navigation */}
+        <div className="fixed lg:w-64 lg:left-0 lg:top-[14vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 shadow-xl bg-[#F1F5ED] transition-all duration-300">
+          {/* Desktop Header - Hidden on Mobile */}
+          <div className="hidden lg:block p-8">
+            <h2 className="text-2xl font-bold mb-8 py-2 rounded-lg tracking-tight text-center bg-slate-500 shadow-lg shadow-slate-500 text-white">
+              Hey There ! 👋
+            </h2>
+          </div>
 
-      {/* Main Content */}
-      <div className="flex-1 ml-72 p-8 pt-20">
-        {activeTab !== "home" && (
-          <button
-            className="mb-6 px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-            onClick={() => handleTabChange("home")}
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back to Home</span>
-          </button>
-        )}
-        <div className="w-full max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-6 transition-all duration-300 hover:shadow-2xl">
-            {renderContent()}
+          {/* Navigation Items */}
+          <div className="h-full lg:px-8">
+            <div className="flex  lg:flex-col h-full lg:space-y-2 justify-around lg:justify-start items-center lg:items-stretch">
+              {["home", "details", "orders", "cart", "general"].map((tab) => (
+                <button
+                  key={tab}
+                  className={`flex flex-col md:flex-row items-center md:justify-start gap-1 md:gap-2 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 ${
+                    activeTab === tab
+                      ? "bg-slate-500 text-white shadow-lg shadow-slate-500/30 scale-105"
+                      : "text-gray-600 hover:bg-gray-200"
+                  } ${
+                    isHovered === tab && activeTab !== tab
+                      ? "bg-gray-200 transform scale-102"
+                      : ""
+                  }
+                  lg:w-full`}
+                  onClick={() => handleTabChange(tab)}
+                  onMouseEnter={() => setIsHovered(tab)}
+                  onMouseLeave={() => setIsHovered(null)}
+                >
+                  {getTabIcon(tab)}
+                  <span className="font-medium text-sm lg:text-base">
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </span>
+                </button>
+              ))}
+
+              {/* Logout Button - Desktop Only */}
+              {pathname === "/user" && (
+                <button
+                  onClick={() => signOut()}
+                  className="hidden lg:flex items-center gap-3 px-4 py-3 mt-8 rounded-xl text-red-500 hover:bg-red-50 transition-colors duration-200 w-full"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span className="font-medium">Logout</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 pt-[14vh] lg:pl-[16rem] pb-[8vh] lg:pb-[4vh]">
+          <div className="w-full mx-auto">
+            <div className="">{renderContent()}</div>
+          </div>
+          <div className="lg:hidden flex justify-center mt-4 pb-4">
+            <button
+              onClick={() => signOut()}
+              className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#FFF0F7] text-red-500 hover:bg-[#ffd1e6] transition-colors duration-200"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="font-medium">Logout</span>
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

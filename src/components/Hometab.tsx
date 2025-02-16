@@ -50,33 +50,40 @@ const HomeTab = ({ userId }: { userId: string }) => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* User Details */}
-      {user ? (
-        <div className="bg-white p-6 shadow-md rounded-lg border">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-            User Details
-          </h2>
-          <div className="space-y-2 text-gray-700">
+      {/* User Info & Total Orders - Side by Side for lg+ */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* User Details */}
+        <div className="p-6 shadow-lg rounded-lg border border-transparent bg-[#FFF0F7] lg:w-3/4 font-ancient">
+          <h2 className="text-2xl font-semibold mb-4">User Details</h2>
+          <div className="space-y-3 text-lg">
+            {" "}
+            {/* Increased text size */}
             <p>
-              <span className="font-medium">Name:</span> {user.name}
+              <span className="font-semibold">Name :</span> {user?.name}
             </p>
             <p>
-              <span className="font-medium">Email:</span> {user.email}
+              <span className="font-semibold">Email :</span> {user?.email}
             </p>
             <p>
-              <span className="font-medium">Phone:</span> {user.phone}
+              <span className="font-semibold">Phone :</span> {user?.phone}
             </p>
             <p>
-              <span className="font-medium">Area:</span> {user.area}
+              <span className="font-semibold">Area :</span> {user?.area}
             </p>
           </div>
         </div>
-      ) : (
-        <p className="text-center text-red-500 font-medium">User not found.</p>
-      )}
+
+        {/* Total Orders Box */}
+        <div className="p-6 shadow-lg hidden lg:flex rounded-lg border border-transparent bg-[#FFF0F7] lg:w-1/3 flex-col items-center justify-center">
+          <h2 className="text-2xl font-semibold text-gray-800">Total Orders</h2>
+          <p className="text-4xl font-bold text-blue-600 mt-2">
+            {orders.length}
+          </p>
+        </div>
+      </div>
 
       {/* Recent Orders */}
-      <div className="bg-white p-6 shadow-md rounded-lg border">
+      <div className="bg-[#FFF0F7] p-6 shadow-lg rounded-lg border border-gray-200">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">
           Recent Orders
         </h2>
@@ -86,7 +93,7 @@ const HomeTab = ({ userId }: { userId: string }) => {
               {orders.slice(0, 3).map((order) => (
                 <li
                   key={order._id}
-                  className="p-4 border rounded-lg bg-gray-50 shadow-sm"
+                  className="p-4 border rounded-lg bg-neutral-50 shadow-xl"
                 >
                   <p className="font-medium text-gray-800">
                     Order ID: {order._id}
@@ -109,8 +116,8 @@ const HomeTab = ({ userId }: { userId: string }) => {
             {/* View More Button */}
             <div className="mt-4 text-right">
               <button
-                onClick={() => router.push("/orders")}
-                className="text-blue-600 font-medium hover:underline"
+                onClick={() => router.push("/user?tab=orders")}
+                className="bg-[#88b4ff] text-black px-4 py-2 rounded-lg shadow-xl hover:bg-blue-600 transition-all duration-200"
               >
                 View More &gt;&gt;
               </button>

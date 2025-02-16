@@ -9,23 +9,51 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const search = searchParams.get("search") || "";
-    const categories = searchParams.getAll("categories[]"); // Get all selected categories
+    const categories = searchParams.getAll("categories[]");
+    const priceFilter = searchParams.get("priceFilter");
+    const isSugarFree = searchParams.get("isSugarFree");
+    const isFeatured = searchParams.get("isFeatured");
 
-    const query: Record<string, unknown> = {}; // Replaced 'any' with a stricter type
+    const query: Record<string, unknown> = {};
 
     // Handle search
     if (search) {
-      query.name = { $regex: search, $options: "i" }; // Case-insensitive search
+      query.name = { $regex: search, $options: "i" };
     }
 
     // Handle multiple categories
     if (categories && categories.length > 0) {
-      query.category = { $in: categories }; // Match any of the selected categories
+      query.category = { $in: categories };
     }
 
-    const products = await Product.find(query);
+    // Handle sugar-free filter
+    if (isSugarFree === "true") {
+      query.isSugarFree = true;
+    }
+
+    // Handle bestseller/featured filter
+    if (isFeatured === "true") {
+      query.isFeatured = true;
+    }
+
+    // Get products with initial filters
+    let products = await Product.find(query);
+
+    // Handle price sorting after fetching products
+    if (priceFilter) {
+      products = products.sort((a, b) => {
+        if (priceFilter === "low-high") {
+          return a.price - b.price;
+        } else if (priceFilter === "high-low") {
+          return b.price - a.price;
+        }
+        return 0;
+      });
+    }
+
     return NextResponse.json(products, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("Error fetching products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 }

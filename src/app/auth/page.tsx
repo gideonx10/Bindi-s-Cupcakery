@@ -113,7 +113,7 @@ const AuthForm = () => {
       <Suspense fallback={null}>
         <SearchParamsHandler onParamsReady={setCallbackUrl} />
       </Suspense>
-      <div className="flex justify-center items-center min-h-screen p-5 bg-gradient-to-br from-blue-300 to-indigo-200">
+      <div className="flex justify-center items-center min-h-screen p-5 bg-[#d9f0fa]">
         <div
           className={`relative overflow-hidden w-full max-w-[800px] min-h-[650px] md:min-h-[650px] bg-[#EDF6F5] rounded-2xl shadow-xl ${
             isRightPanelActive ? "right-panel-active" : ""
@@ -138,7 +138,7 @@ const AuthForm = () => {
               onSubmit={handleSignUp}
               className="flex flex-col items-center justify-center h-full px-12 text-center bg-[#EDF6F5]"
             >
-              <h1 className="mb-5 text-3xl font-bold text-black">
+              <h1 className="mb-5 text-4xl text-black font-bold font-ancient">
                 Create Account
               </h1>
               <AuthInput
@@ -208,7 +208,7 @@ const AuthForm = () => {
               onSubmit={handleSignIn}
               className="flex flex-col items-center justify-center h-full px-12 text-center bg-[#EDF6F5]"
             >
-              <h1 className="mb-5 text-3xl font-bold text-black">Sign In</h1>
+              <h1 className="mb-5 text-4xl font-bold font-ancient text-black">Sign In </h1>
               <AuthInput
                 type="text"
                 placeholder="Email or Phone"
@@ -237,7 +237,7 @@ const AuthForm = () => {
               </div>
               <a
                 href="#"
-                className="mt-4 text-sm text-black hover:text-indigo-600 transition-colors"
+                className="mt-4 text-black hover:text-indigo-600 transition-colors font-semibold font-ancient"
               >
                 Forgot your password?
               </a>
@@ -254,31 +254,30 @@ const AuthForm = () => {
                 className={`relative h-full w-[200%] -left-full transform transition-transform duration-1000 ease-in-out
               ${isRightPanelActive ? "translate-x-1/2" : "translate-x-0"}`}
               >
-                <div className="absolute flex flex-col items-center justify-center w-1/2 h-full px-10 text-center bg-gradient-to-br from-indigo-500 to-purple-500 rounded-r-[100px]">
-                  <h1 className="mb-5 text-3xl font-bold text-[#EDF6F5]">
-                    Welcome Back!
+                <div className="absolute flex flex-col items-center justify-center w-1/2 h-full px-10 text-center bg-indigo-500 rounded-r-[100px]">
+                  <h1 className="mb-5 text-4xl font-bold font-ancient text-[#EDF6F5]">
+                  Join Bindi&apos;s Cupcakery
                   </h1>
-                  <p className="mb-8 text-sm text-[#EDF6F5]/90">
-                    To keep connected with us please login with your personal
-                    info
+                  <p className="mb-8 text-lg text-[#EDF6F5]/90 font-bold font-ancient">
+                  Sign in to explore our delightful treats and manage your orders
                   </p>
                   <button
                     onClick={() => setIsRightPanelActive(false)}
-                    className="px-12 py-3 text-sm font-bold tracking-wider uppercase border-2 border-[#EDF6F5] text-[#EDF6F5] rounded-full transition-all hover:bg-[#EDF6F5] hover:text-indigo-600 hover:scale-105"
+                    className="px-12 py-3 text-lg font-bold font-ancient tracking-wider border-2 border-[#EDF6F5] text-[#EDF6F5] rounded-full transition-all hover:bg-[#EDF6F5] hover:text-indigo-600 hover:scale-105"
                   >
                     Sign In
                   </button>
                 </div>
-                <div className="absolute right-0 flex flex-col items-center justify-center w-1/2 h-full px-10 text-center bg-gradient-to-bl from-indigo-500 to-purple-500 rounded-l-[100px]">
-                  <h1 className="mb-5 text-3xl font-bold text-[#EDF6F5]">
-                    Hello, Friend!
+                <div className="absolute right-0 flex flex-col items-center justify-center w-1/2 h-full px-10 text-center bg-indigo-500  rounded-l-[100px]">
+                  <h1 className="mb-5 text-4xl font-bold font-ancient text-[#EDF6F5]">
+                  Welcome to Bindi's Cupcakery!
                   </h1>
-                  <p className="mb-8 text-sm text-[#EDF6F5]/90">
-                    Enter your personal details and start journey with us
+                  <p className="mb-8 text-[#EDF6F5]/90 font-bold font-ancient text-lg">
+                  Join us to order custom cakes and discover our sweet delights
                   </p>
                   <button
                     onClick={() => setIsRightPanelActive(true)}
-                    className="px-12 py-3 text-sm font-bold tracking-wider uppercase border-2 border-[#EDF6F5] text-[#EDF6F5] rounded-full transition-all hover:bg-[#EDF6F5] hover:text-indigo-600 hover:scale-105"
+                    className="px-12 py-3 text-lg font-ancient font-bold tracking-wider  border-2 border-[#EDF6F5] text-[#EDF6F5] rounded-full transition-all hover:bg-[#EDF6F5] hover:text-indigo-600 hover:scale-105"
                   >
                     Sign Up
                   </button>
@@ -293,7 +292,7 @@ const AuthForm = () => {
           <div className="fixed bottom-0 left-0 right-0 flex justify-center gap-5 p-5 bg-blue-200 rounded-s-2xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
             <button
               onClick={() => setIsRightPanelActive(false)}
-              className={`px-8 py-2.5 text-sm font-bold rounded-full border-2 transition-all duration-1000
+              className={`px-8 py-2.5 text-lg font-ancient font-bold rounded-full border-2 transition-all duration-1000
               ${
                 !isRightPanelActive
                   ? "bg-[#EDF6F5] text-indigo-600 border-black"
@@ -304,7 +303,7 @@ const AuthForm = () => {
             </button>
             <button
               onClick={() => setIsRightPanelActive(true)}
-              className={`px-8 py-2.5 text-sm font-bold rounded-full border-2 transition-all duration-1000
+              className={`px-8 py-2.5 text-lg font-bold font-ancient rounded-full border-2 transition-all duration-1000
               ${
                 isRightPanelActive
                   ? "bg-[#EDF6F5] text-indigo-600 border-black"
@@ -334,7 +333,7 @@ const AuthInput: React.FC<AuthInputProps> = ({
     value={value}
     onChange={onChange}
     required={required}
-    className="w-full p-3 my-2 text-sm bg-gray-50 border-2 border-gray-200 rounded-full text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+    className="w-full p-3 my-2 text-base bg-gray-50 border-2 border-gray-200 rounded-full text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
   />
 );
 
@@ -347,7 +346,7 @@ const AuthButton: React.FC<AuthButtonProps> = ({
   <button
     type={type}
     onClick={onClick}
-    className={`w-full px-12 py-3 text-sm font-semibold tracking-wider uppercase transition-all rounded-2xl shadow-2xl hover:scale-105 mt-3
+    className={`w-full px-12 py-3 text-lg font-semibold tracking-wider  transition-all rounded-2xl shadow-2xl hover:scale-105 mt-3
     ${
       variant === "primary"
         ? "bg-indigo-600 hover:bg-indigo-700 text-[#EDF6F5]"
