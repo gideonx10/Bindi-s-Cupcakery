@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-// import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -17,20 +16,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
+interface Category {
+  _id: string;
+  name: string;
+}
 
 interface OrderProduct {
   product: {
     _id: string;
     name: string;
-    category: string;
+    category: Category | string;
   };
   quantity: number;
 }
@@ -47,38 +55,53 @@ export interface Order {
   user: User;
   products: OrderProduct[];
   totalAmount: number;
-  status: "pending" | "shipped" | "delivered" | "cancelled";
+  status: "pending" | "Ready to Take-away" | "delivered" | "cancelled";
   createdAt: string;
+  isHamper: boolean;
+  isPaymentVerified: boolean;
+  transactionId?: string;
+  customization?: string;
 }
 
-// New component for collapsible products list
-const ProductsList = ({ products }: { products: OrderProduct[] }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+// New component for products modal
+const ProductsModal = ({ products, customization }: { products: OrderProduct[], customization?: string }) => {
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-      <CollapsibleTrigger className="flex items-center gap-2 text-sm">
-        <Badge variant="secondary">{products.length} items</Badge>
-        {isOpen ? (
-          <ChevronUp className="h-4 w-4" />
-        ) : (
-          <ChevronDown className="h-4 w-4" />
-        )}
-      </CollapsibleTrigger>
-      <CollapsibleContent className="mt-2">
-        <div className="space-y-2">
+    <Dialog>
+      <DialogTrigger>
+        <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+          {products.length} items
+        </Badge>
+      </DialogTrigger>
+      <DialogContent className="max-w-[400px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Order Products</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 mt-4">
           {products.map((item, idx) => (
-            <div key={idx} className="rounded-md border p-2 text-sm">
-              <div className="font-semibold">{item.product.name}</div>
-              <div className="text-gray-600">
-                Category: {item.product.category}
+            <div
+              key={idx}
+              className="rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="font-semibold text-lg">{item.product.name}</div>
+              <div className="text-gray-600 mt-1">
+                Category: {
+                  typeof item.product.category === "object" && item.product.category !== null
+                    ? (item.product.category as Category).name
+                    : item.product.category
+                }
               </div>
-              <div className="text-gray-600">Quantity: {item.quantity}</div>
+              <div className="text-gray-600 mt-1">Quantity: {item.quantity}</div>
             </div>
           ))}
+          {customization && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-semibold mb-2">Customization Notes:</h4>
+              <p className="text-gray-600">{customization}</p>
+            </div>
+          )}
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -93,7 +116,6 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
-  // Modified useEffect to filter orders by both ID and customer name
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredOrders(orders);
@@ -102,7 +124,8 @@ export default function OrdersPage() {
       const filtered = orders.filter(
         (order) =>
           order._id.toLowerCase().includes(term) ||
-          order.user.name.toLowerCase().includes(term)
+          order.user.name.toLowerCase().includes(term) ||
+          (order.transactionId && order.transactionId.toLowerCase().includes(term))
       );
       setFilteredOrders(filtered);
     }
@@ -116,7 +139,7 @@ export default function OrdersPage() {
       }
       const data = await res.json();
       setOrders(data);
-      setFilteredOrders(data); // Initialize filtered orders with all orders
+      setFilteredOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast({
@@ -131,7 +154,7 @@ export default function OrdersPage() {
 
   async function updateOrderStatus(
     orderId: string,
-    status: "pending" | "shipped" | "delivered" | "cancelled"
+    status: "pending" | "Ready to Take-away" | "delivered" | "cancelled"
   ) {
     try {
       const res = await fetch(`/api/admin/orders?orderId=${orderId}`, {
@@ -158,6 +181,32 @@ export default function OrdersPage() {
     }
   }
 
+  async function updatePaymentVerification(orderId: string, isVerified: boolean) {
+    try {
+      const res = await fetch(`/api/admin/orders/verify-payment?orderId=${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPaymentVerified: isVerified }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to update payment verification");
+      }
+      toast({
+        title: "Success",
+        description: "Payment verification status updated successfully",
+      });
+      await fetchOrders();
+    } catch (error) {
+      console.error("Error updating payment verification:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to update payment verification",
+        variant: "destructive",
+      });
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -170,14 +219,13 @@ export default function OrdersPage() {
     <div className="p-6 space-y-6">
       <h1 className="text-3xl font-bold mb-4">Orders Management</h1>
 
-      {/* Updated search input placeholder */}
       <div className="relative w-full max-w-sm">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-4 w-4 text-gray-400" />
         </div>
         <Input
           type="text"
-          placeholder="Search by Order ID or Customer name..."
+          placeholder="Search by Order ID, Customer name, or Transaction ID..."
           className="pl-10"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -203,6 +251,7 @@ export default function OrdersPage() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead>Total ($)</TableHead>
+                <TableHead>Payment Details</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Placed At</TableHead>
                 <TableHead>Actions</TableHead>
@@ -216,9 +265,39 @@ export default function OrdersPage() {
                   <TableCell>{order.user.email}</TableCell>
                   <TableCell>{order.user.phone}</TableCell>
                   <TableCell>
-                    <ProductsList products={order.products} />
+                    <ProductsModal 
+                      products={order.products} 
+                      customization={order.customization}
+                    />
                   </TableCell>
                   <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <div className="space-y-2">
+                      {order.transactionId ? (
+                        <>
+                          <div className="text-sm">
+                            <span className="font-medium">Transaction ID:</span>
+                            <br />
+                            {order.transactionId}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              checked={order.isPaymentVerified}
+                              onCheckedChange={(checked) => 
+                                updatePaymentVerification(order._id, checked)
+                              }
+                              id={`payment-verify-${order._id}`}
+                            />
+                            <Label htmlFor={`payment-verify-${order._id}`}>
+                              {order.isPaymentVerified ? "Verified" : "Not Verified"}
+                            </Label>
+                          </div>
+                        </>
+                      ) : (
+                        <Badge variant="secondary">Pay on Take-away</Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="capitalize">{order.status}</TableCell>
                   <TableCell>
                     {new Date(order.createdAt).toLocaleString()}
@@ -231,20 +310,20 @@ export default function OrdersPage() {
                           order._id,
                           newStatus as
                             | "pending"
-                            | "shipped"
+                            | "Ready to Take-away"
                             | "delivered"
                             | "cancelled"
                         );
                       }}
                     >
-                      <SelectTrigger className="w-[120px]">
+                      <SelectTrigger className="w-[140px]">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pending">pending</SelectItem>
-                        <SelectItem value="shipped">shipped</SelectItem>
-                        <SelectItem value="delivered">delivered</SelectItem>
-                        <SelectItem value="cancelled">cancelled</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="Ready to Take-away">Ready to Take-away</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>

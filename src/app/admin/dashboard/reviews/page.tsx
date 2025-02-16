@@ -84,6 +84,35 @@ export default function ReviewsPage() {
     }
   }
 
+  async function deleteReview(reviewId: string) {
+    const confirmation = window.confirm("Are you sure you want to delete this review?");
+    if (!confirmation) return;
+    try {
+      setUpdatingId(reviewId);
+      const response = await fetch(`/api/admin/reviews?reviewId=${reviewId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete review");
+      }
+      toast({
+        title: "Success",
+        description: "Review deleted successfully",
+      });
+      await fetchReviews();
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete review",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingId(null);
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -109,6 +138,7 @@ export default function ReviewsPage() {
                 <TableHead>Comment</TableHead>
                 <TableHead>Approved</TableHead>
                 <TableHead className="text-right">Submitted On</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -128,6 +158,15 @@ export default function ReviewsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     {new Date(review.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <button
+                      onClick={() => deleteReview(review._id)}
+                      disabled={updatingId === review._id}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}

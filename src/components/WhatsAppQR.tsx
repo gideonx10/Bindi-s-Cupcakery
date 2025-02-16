@@ -14,7 +14,7 @@ const WhatsAppQR = ({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <QRCode value={generateWhatsAppLink()} size={200} />
+      {/* <QRCode value={generateWhatsAppLink()} size={200} /> */}
       <a
         href={generateWhatsAppLink()}
         target="_blank"

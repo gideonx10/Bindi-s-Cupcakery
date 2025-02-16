@@ -142,16 +142,32 @@ export default function OrdersPage({ userId }: { userId: string }) {
     }
   };
 
-  const getPaymentBadgeProps = (isVerified: boolean) => {
-    return isVerified
-      ? {
-          variant: "success" as const,
-          className: "bg-green-100 text-green-800",
-        }
-      : {
-          variant: "warning" as const,
-          className: "bg-yellow-100 text-yellow-800",
-        };
+  const getPaymentBadgeProps = (isVerified: boolean, transactionId: number) => {
+    if (isVerified && transactionId) {
+      return {
+        variant: "success" as const,
+        className: "bg-green-100 text-green-800",
+        label: "Payment Verified",
+      };
+    } else if (isVerified && !transactionId) {
+      return {
+        variant: "success" as const,
+        className: "bg-green-100 text-green-800",
+        label: "Payment Received",
+      };
+    } else if (!isVerified && transactionId) {
+      return {
+        variant: "warning" as const,
+        className: "bg-yellow-100 text-yellow-800",
+        label: "Payment Not Verified",
+      };
+    } else {
+      return {
+        variant: "warning" as const,
+        className: "bg-yellow-100 text-yellow-800",
+        label: "Payment Pending",
+      };
+    }
   };
 
   if (loading) {
@@ -163,7 +179,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="lg:w-[96.5%] p-6 bg-[#FFF0F7] lg:m-6 rounded-xl shadow-xl">
+    <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-8 text-gray-800">My Orders</h1>
       {orders.length === 0 ? (
         <Card>
@@ -178,10 +194,10 @@ export default function OrdersPage({ userId }: { userId: string }) {
             <Card
               key={order._id}
               className={`transform transition-all duration-200 hover:shadow-lg ${
-                order.isHamper ? "bg-purple-50" : "bg-[#FAFAFA]"
+                order.isHamper ? "bg-purple-50" : ""
               }`}
             >
-              <CardHeader className="flex lg:flex-row gap-2 lg:items-center justify-between space-y-0 pb-4">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Order ID</p>
                   <p className="text-lg font-semibold">{order._id}</p>
@@ -192,15 +208,21 @@ export default function OrdersPage({ userId }: { userId: string }) {
                       Hamper
                     </Badge>
                   )}
-                  <Badge {...getPaymentBadgeProps(order.isPaymentVerified)}>
-                    {order.isPaymentVerified
-                      ? "Payment Verified"
-                      : order.status === "online"
-                      ? "Your Payment will be reflected in 24rhs"
-                      : "Payment Pending"}
+                  <Badge
+                    {...getPaymentBadgeProps(
+                      order.isPaymentVerified,
+                      order.transactionId
+                    )}
+                  >
+                    {
+                      getPaymentBadgeProps(
+                        order.isPaymentVerified,
+                        order.transactionId
+                      ).label
+                    }
                   </Badge>
                   <Badge {...getStatusBadgeProps(order.status)}>
-                    {order.status}
+                    {`Status: ${order.status}`}
                   </Badge>
                 </div>
               </CardHeader>
