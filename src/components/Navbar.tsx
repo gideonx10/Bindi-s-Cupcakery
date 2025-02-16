@@ -249,7 +249,7 @@ const Navbar = () => {
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
                     isMenuOpen
                       ? "bg-yellow-400"
-                      : pathname.startsWith("/Products")
+                      : pathname.startsWith("/products")
                       ? "bg-[#3e7496]"
                       : "bg-yellow-400"
                   } rounded-full transition-all duration-300 ${

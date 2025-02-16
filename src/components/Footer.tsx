@@ -26,10 +26,10 @@ const Footer = () => {
           {/* Company Name and Tagline */}
           <div className="flex flex-col items-center text-center justify-center">
             <h2 className="font-[Ananda] text-[1.8rem] md:text-5xl text-gray-900">
-              Bindi's Cupcakery
+              Bindi&apos;s Cupcakery
             </h2>
             <p className="text-gray-900 font-mono text-[0.9rem] md:text-2xl italic mt-5 hidden md:block">
-              "Baked with Love, Egg-Free Always!"
+              &quot;Baked with Love, Egg-Free Always!&quot;
             </p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-gray-900 font-medium text-lg md:text-xl text-center">
@@ -137,7 +137,7 @@ const Footer = () => {
       <div className="bg-[#eeffdc] absolute bottom-0 w-full p-4 mt-8 rounded-t-3xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-4">
           <p className="text-gray-900 text-lg md:text-xl mb-2 md:mb-0">
-            &copy; 2025 Bindi's Cupcakery. All rights reserved.
+            &copy; 2025 Bindi&apos;s Cupcakery. All rights reserved.
           </p>
           <p className="text-gray-900 text-lg md:text-xl flex items-center gap-2">
             <Mail className="w-6 h-6" />

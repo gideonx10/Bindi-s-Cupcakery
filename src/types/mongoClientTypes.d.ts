@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 import { MongoClient } from "mongodb";
 
 export interface GlobalWithMongoDB extends NodeJS.Global {
@@ -7,7 +6,9 @@ export interface GlobalWithMongoDB extends NodeJS.Global {
 
 declare global {
   namespace NodeJS {
-    interface Global extends GlobalWithMongoDB {}
+    interface Global extends GlobalWithMongoDB {
+      lg: string;
+    }
   }
 }
 

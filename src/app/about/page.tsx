@@ -126,13 +126,13 @@ export default function About() {
         {/* About Us Hero Section */}
         <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto">
           <div className="container mx-auto px-4 translate-y-10 fade-up">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mt-[6vh] text-center md:text-left lg:translate-y-10 drop-shadow-2xl font-ancient">
+            <h1 className="text-7xl md:text-8xl text-gray-800 mt-[6vh] text-center md:text-left lg:translate-y-10 drop-shadow-2xl font-serif">
               About Us
             </h1>
             <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-[2rem] md:gap-[4rem] md:translate-y-10">
               {/* Text Content - Left Side */}
               <div className="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left xl:-translate-y-[3rem]">
-                <p className="text-lg lg:text-2xl md:text-xl text-gray-700 leading-relaxed font-semibold drop-shadow-2xl">
+                <p className="text-lg lg:text-2xl md:text-xl text-gray-700 leading-relaxed font-semibold drop-shadow-2xl font-ancient">
                   Bindi&apos;s Cupcakery was born out of a passion for baking
                   and a commitment to providing high-quality, homemade desserts
                   that everyone can enjoy. Located in the heart of Parle Point,
@@ -144,7 +144,7 @@ export default function About() {
                 <Link
                   href="/products"
                   className="bg-[#fdecd8] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
-                max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-mono"
+                max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-semibold font-ancient"
                 >
                   Shop Now
                   <MoveUpRight className="h-5 w-5 inline-block translate-x-2 -translate-y-0.5" />
@@ -168,7 +168,7 @@ export default function About() {
       <section className="py-16 bg-[#EDF6F5]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
-            <h2 className="text-4xl font-bold text-amber-700 mb-4 font-ancient">
+            <h2 className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif">
               Our Promise
             </h2>
             <div className="flex justify-center">
@@ -193,13 +193,13 @@ export default function About() {
                 <h3 className=" font-bold text-amber-700 mb-2 font-ancient text-xl">
                   {promise.title}
                 </h3>
-                <p className="text-gray-700">{promise.description}</p>
+                <p className="text-gray-700 font-ancient font-semibold">{promise.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-      <div className="w-full flex justify-center mb-8 fade-up">
+      <div className="w-full flex justify-center mb-8 ">
         <Image
           src="/images/about-section.png"
           alt="Bindi's Cupcakery aboutus"
@@ -213,15 +213,17 @@ export default function About() {
           <div className="flex flex-col md:flex-row gap-12 items-center bg-[#EDF6F5] p-10 md:rounded-3xl shadow-2xl feedback-form">
             {/* Left side - Text content */}
             <div className="md:w-1/2">
-              <h2 className="text-4xl md:text-5xl font-serif mb-6">
-                REACH OUT AND LET&apos;S CONNECT!
-              </h2>
-              <p className="text-lg text-gray-700 leading-relaxed font-ancient">
-                Drop us a message, and let&apos;s start a conversation about
-                your experience with our desserts. We value your feedback and
-                are always looking to improve.
-              </p>
-            </div>
+                <h2 className="text-4xl md:text-5xl  font-serif mb-14">
+                  SWEETEN OUR STORY WITH YOUR THOUGHTS
+                </h2>
+                <p className="text-lg text-gray-700 leading-relaxed font-semibold font-ancient">
+                  Every delightful review adds a special ingredient to our bakery&apos;s journey. 
+                  Share how our desserts made your day a little sweeter, and help future 
+                  guests discover their next favorite treat. Your thoughtful feedback 
+                  helps us perfect our craft with each passing day.
+                </p>
+              </div>
+
 
             {/* Right side - Form */}
             <div className="md:w-1/2 w-full">
@@ -256,10 +258,10 @@ export default function About() {
                 <div className="flex items-start gap-4">
                   <MapPin className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 font-ancient">
+                    <h3 className="font-semibold text-xl text-gray-800 mb-2 font-ancient">
                       Our Location
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 leading-relaxed font-ancient font-semibold">
                       Cloud Kitchen at Parle Point
                       <br />
                       Surat - 395007,
@@ -273,13 +275,13 @@ export default function About() {
                 <div className="flex items-start gap-4">
                   <Phone className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 font-ancient">
+                    <h3 className="text-xl text-gray-800 mb-2 font-ancient font-semibold">
                       Phone
                     </h3>
                     <p className="text-gray-600">
                       <a
                         href="tel:+919876543210"
-                        className="hover:text-amber-700 transition-colors"
+                        className="hover:text-amber-700 transition-colors font-ancient font-semibold"
                       >
                         +91 8849130189
                       </a>
@@ -291,13 +293,13 @@ export default function About() {
                 <div className="flex items-start gap-4">
                   <Mail className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-2 font-ancient">
+                    <h3 className="text-xl text-gray-800 mb-2 font-ancient font-semibold">
                       Email
                     </h3>
                     <p className="text-gray-600">
                       <a
                         href="mailto:info@bindiscupcakery.com"
-                        className="hover:text-amber-700 transition-colors"
+                        className="hover:text-amber-700 transition-colors font-ancient font-semibold"
                       >
                         bindis_cupcakery@gmail.com
                       </a>
@@ -307,10 +309,10 @@ export default function About() {
 
                 {/* Business Hours */}
                 <div className="mt-8 pt-6 border-t border-amber-700">
-                  <h3 className="font-semibold text-lg text-gray-800 mb-3 font-ancient">
+                  <h3 className="text-xl text-gray-800 mb-3 font-ancient font-semibold">
                     Business Hours
                   </h3>
-                  <div className="space-y-2 text-gray-600">
+                  <div className="space-y-2 text-gray-600 font-ancient font-semibold">
                     <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
                     <p>Sunday: 10:00 AM - 6:00 PM</p>
                   </div>
