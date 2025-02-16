@@ -55,7 +55,7 @@ export interface Order {
   user: User;
   products: OrderProduct[];
   totalAmount: number;
-  status: "pending" | "Ready to Take-away" | "delivered" | "cancelled";
+  status: "pending" | "ready to take-away" | "delivered" | "cancelled";
   createdAt: string;
   isHamper: boolean;
   isPaymentVerified: boolean;
@@ -329,8 +329,7 @@ export default function OrdersPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="Ready to Take-away">Ready to Take-away</SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="ready to take-away">Ready to take-away</SelectItem>                        <SelectItem value="delivered">Delivered</SelectItem>
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>

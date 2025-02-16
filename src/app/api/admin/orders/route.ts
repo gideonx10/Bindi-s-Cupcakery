@@ -62,7 +62,7 @@ export async function PUT(request: Request) {
 
     // Handle order status update
     if (body.status !== undefined) {
-      const validStatuses = ["pending", "Ready to Take-away", "delivered", "cancelled"];
+      const validStatuses = ["pending", "ready to take-away", "delivered", "cancelled"];
       if (!validStatuses.includes(body.status)) {
         return NextResponse.json({ error: "Invalid status" }, { status: 400 });
       }
