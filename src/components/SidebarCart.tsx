@@ -120,7 +120,10 @@ export default function Cart({
                 <span>₹{totalPrice.toFixed(2)}</span>
               </div>
               <button
-                onClick={() => router.push("/user?tab=cart")}
+                onClick={() => {
+                  onClose(); // Close the cart
+                  router.push("/user?tab=cart"); // Navigate to checkout
+                }}
                 className="w-full text-black shadow-2xl bg-[#c3e3fe] py-3 rounded-xl font-semibold hover:bg-[#abd5f8] transition-colors duration-300"
               >
                 Proceed to Checkout
@@ -129,7 +132,7 @@ export default function Cart({
           )}
         </div>
       </div>
-      <style jsx>{`
+      <style>{`
         .shiny-background {
           background: linear-gradient(
             135deg,

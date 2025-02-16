@@ -256,8 +256,8 @@ ${displayedCartItems
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#FFF0F7] rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
               Your Cart
@@ -274,7 +274,7 @@ ${displayedCartItems
           </div>
 
           {/* Hamper Toggle with enhanced styling */}
-          <div className="mb-6 bg-gray-50 p-4 rounded-xl">
+          <div className="mb-6 bg-gray-50 p-4 rounded-xl shadow-xl">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"

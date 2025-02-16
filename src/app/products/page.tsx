@@ -189,7 +189,7 @@ export default function ProductsPage() {
       const userId = (session?.user as { id: string })?.id;
       if (!userId) {
         router.push(
-          `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+          `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
         );
         return;
       }
@@ -392,7 +392,7 @@ export default function ProductsPage() {
     <div className="max-w-screen overflow-x-hidden min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%] font-ancient text-[#08410c]">
       {/* Category Filter */}
       <div className="flex-1 ">
-        <div className="absolute top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
+        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
             <button

@@ -176,9 +176,9 @@ const Navbar = () => {
 
   const menuItems = [
     { href: "/user", text: "PROFILE" },
-    { href: "/Products", text: "PRODUCTS" },
+    { href: "/products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
-    { href: "/aboutUs", text: "ABOUT US" },
+    { href: "/about", text: "ABOUT US" },
   ];
 
   return (
@@ -420,7 +420,7 @@ const Navbar = () => {
         onClose={() => setIsCartOpen(false)}
       />
 
-      <style jsx>{`
+      <style>{`
         @keyframes moveWave {
           0% {
             transform: translateX(0%);
@@ -462,5 +462,6 @@ const Navbar = () => {
     </>
   );
 };
+
 
 export default Navbar;

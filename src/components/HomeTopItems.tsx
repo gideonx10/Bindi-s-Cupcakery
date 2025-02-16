@@ -30,7 +30,7 @@ const categories: Category[] = [
   {
     id: 1,
     name: "Classic Items",
-    image: "/images/drone_poster.png",
+    image: "/images/img1.jpg",
     description: "Timeless collection of traditional favorites",
     colors: {
       bgGradient: "from-[#F3E8FF] to-[#E9D5FF]",
@@ -45,7 +45,7 @@ const categories: Category[] = [
   {
     id: 2,
     name: "Specialty Items",
-    image: "/images/AboutUs_header.png",
+    image: "/images/img2.jpg",
     description: "Unique and innovative combinations",
     colors: {
       bgGradient: "from-[#FEF3C7] to-[#FDE68A]",
@@ -60,7 +60,7 @@ const categories: Category[] = [
   {
     id: 3,
     name: "Premium Selection",
-    image: "/images/leaves.png",
+    image: "/images/img3.jpg",
     description: "Elegant and sophisticated choices",
     colors: {
       bgGradient: "from-[#FFE6E6] to-[#FFCCD6]",
@@ -75,7 +75,7 @@ const categories: Category[] = [
   {
     id: 4,
     name: "Seasonal Items",
-    image: "/images/drone_poster.png",
+    image: "/images/img4.jpg",
     description: "Limited edition seasonal delights",
     colors: {
       bgGradient: "from-[#E0F4FF] to-[#B5E8FF]",

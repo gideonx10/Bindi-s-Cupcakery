@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion, useMotionValue, animate } from 'framer-motion';
+import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
+import { motion, useMotionValue, animate } from "framer-motion";
 
 interface GalleryImage {
   id: number;
@@ -13,24 +13,24 @@ interface GalleryImage {
 const galleryImages: GalleryImage[] = [
   {
     id: 1,
-    src: "/images/dalal_street_poster.png",
+    src: "/images/img1.jpg",
     alt: "Dalal Street Movie Poster",
   },
   {
     id: 2,
-    src: "/images/ctc_poster.png",
+    src: "/images/img2.jpg",
     alt: "CTC Movie Poster",
   },
   {
     id: 3,
-    src: "/images/drone_poster.png",
+    src: "/images/img3.jpg",
     alt: "Drone Movie Poster",
   },
   {
     id: 4,
-    src: "/images/jumanji_poster.png",
+    src: "/images/img4.jpg",
     alt: "Jumanji Movie Poster",
-  }
+  },
 ];
 
 const generateOffset = (index: number) => {
@@ -58,13 +58,13 @@ const ImageGallery = () => {
           onComplete: () => {
             if (!containerRef.current) return;
             const containerWidth = containerRef.current.scrollWidth / 3;
-            
+
             if (currentX < -containerWidth) {
               x.set(currentX + containerWidth);
             }
-            
+
             startAutoScroll();
-          }
+          },
         });
       }, 3000);
     };
@@ -86,7 +86,7 @@ const ImageGallery = () => {
       clearTimeout(timeoutRef.current);
     }
   };
-  
+
   const handleDragEnd = () => {
     if (!containerRef.current) return;
 
@@ -98,22 +98,25 @@ const ImageGallery = () => {
     } else if (currentX > 0) {
       x.set(currentX - containerWidth);
     }
-    
+
     setIsDragging(false);
   };
 
-  const handleDrag = (event: MouseEvent | TouchEvent, info: { delta: { x: number } }) => {
+  const handleDrag = (
+    event: MouseEvent | TouchEvent,
+    info: { delta: { x: number } }
+  ) => {
     if (!containerRef.current) return;
-    
+
     const containerWidth = containerRef.current.scrollWidth / 3;
     let newX = x.get() + info.delta.x;
-    
+
     if (newX < -containerWidth) {
       newX += containerWidth;
     } else if (newX > 0) {
       newX -= containerWidth;
     }
-    
+
     x.set(newX);
   };
 
@@ -123,15 +126,15 @@ const ImageGallery = () => {
         {/* Header Section */}
         <div className="flex items-center justify-center">
           <div className="text-center px-4">
-            <h1 
+            <h1
               className="text-7xl sm:text-8xl md:text-9xl text-[#4C1D95] uppercase tracking-tight leading-[1.1] font-black mb-4"
-              style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
             >
               Visual Wonders
             </h1>
-            <div 
+            <div
               className="text-xl sm:text-2xl md:text-3xl text-[#6D28D9] tracking-wider font-medium"
-              style={{ fontFamily: 'Barlow, sans-serif' }}
+              style={{ fontFamily: "Barlow, sans-serif" }}
             >
               Experience Our Cinematic Magic 🎬
             </div>
@@ -147,50 +150,54 @@ const ImageGallery = () => {
               drag="x"
               dragConstraints={{
                 left: -Infinity,
-                right: Infinity
+                right: Infinity,
               }}
               dragElastic={0.1}
-              dragTransition={{ 
-                bounceStiffness: 400, 
+              dragTransition={{
+                bounceStiffness: 400,
                 bounceDamping: 40,
-                power: 0.2
+                power: 0.2,
               }}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               onDrag={handleDrag}
               className="flex gap-4 sm:gap-6 md:gap-8 cursor-grab active:cursor-grabbing py-8"
             >
-              {[...galleryImages, ...galleryImages, ...galleryImages].map((image, index) => (
-                <motion.div
-                  key={`${image.id}-${index}`}
-                  className="relative flex-shrink-0"
-                  style={{
-                    y: generateOffset(index),
-                  }}
-                >
-                  <div className="w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] 
-                                relative rounded-xl overflow-hidden">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, 320px"
-                      draggable="false"
-                      priority={index < 4}
-                    />
-                  </div>
-                </motion.div>
-              ))}
+              {[...galleryImages, ...galleryImages, ...galleryImages].map(
+                (image, index) => (
+                  <motion.div
+                    key={`${image.id}-${index}`}
+                    className="relative flex-shrink-0"
+                    style={{
+                      y: generateOffset(index),
+                    }}
+                  >
+                    <div
+                      className="w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] 
+                                relative rounded-xl overflow-hidden"
+                    >
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, 320px"
+                        draggable="false"
+                        priority={index < 4}
+                      />
+                    </div>
+                  </motion.div>
+                )
+              )}
             </motion.div>
           </div>
         </div>
 
         {/* Footer Section */}
         <div className="flex items-center justify-center px-4 pb-4">
-          <p 
+          <p
             className="text-2xl sm:text-3xl md:text-4xl text-[#5B21B6] tracking-wider font-medium text-center"
-            style={{ fontFamily: 'Barlow, sans-serif' }}
+            style={{ fontFamily: "Barlow, sans-serif" }}
           >
             Unveil The Stories That Move You
           </p>

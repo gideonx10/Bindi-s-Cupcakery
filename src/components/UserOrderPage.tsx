@@ -151,7 +151,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="lg:w-[96.5%] p-6 bg-[#FFF0F7] lg:m-6 rounded-xl shadow-xl">
       <h1 className="text-3xl font-bold mb-8 text-gray-800">My Orders</h1>
       {orders.length === 0 ? (
         <Card>
@@ -166,10 +166,10 @@ export default function OrdersPage({ userId }: { userId: string }) {
             <Card
               key={order._id}
               className={`transform transition-all duration-200 hover:shadow-lg ${
-                order.isHamper ? "bg-purple-50" : ""
+                order.isHamper ? "bg-purple-50" : "bg-[#FAFAFA]"
               }`}
             >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex lg:flex-row gap-2 lg:items-center justify-between space-y-0 pb-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Order ID</p>
                   <p className="text-lg font-semibold">{order._id}</p>
