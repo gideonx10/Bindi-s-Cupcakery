@@ -155,9 +155,9 @@ const TopCategories = () => {
   return (
     <section 
       ref={sectionRef} 
-      className="py-20 px-4 bg-[#E6F7FF] relative overflow-hidden min-h-screen"
+      className="py-20 pt-8 md:pt-10 lg:pt-12 bg-[#E6F7FF] relative overflow-hidden min-h-screen"
     >
-      <motion.div
+      <motion.div 
         style={{ y, opacity }}
         className="max-w-7xl mx-auto relative z-10"
       >
@@ -169,8 +169,8 @@ const TopCategories = () => {
             TOP CATEGORIES
           </h1>
           <div 
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#4A739B] tracking-wider font-medium"
-            style={{ fontFamily: 'Barlow, sans-serif' }}
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#4A739B] tracking-wider font-medium font-ancient"
+            
           >
             EXPLORE OUR HANDCRAFTED COLLECTION
           </div>

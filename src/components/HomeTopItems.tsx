@@ -155,13 +155,13 @@ const TopItems = () => {
   return (
     <section 
       ref={sectionRef} 
-      className="py-20 px-4 bg-[#F1F5ED] relative overflow-hidden min-h-screen"
+      className="pb-20 px-4 bg-[#F1F5ED] relative overflow-hidden min-h-screen"
     >
       <motion.div
         style={{ y, opacity }}
         className="max-w-7xl mx-auto relative z-10"
       >
-        <div className="pt-12 pb-16 flex-shrink-0">
+        <div className=" pb-16 flex-shrink-0">
           <h1 
             className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl text-center text-[#445D48] uppercase tracking-tight leading-none font-black"
             style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
@@ -169,9 +169,7 @@ const TopItems = () => {
             TOP ITEMS
           </h1>
           <div 
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#588157] tracking-wider font-medium"
-            style={{ fontFamily: 'Barlow, sans-serif' }}
-          >
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#588157] tracking-wider font-medium font-ancient"          >
             EXPLORE OUR HANDCRAFTED COLLECTION
           </div>
         </div>

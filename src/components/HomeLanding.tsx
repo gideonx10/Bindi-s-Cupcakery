@@ -327,7 +327,7 @@ export default function HomeLanding() {
                           bg-white/5 backdrop-blur-[2px] 
                           border border-white/10
                           shadow-[0_4px_24px_0_rgba(31,38,135,0.10)]"
-                 style={{ WebkitBackdropFilter: "blur(2px)" }}
+                 style={{ WebkitBackdropFilter: "blur(2px)" ,}}
             />
             
             {/* Animated Content */}
@@ -339,7 +339,7 @@ export default function HomeLanding() {
                 <span className="text-2xl md:text-3xl animate-bounce">
                   {FEATURE_MESSAGES[currentFeature].icon}
                 </span>
-                <p className="font-serif text-lg md:text-xl text-gray-800 font-medium whitespace-normal min-w-[200px] md:min-w-[300px]">
+                <p className="font-ancient text-lg md:text-xl text-[#c23471] font-medium whitespace-normal min-w-[200px] md:min-w-[300px]">
                   {FEATURE_MESSAGES[currentFeature].text}
                 </p>
               </div>

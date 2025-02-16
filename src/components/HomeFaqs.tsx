@@ -43,7 +43,7 @@ const FAQs = () => {
     };
   
     return (
-      <section className="min-h-screen bg-[#FFF0F7] pt-24 pb-32 md:pt-32 md:pb-40 lg:pt-40">
+      <section className="min-h-screen bg-[#FFF0F7] pt-8 md:pt-10 lg:pt-12 pb-20">
         <div className="flex flex-col gap-16 md:gap-20 max-w-6xl mx-auto px-4">
           {/* Header */}
           <motion.div 
@@ -60,8 +60,8 @@ const FAQs = () => {
                 FAQs
               </h1>
               <div 
-                className="text-xl sm:text-2xl md:text-3xl text-[#B13D73] tracking-wider font-medium"
-                style={{ fontFamily: 'Barlow, sans-serif' }}
+                className="text-xl sm:text-2xl md:text-3xl text-[#B13D73] tracking-wider font-medium font-ancient"
+                
               >
                 Got Questions? We&apos;ve Got Answers! 🎯
               </div>
