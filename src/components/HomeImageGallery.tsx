@@ -11,30 +11,14 @@ interface GalleryImage {
 }
 
 const galleryImages: GalleryImage[] = [
-  {
-    id: 1,
-    src: "/images/img1.jpg",
-    alt: "Dalal Street Movie Poster",
-  },
-  {
-    id: 2,
-    src: "/images/img2.jpg",
-    alt: "CTC Movie Poster",
-  },
-  {
-    id: 3,
-    src: "/images/img3.jpg",
-    alt: "Drone Movie Poster",
-  },
-  {
-    id: 4,
-    src: "/images/img4.jpg",
-    alt: "Jumanji Movie Poster",
-  },
+  { id: 1, src: "/images/img1.jpg", alt: "Dalal Street Movie Poster" },
+  { id: 2, src: "/images/img2.jpg", alt: "CTC Movie Poster" },
+  { id: 3, src: "/images/img3.jpg", alt: "Drone Movie Poster" },
+  { id: 4, src: "/images/img4.jpg", alt: "Jumanji Movie Poster" },
 ];
 
 const generateOffset = (index: number) => {
-  const offsets = [0, -10, 10, -10, 10]; // Reduced randomness in vertical positions
+  const offsets = [0, -10, 10, -10, 10];
   return offsets[index % offsets.length];
 };
 
@@ -121,8 +105,8 @@ const ImageGallery = () => {
   };
 
   return (
-    <section className="bg-[#F5F3FF] h-screen pt-16 md:pt-20 lg:pt-24">
-      <div className="flex flex-col gap-10 md:gap-12 h-full pb-8">
+    <section className="bg-[#F5F3FF] min-h-screen ">
+      <div className="flex flex-col gap-8 md:gap-10 h-full">
         {/* Header Section */}
         <div className="flex items-center justify-center">
           <div className="text-center px-4">
@@ -161,7 +145,7 @@ const ImageGallery = () => {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               onDrag={handleDrag}
-              className="flex gap-4 sm:gap-6 md:gap-8 cursor-grab active:cursor-grabbing py-8"
+              className="flex gap-4 sm:gap-6 md:gap-8 cursor-grab active:cursor-grabbing py-6"
             >
               {[...galleryImages, ...galleryImages, ...galleryImages].map(
                 (image, index) => (
@@ -194,12 +178,12 @@ const ImageGallery = () => {
         </div>
 
         {/* Footer Section */}
-        <div className="flex items-center justify-center px-4 pb-4">
+        <div className="flex items-center justify-center px-4 pb-12 md:pb-16">
           <p
             className="text-2xl sm:text-3xl md:text-4xl text-[#5B21B6] tracking-wider font-medium text-center"
             style={{ fontFamily: "Barlow, sans-serif" }}
           >
-            Unveil The Stories That Move You
+            Unveiling Art, One Frame at a Time. 🎭✨
           </p>
         </div>
       </div>

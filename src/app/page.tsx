@@ -5,6 +5,7 @@ import ImageGallery from "@/components/HomeImageGallery";
 import CustomerReviews from "@/components/HomeCustomerReviews";
 import TopItems from "@/components/HomeTopItems";
 import FAQs from "@/components/HomeFaqs";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -39,6 +40,9 @@ export default function Home() {
       {/* FAQs Section */}
       <div className="relative bg-gradient-to-b from-[#FFF0F7] to-[#FFE4F0]">
         <FAQs />
+      </div>
+      <div className="relative bg-gradient-to-b from-[#FFE4F0] to-[#F1F5ED]">
+        <Footer />
       </div>
     </div>
   );

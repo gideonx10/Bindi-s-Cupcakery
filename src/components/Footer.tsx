@@ -6,8 +6,8 @@ import { Phone, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative flex flex-col min-h-[60vh] bg-[#F1F5ED] w-full bottom-0 rounded-t-[40px] overflow-hidden justify-center">
-      <div className="flex flex-col md:flex-row justify-between p-8 md:px-20 gap-8 -translate-y-8">
+    <footer className="relative flex flex-col bg-[#F1F5ED] w-full overflow-hidden justify-center pt-10">
+      <div className="flex flex-col md:flex-row justify-between p-6 md:px-20 gap-8 -translate-y-8">
         {/* First Section - Logo and Company Name */}
         <div className="flex flex-row md:flex-col md:w-[40%] items-center justify-center">
           {/* Store Icon */}
@@ -15,7 +15,7 @@ const Footer = () => {
             <div className="absolute top-0 left-0 w-full z-10">
               <Image
                 src="/images/icon.png"
-                alt="Bindi's Cupcakery Roof"
+                alt="Footer logo"
                 width={128}
                 height={128}
                 className="transform"
@@ -46,7 +46,7 @@ const Footer = () => {
             <h3 className="text-gray-900 text-3xl md:text-4xl font-semibold mb-6 font-serif">
               Quick Links
             </h3>
-            <div className="flex flex-col gap-4 md:gap-6 items-center">
+            <div className="flex md:flex-col gap-4 md:gap-6 items-center">
               <a
                 className="text-gray-900 text-2xl md:text-3xl font-medium hover:underline"
                 href=""
@@ -74,7 +74,7 @@ const Footer = () => {
             <div className="w-36 h-36 p-2">
               <Image
                 src="/images/footerQR.png"
-                alt="Bindi's Cupcakery Roof"
+                alt="Footer QR"
                 width={140}
                 height={140}
                 className="transform"
@@ -134,7 +134,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright Section */}
-      <div className="bg-[#eeffdc] absolute bottom-0 w-full p-4 mt-8 rounded-t-3xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
+      <div className="bg-[#eeffdc] relative bottom-0 w-full p-4 rounded-t-3xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-4">
           <p className="text-gray-900 text-lg md:text-xl mb-2 md:mb-0">
             &copy; 2025 Bindi&apos;s Cupcakery. All rights reserved.

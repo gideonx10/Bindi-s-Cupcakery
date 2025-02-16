@@ -59,15 +59,17 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
           >
             <p
               ref={firstText}
-              className="m-0 mr-3 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight"
-              style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
+              className="m-0 mr-3 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black  uppercase tracking-tight"
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+              
             >
               {text}
             </p>
             <p
               ref={secondText}
-              className="m-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight"
-              style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
+              className="m-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black  uppercase tracking-tight"
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+              
             >
               {text}
             </p>

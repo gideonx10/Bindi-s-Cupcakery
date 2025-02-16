@@ -10,7 +10,7 @@ interface Review {
   color: string;
   textColor: string;
   shadow: string;
-  isApproved: boolean; // Added to filter approved reviews
+  isApproved: boolean;
 }
 
 const generateAlternatingOffsets = (count: number) => {
@@ -45,13 +45,13 @@ const CustomerReviews = () => {
 
         const data: Review[] = await response.json();
         console.log(data);
-        const approvedReviews = data.filter((review) => review.isApproved); // Only include approved reviews
+        const approvedReviews = data.filter((review) => review.isApproved);
         console.log(approvedReviews);
         setReviews([
           ...approvedReviews,
           ...approvedReviews,
           ...approvedReviews,
-        ]); // Tripling for infinite loop effect
+        ]);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -81,7 +81,7 @@ const CustomerReviews = () => {
   );
 
   return (
-    <section className="bg-[#FCFBE4] pt-24 md:pt-32 lg:pt-40">
+    <section className="bg-[#FCFBE4] min-h-screen pt-8 md:pt-10 lg:pt-12 pb-20">
       <div className="flex flex-col gap-16 md:gap-20">
         {/* Header Section */}
         <div className="flex items-center justify-center">
@@ -92,7 +92,7 @@ const CustomerReviews = () => {
             >
               HAPPY CUSTOMERS.
             </h2>
-            <div className="text-lg xs:text-xl sm:text-2xl md:text-3xl text-[#4A0D2C] tracking-wider font-medium">
+            <div className="text-lg xs:text-xl sm:text-2xl md:text-3xl text-[#4A0D2C] tracking-wider font-medium font-ancient">
               Share Your Experience With Us
             </div>
           </div>
@@ -145,6 +145,15 @@ const CustomerReviews = () => {
               ))}
             </motion.div>
           </div>
+        </div>
+
+        {/* Footer Section */}
+        <div className="flex items-center justify-center pb-12 md:pb-16">
+          <p
+            className="text-2xl sm:text-3xl md:text-4xl text-[#4A0D2C] tracking-wider font-medium text-center font-ancient"
+          >
+            Your words inspire our craft. ✨💬
+          </p>
         </div>
       </div>
     </section>
