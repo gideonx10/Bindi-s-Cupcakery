@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CartItem from "@/components/CartItem";
-import WhatsAppQR from "./WhatsAppQR";
 import UPIQrCode from "./UPIQrCode";
 
 interface Product {
@@ -30,8 +29,6 @@ export default function CartPage({ userId }: { userId: string }) {
   const [customization, setCustomization] = useState("");
   const [showQR, setShowQR] = useState(false);
   const [transactionId, setTransactionId] = useState("");
-  const [showWhatsAppQR, setShowWhatsAppQR] = useState(false);
-  const [whatsAppMessage, setWhatsAppMessage] = useState("");
   const [isHamper, setIsHamper] = useState(false);
   const upiId = process.env.NEXT_PUBLIC_UPI_ID as string | "";
   const upiName = process.env.NEXT_PUBLIC_UPI_NAME;
@@ -220,53 +217,14 @@ export default function CartPage({ userId }: { userId: string }) {
       setCheckingOut(false);
     }
   }
+
   const handlePayOnlineClick = () => {
-    setShowQR(!showQR); // Toggle QR visibility
-    if (showWhatsAppQR) setShowWhatsAppQR(false); // Hide WhatsApp QR if showing
+    setShowQR(!showQR);
   };
-  const generateWhatsAppOrderMessage = async () => {
-    if (isHamper && getTotalQuantity() > 6) {
-      alert("Hamper orders cannot exceed 6 items in total!");
-      return;
-    }
-
-    if (showWhatsAppQR) {
-      setShowWhatsAppQR(false);
-      return;
-    }
-    try {
-      const userRes = await fetch(`/api/user/details?userId=${userId}`);
-      if (!userRes.ok) throw new Error("Failed to fetch user details");
-      const userData = await userRes.json();
-
-      const message = `Order Details:
-🛍️ Order from: Bindi's Cupcakery
-👤 Customer: ${userData.name}
-📞 Contact: ${userData.phoneNumber}
-📦 Items:
-${displayedCartItems
-  .map((item) => `- ${item.product.name} x${item.quantity}`)
-  .join("\n")}
-💰 Total Amount: ₹${displayedCartItems.reduce(
-        (total, item) => total + item.product.price * item.quantity,
-        0
-      )}
-📝 Customization: ${customization || "N/A"}
-🎁 Is Hamper: ${isHamper ? "Yes" : "No"}
-💳 Payment Method: Pay on Takeaway\nIf you already paid online,share the Transaction ID in next message `;
-
-      setWhatsAppMessage(message);
-      setShowWhatsAppQR(true);
-    } catch (error) {
-      console.log(error);
-      console.error("Failed to fetch user details for WhatsApp order.");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#FFF0F7] rounded-2xl shadow-xl p-6 sm:p-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
               Your Cart
@@ -283,7 +241,7 @@ ${displayedCartItems
           </div>
 
           {/* Hamper Toggle with enhanced styling */}
-          <div className="mb-6 bg-gray-50 p-4 rounded-xl shadow-xl">
+          <div className="mb-6 bg-gray-50 p-4 rounded-xl">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -386,16 +344,6 @@ ${displayedCartItems
                   >
                     {showQR ? "Hide Payment QR" : "Pay Online"}
                   </button>
-
-                  <button
-                    onClick={generateWhatsAppOrderMessage}
-                    disabled={isQuantityExceeded}
-                    className={`w-full sm:w-auto px-8 py-3 ${
-                      showWhatsAppQR ? "bg-red-600" : "bg-green-600"
-                    } text-white font-semibold rounded-xl transform hover:-translate-y-1 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:transform-none`}
-                  >
-                    {showWhatsAppQR ? "Hide WhatsApp QR" : "Order via WhatsApp"}
-                  </button>
                 </div>
               </div>
 
@@ -438,15 +386,6 @@ ${displayedCartItems
                   >
                     Confirm Payment
                   </button>
-                </div>
-              )}
-
-              {showWhatsAppQR && (
-                <div className="mt-6 bg-gray-50 rounded-xl p-6 text-center">
-                  <WhatsAppQR
-                    phoneNumber="+917600960068"
-                    message={whatsAppMessage}
-                  />
                 </div>
               )}
             </div>
