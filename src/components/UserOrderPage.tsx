@@ -142,6 +142,18 @@ export default function OrdersPage({ userId }: { userId: string }) {
     }
   };
 
+  const getPaymentBadgeProps = (isVerified: boolean) => {
+    return isVerified
+      ? {
+          variant: "success" as const,
+          className: "bg-green-100 text-green-800",
+        }
+      : {
+          variant: "warning" as const,
+          className: "bg-yellow-100 text-yellow-800",
+        };
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -180,6 +192,13 @@ export default function OrdersPage({ userId }: { userId: string }) {
                       Hamper
                     </Badge>
                   )}
+                  <Badge {...getPaymentBadgeProps(order.isPaymentVerified)}>
+                    {order.isPaymentVerified
+                      ? "Payment Verified"
+                      : order.status === "online"
+                      ? "Your Payment will be reflected in 24rhs"
+                      : "Payment Pending"}
+                  </Badge>
                   <Badge {...getStatusBadgeProps(order.status)}>
                     {order.status}
                   </Badge>
