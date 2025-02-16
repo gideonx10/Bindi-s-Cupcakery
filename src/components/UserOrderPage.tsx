@@ -195,8 +195,6 @@ export default function OrdersPage({ userId }: { userId: string }) {
                   <Badge {...getPaymentBadgeProps(order.isPaymentVerified)}>
                     {order.isPaymentVerified
                       ? "Payment Verified"
-                      : order.status === "online"
-                      ? "Your Payment will be reflected in 24rhs"
                       : "Payment Pending"}
                   </Badge>
                   <Badge {...getStatusBadgeProps(order.status)}>
