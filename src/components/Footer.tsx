@@ -6,8 +6,8 @@ import { Phone, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative flex flex-col min-h-[60vh] bg-[#F1F5ED] w-full bottom-0 overflow-hidden justify-center">
-      <div className="flex flex-col md:flex-row justify-between p-8 md:px-20 gap-8 -translate-y-8">
+    <footer className="relative flex flex-col bg-[#F1F5ED] w-full overflow-hidden justify-center pt-10">
+      <div className="flex flex-col md:flex-row justify-between p-6 md:px-20 gap-8 -translate-y-8">
         {/* First Section - Logo and Company Name */}
         <div className="flex flex-row md:flex-col md:w-[40%] items-center justify-center">
           {/* Store Icon */}
