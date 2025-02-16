@@ -15,6 +15,7 @@ import {
   Star,
   Menu,
   FolderTree,
+  LogOut,
 } from "lucide-react";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -78,6 +79,7 @@ export default function DashboardLayout({
 
 function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const routes = [
     {
       label: "Overview",
@@ -117,28 +119,54 @@ function Sidebar({ className }: SidebarProps) {
     },
   ];
 
+  async function handleLogout() {
+    try {
+      const response = await fetch("/api/admin/logout", {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to logout");
+      }
+      router.push("/admin/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  }
+
   return (
-    <div className={cn("pb-12 w-64", className)}>
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold">Admin Dashboard</h2>
-          <Separator />
-        </div>
-        <ScrollArea className="px-3">
-          <div className="space-y-1">
-            {routes.map((route) => (
-              <Link key={route.href} href={route.href}>
-                <Button
-                  variant={pathname === route.href ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                >
-                  <route.icon className={cn("mr-2 h-4 w-4", route.color)} />
-                  {route.label}
-                </Button>
-              </Link>
-            ))}
+    <div className={cn("pb-12 w-64 flex flex-col justify-between", className)}>
+      <div>
+        <div className="space-y-4 py-4">
+          <div className="px-3 py-2">
+            <h2 className="mb-2 px-4 text-lg font-semibold">Admin Dashboard</h2>
+            <Separator />
           </div>
-        </ScrollArea>
+          <ScrollArea className="px-3">
+            <div className="space-y-1">
+              {routes.map((route) => (
+                <Link key={route.href} href={route.href}>
+                  <Button
+                    variant={pathname === route.href ? "secondary" : "ghost"}
+                    className="w-full justify-start"
+                  >
+                    <route.icon className={cn("mr-2 h-4 w-4", route.color)} />
+                    {route.label}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      </div>
+      <div className="px-3">
+        <Button 
+          onClick={handleLogout} 
+          variant="ghost"
+          className="w-full justify-start"
+        >
+          <LogOut className="mr-2 h-4 w-4 text-red-500" />
+          Logout
+        </Button>
       </div>
     </div>
   );
