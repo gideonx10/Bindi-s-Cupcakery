@@ -178,7 +178,7 @@ const Navbar = () => {
     { href: "/user", text: "PROFILE" },
     { href: "/products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
-    { href: "/aboutUs", text: "ABOUT US" },
+    { href: "/about", text: "ABOUT US" },
   ];
 
   return (
@@ -462,5 +462,6 @@ const Navbar = () => {
     </>
   );
 };
+
 
 export default Navbar;

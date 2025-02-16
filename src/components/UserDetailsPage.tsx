@@ -126,7 +126,7 @@ const UserDetails = ({ userId }: { userId: string }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
       </div>
     );
   }
@@ -140,7 +140,7 @@ const UserDetails = ({ userId }: { userId: string }) => {
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="m-6 p-4 md:p-8 bg-[#FFF0F7] shadow-xl">
       <CardHeader>
         <div className="flex items-center gap-2">
           <User className="w-6 h-6 text-blue-500" />
@@ -213,46 +213,46 @@ const UserDetails = ({ userId }: { userId: string }) => {
               </div>
             ) : (
               <div>
-                <div className="grid gap-4">
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <User className="w-5 h-5 text-blue-500" />
+                <div className="grid gap-6">
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
+                    <User className="w-6 h-6 text-blue-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Name</p>
-                      <p className="font-medium">{user.name}</p>
+                      <p className="text-base text-gray-500">Name</p>
+                      <p className="font-semibold text-xl">{user.name}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Mail className="w-5 h-5 text-blue-500" />
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
+                    <Mail className="w-6 h-6 text-blue-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium">{user.email}</p>
+                      <p className="text-base text-gray-500">Email</p>
+                      <p className="font-semibold text-xl">{user.email}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Phone className="w-5 h-5 text-blue-500" />
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
+                    <Phone className="w-6 h-6 text-blue-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Phone</p>
-                      <p className="font-medium">{user.phone}</p>
+                      <p className="text-base text-gray-500">Phone</p>
+                      <p className="font-semibold text-xl">{user.phone}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <MapPin className="w-5 h-5 text-blue-500" />
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
+                    <MapPin className="w-6 h-6 text-blue-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Area</p>
-                      <p className="font-medium">{user.area}</p>
+                      <p className="text-base text-gray-500">Area</p>
+                      <p className="font-semibold text-xl">{user.area}</p>
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-6">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-xl"
                   >
                     Edit Profile
                   </button>
                   <button
                     onClick={() => setShowChangePassword(!showChangePassword)}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 shadow-xl"
                   >
                     Change Password
                   </button>
@@ -261,7 +261,7 @@ const UserDetails = ({ userId }: { userId: string }) => {
             )}
 
             {showChangePassword && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-md">
                 <div className="flex items-center gap-2 mb-4">
                   <KeyRound className="w-5 h-5 text-blue-500" />
                   <h3 className="text-lg font-semibold">Change Password</h3>
