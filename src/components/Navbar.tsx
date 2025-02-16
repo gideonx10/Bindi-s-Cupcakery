@@ -10,6 +10,10 @@ import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) {
+    return null; // Don't render navbar for admin paths
+  }
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
@@ -20,7 +24,6 @@ const Navbar = () => {
 
   const { data: session } = useSession();
   const userId = (session?.user as { id: string })?.id;
-  const pathname = usePathname();
 
   // ... (other state and refs)
 
@@ -462,6 +465,5 @@ const Navbar = () => {
     </>
   );
 };
-
 
 export default Navbar;

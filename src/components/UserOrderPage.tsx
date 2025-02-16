@@ -127,7 +127,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
       case "pending":
         return {
           variant: "warning" as const,
-          className: "bg-yellow-100 text-yellow-800",
+          className: "bg-yellow-100 text-yellow-500",
         };
       case "cancelled":
         return {
@@ -137,7 +137,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
       default:
         return {
           variant: "secondary" as const,
-          className: "bg-gray-100 text-gray-800",
+          className: "bg-yellow-500 text-yellow-900",
         };
     }
   };
@@ -194,7 +194,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
             <Card
               key={order._id}
               className={`transform transition-all duration-200 hover:shadow-lg ${
-                order.isHamper ? "bg-purple-50" : ""
+                order.isHamper ? "bg-purple-100" : ""
               }`}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -204,7 +204,7 @@ export default function OrdersPage({ userId }: { userId: string }) {
                 </div>
                 <div className="flex gap-2">
                   {order.isHamper && (
-                    <Badge className="bg-purple-100 text-purple-800">
+                    <Badge className="bg-purple-200 text-purple-800">
                       Hamper
                     </Badge>
                   )}
