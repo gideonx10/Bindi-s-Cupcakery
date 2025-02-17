@@ -60,7 +60,7 @@ export default function Home() {
         </div>
       )}
 
-      <div ref={homeRef} className="relative opacity-0">
+      <div ref={homeRef} className="relative opacity-0 ">
         <HomeLanding />
         <InfiniteName />
 

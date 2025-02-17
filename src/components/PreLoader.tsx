@@ -126,7 +126,7 @@ const PreLoader = () => {
       {/* Company name */}
       <div
         ref={textRef}
-        className="bindi font-[pacifico]"
+        className="bindi font-[pacifico] text-center"
         style={{
           fontSize: "3rem",
           letterSpacing: "0.05em",
