@@ -3,7 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/connectDB";
 import Order from "@/models/Order";
-
+import "@/models/Product";
+import "@/models/User";
+import "@/models/Category";
 export async function GET() {
   try {
     await connectDB();
@@ -13,7 +15,10 @@ export async function GET() {
     }
 
     const orders = await Order.find()
-      .populate({ path: "user", select: "name email phone" })
+      .populate({
+        path: "user",
+        select: "name email phone",
+      })
       .populate({
         path: "products.product",
         select: "name category",
@@ -35,8 +40,30 @@ export async function GET() {
         user: 1
       })
       .sort({ createdAt: -1 });
+
+    // Transform orders to handle deleted users
+    const processedOrders = orders.map(order => {
+      const orderObj = order.toObject();
       
-    return NextResponse.json(orders);
+      if (!orderObj.user) {
+        return {
+          ...orderObj,
+          user: {
+            _id: 'deleted',
+            name: '(Deleted User)',
+            email: '<Account Removed>',
+            phone: '<Account Removed>'
+          },
+          userDeleted: true // Add a flag to indicate deleted user
+        };
+      }
+      return {
+        ...orderObj,
+        userDeleted: false
+      };
+    });
+      
+    return NextResponse.json(processedOrders);
   } catch (error) {
     console.error("Error fetching orders:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

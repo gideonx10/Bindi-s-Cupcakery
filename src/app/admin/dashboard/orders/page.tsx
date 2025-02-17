@@ -53,6 +53,7 @@ interface User {
 export interface Order {
   _id: string;
   user: User;
+  userDeleted?: boolean; // Add this field
   products: OrderProduct[];
   totalAmount: number;
   status: "pending" | "ready to take-away" | "delivered" | "cancelled";
@@ -125,6 +126,13 @@ const ProductsModal = ({ products, customization }: { products: OrderProduct[], 
       </DialogContent>
     </Dialog>
   );
+};
+
+const getDeletedUserStyle = (isDeleted: boolean) => {
+  if (isDeleted) {
+    return "text-gray-500 italic";
+  }
+  return "";
 };
 
 export default function OrdersPage() {
@@ -259,7 +267,7 @@ export default function OrdersPage() {
                 <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Products</TableHead>
-                <TableHead>Total ($)</TableHead>
+                <TableHead>Total</TableHead>
                 <TableHead>Payment Details</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Placed At</TableHead>
@@ -270,9 +278,20 @@ export default function OrdersPage() {
               {filteredOrders.map((order) => (
                 <TableRow key={order._id}>
                   <TableCell className="font-medium">{order._id}</TableCell>
-                  <TableCell>{order.user.name}</TableCell>
-                  <TableCell>{order.user.email}</TableCell>
-                  <TableCell>{order.user.phone}</TableCell>
+                  <TableCell className={getDeletedUserStyle(order.userDeleted ?? false)}>
+                    {order.user.name}
+                    {order.userDeleted && (
+                      <Badge variant="secondary" className="ml-2 text-xs">
+                        Deleted Account
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className={getDeletedUserStyle(order.userDeleted ?? false)}>
+                    {order.user.email}
+                  </TableCell>
+                  <TableCell className={getDeletedUserStyle(order.userDeleted ?? false)}>
+                    {order.user.phone}
+                  </TableCell>
                   <TableCell>
                     <ProductsModal 
                       products={order.products}
@@ -329,7 +348,8 @@ export default function OrdersPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="ready to take-away">Ready to take-away</SelectItem>                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="ready to take-away">Ready to take-away</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
