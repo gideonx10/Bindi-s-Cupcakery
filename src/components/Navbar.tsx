@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
   const [isPreloaderActive, setIsPreloaderActive] = useState(pathname === "/");
 
   useEffect(() => {
@@ -62,9 +63,6 @@ const Navbar = () => {
     checkSession();
   }, []);
   const userId = user?.userId;
-
-  // const { data: session } = useSession();
-  // const userId = (session?.user as { id: string })?.id;
 
   // Handle scroll position for homepage
   useEffect(() => {
