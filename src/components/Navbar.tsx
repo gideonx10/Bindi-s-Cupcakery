@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import Cart from "./SidebarCart";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
@@ -21,9 +21,32 @@ const Navbar = () => {
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLLIElement[]>([]);
+  const [user, setUser] = useState<{
+    userId: string;
+    phone: string;
+    role: string;
+  } | null>(null);
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
 
-  const { data: session } = useSession();
-  const userId = (session?.user as { id: string })?.id;
+      const data = await res.json();
+      console.log(data);
+      if (data.authenticated) {
+        setUser({ userId: data.userId, phone: data.phone, role: data.role });
+      } else {
+        console.log("Not authenticated:", data.message);
+      }
+    };
+    checkSession();
+  }, []);
+  const userId = user?.userId;
+
+  // const { data: session } = useSession();
+  // const userId = (session?.user as { id: string })?.id;
 
   // ... (other state and refs)
 

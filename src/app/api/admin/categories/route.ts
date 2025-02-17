@@ -1,16 +1,37 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/connectDB";
 import Category from "@/models/Category";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 // GET - Retrieve all categories (Admin only)
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
+    }
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
     }
     const categories = await Category.find().sort({ createdAt: -1 });
     return NextResponse.json(categories);
@@ -24,14 +45,34 @@ export async function GET() {
 }
 
 // POST - Create a new category (Admin only)
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const data = await request.json();
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const data = await req.json();
 
     // Remove empty _id field to avoid casting error
     if ("_id" in data && data._id === "") {
@@ -57,14 +98,34 @@ export async function POST(request: Request) {
 }
 
 // PUT - Update an existing category (Admin only)
-export async function PUT(request: Request) {
+export async function PUT(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const { searchParams } = new URL(request.url);
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (!id) {
       return NextResponse.json(
@@ -72,7 +133,7 @@ export async function PUT(request: Request) {
         { status: 400 }
       );
     }
-    const data = await request.json();
+    const data = await req.json();
     if (!data.name || !data.description) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -100,14 +161,34 @@ export async function PUT(request: Request) {
 }
 
 // DELETE - Delete a category (Admin only)
-export async function DELETE(request: Request) {
+export async function DELETE(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const { searchParams } = new URL(request.url);
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (!id) {
       return NextResponse.json(

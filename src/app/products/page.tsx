@@ -6,7 +6,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 
 interface Product {
   _id: string;
@@ -37,7 +37,7 @@ export default function ProductsPage() {
   const itemsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   // State variables
   const [products, setProducts] = useState<Product[]>([]);
@@ -62,6 +62,28 @@ export default function ProductsPage() {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [user, setUser] = useState<{
+    userId: string;
+    phone: string;
+    role: string;
+  } | null>(null);
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const data = await res.json();
+      console.log(data);
+      if (data.authenticated) {
+        setUser({ userId: data.userId, phone: data.phone, role: data.role });
+      } else {
+        console.log("Not authenticated:", data.message);
+      }
+    };
+    checkSession();
+  }, []);
 
   // Fetch products when filter conditions change
   useEffect(() => {
@@ -147,7 +169,8 @@ export default function ProductsPage() {
   // Fetch cart quantities when user session changes
   useEffect(() => {
     async function fetchCartQuantities() {
-      const userId = (session?.user as { id: string })?.id;
+      // const userId = (session?.user as { id: string })?.id;
+      const userId = user?.userId;
       if (!userId) {
         setCartQuantities({});
         return;
@@ -171,7 +194,7 @@ export default function ProductsPage() {
     }
 
     fetchCartQuantities();
-  }, [session?.user]);
+  }, [user]);
 
   // Set body overflow to prevent horizontal scroll
   useEffect(() => {
@@ -186,7 +209,8 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
+      // const userId = (session?.user as { id: string })?.id;
+      const userId = user?.userId;
       if (!userId) {
         router.push(
           `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
@@ -231,8 +255,8 @@ export default function ProductsPage() {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
-
+      // const userId = (session?.user as { id: string })?.id;
+      const userId = user?.userId;
       if (!userId) {
         router.push(
           `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`

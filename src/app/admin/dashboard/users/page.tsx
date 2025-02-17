@@ -19,6 +19,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/router";
 
 interface User {
   _id: string;
@@ -47,6 +48,53 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [userId, setUserId] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const sessionData = await res.json();
+      console.log(sessionData);
+      if (sessionData.authenticated) {
+        setUserId(sessionData.userId);
+      } else {
+        console.log("Not authenticated:", sessionData.message);
+        router.push("/admin/login");
+      }
+    };
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [userRes] = await Promise.all([
+          fetch(`/api/user/details?userId=${userId}`),
+          // fetch(`/api/orders?userId=${userId}`),
+        ]);
+
+        const userData = await userRes.json();
+        console.log(userData);
+        if (!userData || userData.user.role !== "admin") {
+          router.push("/admin/login");
+        }
+
+        // setOrders(ordersData.reverse()); // If you plan to use orders
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   useEffect(() => {
     fetchUsers();
@@ -140,7 +188,9 @@ export default function UsersPage() {
                       Order History
                     </Button>
                     <a
-                      href={`https://wa.me/91${(user.phone ?? "").toString().replace(/^(\+91|91)/, "")}`}
+                      href={`https://wa.me/91${(user.phone ?? "")
+                        .toString()
+                        .replace(/^(\+91|91)/, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -161,7 +211,9 @@ export default function UsersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedUser ? `${selectedUser.name}'s Order History` : "Order History"}
+              {selectedUser
+                ? `${selectedUser.name}'s Order History`
+                : "Order History"}
             </DialogTitle>
             <DialogDescription>
               Below is the order history for the selected user.
@@ -187,7 +239,9 @@ export default function UsersPage() {
                     <TableRow key={order._id}>
                       <TableCell>{order._id}</TableCell>
                       <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                      <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </TableCell>
                       <TableCell>{order.status}</TableCell>
                     </TableRow>
                   ))}

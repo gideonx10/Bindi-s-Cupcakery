@@ -6,7 +6,7 @@ import CartPage from "@/components/UserCartPage";
 import HomeTab from "@/components/Hometab";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   Home,
   User,
@@ -17,23 +17,42 @@ import {
 } from "lucide-react";
 
 const UserPage = () => {
-  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const userId = (session?.user as { id: string })?.id;
-
+  const [user, setUser] = useState<{
+    userId: string;
+  } | null>(null);
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+      const data = await res.json();
+      // console.log(data);
+      if (data.authenticated) {
+        setUser({
+          userId: data.userId,
+        });
+      } else {
+        console.log("Not authenticated:", data.message);
+      }
+    };
+    checkSession();
+  }, []);
+  const userId = user?.userId;
   const initialTab = searchParams.get("tab") || "home";
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isHovered, setIsHovered] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push(
-        `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
-      );
-    }
-  }, [status, router]);
+  // useEffect(() => {
+  //   if (status === "unauthenticated") {
+  //     router.push(
+  //       `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
+  //     );
+  //   }
+  // }, [status, router]);
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
@@ -79,11 +98,7 @@ const UserPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "home":
-        return session?.user?.id ? (
-          <HomeTab userId={userId} />
-        ) : (
-          <p>Loading...</p>
-        );
+        return userId ? <HomeTab userId={userId} /> : <p>Loading...</p>;
       case "details":
         return <UserpageDetails userId={userId} />;
       case "orders":

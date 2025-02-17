@@ -7,7 +7,6 @@ interface User {
   name: string;
   email: string;
   phone: string;
-  area: string;
 }
 
 interface Order {
@@ -16,13 +15,15 @@ interface Order {
   createdAt: string;
 }
 
-const HomeTab = ({ userId }: { userId: string }) => {
-  const [user, setUser] = useState<User | null>(null);
+const HomeTab = ({ userId }: { userId: string | undefined }) => {
+  const [user, setUser] = useState<User>({ name: "", email: "", phone: "" });
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter(); // Initialize router
 
   useEffect(() => {
+    if (!userId) return;
+
     const fetchData = async () => {
       try {
         const [userRes, ordersRes] = await Promise.all([
@@ -33,7 +34,12 @@ const HomeTab = ({ userId }: { userId: string }) => {
         const userData = await userRes.json();
         const ordersData = await ordersRes.json();
 
-        setUser(userData);
+        setUser({
+          name: userData.user.name,
+          email: userData.user.email,
+          phone: userData.user.phone,
+        });
+
         setOrders(ordersData.reverse()); // Ensure latest orders appear first
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -41,7 +47,6 @@ const HomeTab = ({ userId }: { userId: string }) => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [userId]);
 
@@ -66,9 +71,6 @@ const HomeTab = ({ userId }: { userId: string }) => {
             </p>
             <p>
               <span className="font-semibold">Phone :</span> {user?.phone}
-            </p>
-            <p>
-              <span className="font-semibold">Area :</span> {user?.area}
             </p>
           </div>
         </div>
