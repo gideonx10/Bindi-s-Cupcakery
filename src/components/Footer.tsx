@@ -6,7 +6,7 @@ import { Phone, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative flex flex-col bg-[#F1F5ED] w-full overflow-hidden justify-center pt-10">
+    <footer className="relative flex flex-col bg-[#FCFBE4] w-full overflow-hidden justify-center pt-10">
       <div className="flex flex-col md:flex-row justify-between p-6 md:px-20 gap-8 -translate-y-8">
         {/* First Section - Logo and Company Name */}
         <div className="flex flex-row md:flex-col md:w-[40%] items-center justify-center">
@@ -25,14 +25,14 @@ const Footer = () => {
 
           {/* Company Name and Tagline */}
           <div className="flex flex-col items-center text-center justify-center">
-            <h2 className="font-[Ananda] text-[1.8rem] md:text-5xl text-gray-900">
+            <h2 className="font-[Ananda] text-[1.8rem] md:text-5xl text-[#4A0D2C]">
               Bindi&apos;s Cupcakery
             </h2>
-            <p className="text-gray-900 font-mono text-[0.9rem] md:text-2xl italic mt-5 hidden md:block">
+            <p className="text-[#4A0D2C] font-ancient text-[0.9rem] md:text-2xl mt-5 hidden md:block">
               &quot;Baked with Love, Egg-Free Always!&quot;
             </p>
             <div className="flex items-center gap-3 mt-3">
-              <span className="text-gray-900 font-medium text-lg md:text-xl text-center">
+              <span className="text-[#4A0D2C] font-medium text-lg md:text-xl text-center">
                 Cloud Kitchen at Parle Point, Surat
               </span>
             </div>
@@ -43,24 +43,24 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between w-full md:w-2/3 gap-8">
           {/* Quick Links Section */}
           <div className="flex flex-col items-center md:items-center w-full md:w-1/2 justify-center">
-            <h3 className="text-gray-900 text-3xl md:text-4xl font-semibold mb-6 font-serif">
+            <h3 className="text-[#4A0D2C] text-3xl md:text-4xl font-bold mb-6">
               Quick Links
             </h3>
             <div className="flex md:flex-col gap-4 md:gap-6 items-center">
               <a
-                className="text-gray-900 text-2xl md:text-3xl font-medium hover:underline"
+                className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
                 href=""
               >
                 PROFILE
               </a>
               <a
-                className="text-gray-900 text-2xl md:text-3xl font-medium hover:underline"
+                className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
                 href=""
               >
                 PRODUCTS
               </a>
               <a
-                className="text-gray-900 text-2xl md:text-3xl font-medium hover:underline"
+                className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
                 href=""
               >
                 ABOUT US
@@ -80,19 +80,19 @@ const Footer = () => {
                 className="transform"
               />
             </div>
-            <span className="text-gray-900 font-medium text-xl md:text-2xl">
+            <span className="text-[#4A0D2C] font-medium text-xl md:text-2xl">
               Scan QR to Order
             </span>
 
             {/* Contact Info */}
             <div className="flex items-center gap-3">
-              <Phone className="w-6 h-6 text-gray-900" />
-              <span className="text-gray-900 font-medium text-lg md:text-xl">
+              <Phone className="w-6 h-6 text-[#4A0D2C]" />
+              <span className="text-[#4A0D2C] font-medium text-lg md:text-xl">
                 +91-8849130189
               </span>
             </div>
             <div className="flex justify-center gap-6">
-              <a href="" className="text-gray-900">
+              <a href="" className="text-[#4A0D2C]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -104,7 +104,7 @@ const Footer = () => {
                   />
                 </svg>
               </a>
-              <a href="" className="text-gray-900">
+              <a href="" className="text-[#4A0D2C]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -116,7 +116,7 @@ const Footer = () => {
                   />
                 </svg>
               </a>
-              <a href="" className="text-gray-900">
+              <a href="" className="text-[#4A0D2C]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -134,12 +134,12 @@ const Footer = () => {
       </div>
 
       {/* Copyright Section */}
-      <div className="bg-[#eeffdc] relative bottom-0 w-full p-4 rounded-t-3xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
+      <div className="bg-[#FCFBE4] relative bottom-0 w-full p-6 rounded-t-2xl shadow-[0_-5px_10px_-5px_rgba(0,0,0,0.1)] font-ancient">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-4">
-          <p className="text-gray-900 text-lg md:text-xl mb-2 md:mb-0">
+          <p className="text-[#4A0D2C] text-lg md:text-xl mb-2 md:mb-0 text-center">
             &copy; 2025 Bindi&apos;s Cupcakery. All rights reserved.
           </p>
-          <p className="text-gray-900 text-lg md:text-xl flex items-center gap-2">
+          <p className="text-[#4A0D2C] text-lg md:text-xl flex items-center gap-2">
             <Mail className="w-6 h-6" />
             bindis_cupcakery@gmail.com
           </p>

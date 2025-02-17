@@ -122,11 +122,14 @@ export default function About() {
 
   return (
     <>
-      <main className="bg-[#F4EADE] min-h-screen max-w-full overflow-hidden">
+      <main className="bg-[#FCFBE4] min-h-screen max-w-full overflow-hidden ">
         {/* About Us Hero Section */}
         <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto">
           <div className="container mx-auto px-4 translate-y-10 fade-up">
-            <h1 className="text-7xl md:text-8xl text-gray-800 mt-[6vh] text-center md:text-left lg:translate-y-10 drop-shadow-2xl font-serif">
+            <h1
+              className="text-7xl md:text-8xl text-gray-800 mt-[6vh] text-center md:text-left lg:translate-y-10 drop-shadow-2xl"
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+            >
               About Us
             </h1>
             <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-[2rem] md:gap-[4rem] md:translate-y-10">
@@ -143,7 +146,7 @@ export default function About() {
                 {/* Responsive Shop Now Button */}
                 <Link
                   href="/products"
-                  className="bg-[#fdecd8] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
+                  className="bg-[#f9f7cf] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
                 max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-semibold font-ancient"
                 >
                   Shop Now
@@ -165,10 +168,10 @@ export default function About() {
           </div>
         </section>
       </main>
-      <section className="py-16 bg-[#EDF6F5]">
+      <section className="py-16 bg-[#FFF0F8]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
-            <h2 className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif">
+            <h2 className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif" style={{ fontFamily: "Barlow Condensed, sans-serif" }}>
               Our Promise
             </h2>
             <div className="flex justify-center">
@@ -193,7 +196,9 @@ export default function About() {
                 <h3 className=" font-bold text-amber-700 mb-2 font-ancient text-xl">
                   {promise.title}
                 </h3>
-                <p className="text-gray-700 font-ancient font-semibold">{promise.description}</p>
+                <p className="text-gray-700 font-ancient font-semibold">
+                  {promise.description}
+                </p>
               </div>
             ))}
           </div>
@@ -210,20 +215,20 @@ export default function About() {
       </div>
       <section className="bg-white md:mx-8 mb-10">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row gap-12 items-center bg-[#EDF6F5] p-10 md:rounded-3xl shadow-2xl feedback-form">
+          <div className="flex flex-col md:flex-row gap-12 items-center bg-[#FFF0F8] p-10 md:rounded-3xl shadow-2xl feedback-form">
             {/* Left side - Text content */}
             <div className="md:w-1/2">
-                <h2 className="text-4xl md:text-5xl  font-serif mb-14">
-                  SWEETEN OUR STORY WITH YOUR THOUGHTS
-                </h2>
-                <p className="text-lg text-gray-700 leading-relaxed font-semibold font-ancient">
-                  Every delightful review adds a special ingredient to our bakery&apos;s journey. 
-                  Share how our desserts made your day a little sweeter, and help future 
-                  guests discover their next favorite treat. Your thoughtful feedback 
-                  helps us perfect our craft with each passing day.
-                </p>
-              </div>
-
+              <h2 className="text-4xl md:text-5xl  font-serif mb-14">
+                SWEETEN OUR STORY WITH YOUR THOUGHTS
+              </h2>
+              <p className="text-lg text-gray-700 leading-relaxed font-semibold font-ancient">
+                Every delightful review adds a special ingredient to our
+                bakery&apos;s journey. Share how our desserts made your day a
+                little sweeter, and help future guests discover their next
+                favorite treat. Your thoughtful feedback helps us perfect our
+                craft with each passing day.
+              </p>
+            </div>
 
             {/* Right side - Form */}
             <div className="md:w-1/2 w-full">
@@ -232,7 +237,7 @@ export default function About() {
           </div>
         </div>
       </section>
-      <section className="mb:py-[15vh] py-[6vh] bg-[#EDF6F5] md:mt-[15vh] border-t-0 rounded-t-xl md:rounded-t-[4rem] fade-up">
+      <section className="mb:py-[15vh] py-[6vh] bg-[#FFF0F8] md:mt-[15vh] border-t-0 rounded-t-xl md:rounded-t-[4rem] fade-up">
         <div className="container mx-auto max-w-6xl px-8">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left side - Map */}

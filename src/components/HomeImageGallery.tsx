@@ -105,7 +105,7 @@ const ImageGallery = () => {
   };
 
   return (
-    <section className="bg-[#F5F3FF] min-h-screen ">
+    <section className="bg-[#F5F3FF] min-h-screen pt-8 md:pt-10 lg:pt-12 pb-20">
       <div className="flex flex-col gap-8 md:gap-10 h-full">
         {/* Header Section */}
         <div className="flex items-center justify-center">
@@ -178,10 +178,9 @@ const ImageGallery = () => {
         </div>
 
         {/* Footer Section */}
-        <div className="flex items-center justify-center px-4 pb-12 md:pb-16">
+        <div className="flex items-center justify-center pb-12 md:pb-16">
           <p
-            className="text-2xl sm:text-3xl md:text-4xl text-[#5B21B6] tracking-wider font-medium text-center"
-            style={{ fontFamily: "Barlow, sans-serif" }}
+            className="text-2xl sm:text-3xl md:text-4xl text-[#6D28D9] tracking-wider font-medium text-center font-ancient"
           >
             Unveiling Art, One Frame at a Time. 🎭✨
           </p>

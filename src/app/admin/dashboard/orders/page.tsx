@@ -56,7 +56,7 @@ export interface Order {
   user: User;
   products: OrderProduct[];
   totalAmount: number;
-  status: "pending" | "Ready to Take-away" | "delivered" | "cancelled";
+  status: "pending" | "ready to take-away" | "delivered" | "cancelled";
   createdAt: string;
   isHamper: boolean;
   isPaymentVerified: boolean;
@@ -64,7 +64,29 @@ export interface Order {
   customization?: string;
 }
 
-// New component for products modal
+const getPaymentStatus = (order: Order) => {
+  if (order.isPaymentVerified) {
+    return order.transactionId ? "Payment Verified" : "Payment Received";
+  } else {
+    return order.transactionId ? "Payment Not Verified" : "Payment Pending";
+  }
+};
+
+const getPaymentStatusColor = (status: string) => {
+  switch (status) {
+    case "Payment Verified":
+      return "bg-green-100 text-green-800";
+    case "Payment Received":
+      return "bg-blue-100 text-blue-800";
+    case "Payment Not Verified":
+      return "bg-yellow-100 text-yellow-800";
+    case "Payment Pending":
+      return "bg-gray-100 text-gray-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
 const ProductsModal = ({
   products,
   customization,
@@ -194,9 +216,7 @@ export default function OrdersPage() {
   async function fetchOrders() {
     try {
       const res = await fetch("/api/admin/orders", { cache: "no-cache" });
-      if (!res.ok) {
-        throw new Error("Failed to fetch orders");
-      }
+      if (!res.ok) throw new Error("Failed to fetch orders");
       const data = await res.json();
       setOrders(data);
       setFilteredOrders(data);
@@ -212,19 +232,14 @@ export default function OrdersPage() {
     }
   }
 
-  async function updateOrderStatus(
-    orderId: string,
-    status: "pending" | "Ready to Take-away" | "delivered" | "cancelled"
-  ) {
+  async function updateOrderStatus(orderId: string, status: Order["status"]) {
     try {
       const res = await fetch(`/api/admin/orders?orderId=${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      if (!res.ok) {
-        throw new Error("Failed to update order status");
-      }
+      if (!res.ok) throw new Error("Failed to update order status");
       toast({
         title: "Success",
         description: "Order status updated successfully",
@@ -246,17 +261,12 @@ export default function OrdersPage() {
     isVerified: boolean
   ) {
     try {
-      const res = await fetch(
-        `/api/admin/orders/verify-payment?orderId=${orderId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isPaymentVerified: isVerified }),
-        }
-      );
-      if (!res.ok) {
-        throw new Error("Failed to update payment verification");
-      }
+      const res = await fetch(`/api/admin/orders?orderId=${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPaymentVerified: isVerified }),
+      });
+      if (!res.ok) throw new Error("Failed to update payment verification");
       toast({
         title: "Success",
         description: "Payment verification status updated successfully",
@@ -340,32 +350,42 @@ export default function OrdersPage() {
                   </TableCell>
                   <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
                   <TableCell>
-                    <div className="space-y-2">
-                      {order.transactionId ? (
-                        <>
-                          <div className="text-sm">
-                            <span className="font-medium">Transaction ID:</span>
-                            <br />
+                    <div className="space-y-3">
+                      <Badge
+                        className={`${getPaymentStatusColor(
+                          getPaymentStatus(order)
+                        )} font-medium`}
+                      >
+                        {getPaymentStatus(order)}
+                      </Badge>
+
+                      {order.transactionId && (
+                        <div className="text-sm">
+                          <span className="font-medium">Transaction ID:</span>
+                          <br />
+                          <span className="font-mono text-xs">
                             {order.transactionId}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Switch
-                              checked={order.isPaymentVerified}
-                              onCheckedChange={(checked) =>
-                                updatePaymentVerification(order._id, checked)
-                              }
-                              id={`payment-verify-${order._id}`}
-                            />
-                            <Label htmlFor={`payment-verify-${order._id}`}>
-                              {order.isPaymentVerified
-                                ? "Verified"
-                                : "Not Verified"}
-                            </Label>
-                          </div>
-                        </>
-                      ) : (
-                        <Badge variant="secondary">Pay on Take-away</Badge>
+                          </span>
+                        </div>
                       )}
+
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={order.isPaymentVerified}
+                          onCheckedChange={(checked) =>
+                            updatePaymentVerification(order._id, checked)
+                          }
+                          id={`payment-verify-${order._id}`}
+                        />
+                        <Label
+                          htmlFor={`payment-verify-${order._id}`}
+                          className="text-sm"
+                        >
+                          {order.isPaymentVerified
+                            ? "Mark as Not Paid"
+                            : "Mark as Paid"}
+                        </Label>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="capitalize">{order.status}</TableCell>
@@ -378,11 +398,7 @@ export default function OrdersPage() {
                       onValueChange={(newStatus) => {
                         updateOrderStatus(
                           order._id,
-                          newStatus as
-                            | "pending"
-                            | "Ready to Take-away"
-                            | "delivered"
-                            | "cancelled"
+                          newStatus as Order["status"]
                         );
                       }}
                     >
@@ -391,9 +407,9 @@ export default function OrdersPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="Ready to Take-away">
-                          Ready to Take-away
-                        </SelectItem>
+                        <SelectItem value="ready to take-away">
+                          Ready to take-away
+                        </SelectItem>{" "}
                         <SelectItem value="delivered">Delivered</SelectItem>
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>

@@ -43,6 +43,15 @@ const PreLoader = () => {
           delay: 1,
         },
         "<"
+      )
+      .to(
+        component.current,
+        {
+          opacity: 0,
+          duration: 1,
+          ease: "expo.out",
+        },
+        "<"
       );
   }, []);
 

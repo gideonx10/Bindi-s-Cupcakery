@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     if (!userData || !userData.user.role || userData.user.role !== "admin") {
       return NextResponse.redirect("/admin/login");
     }
-    // Fetch orders, populating user details, product details, and category details
+
     const orders = await Order.find()
       .populate({ path: "user", select: "name email phone" })
       .populate({
@@ -42,6 +42,18 @@ export async function GET(req: NextRequest) {
           path: "category",
           select: "name",
         },
+      })
+      .select({
+        _id: 1,
+        products: 1,
+        totalAmount: 1,
+        status: 1,
+        createdAt: 1,
+        isHamper: 1,
+        isPaymentVerified: 1,
+        transactionId: 1,
+        customization: 1,
+        user: 1,
       })
       .sort({ createdAt: -1 });
 
@@ -93,51 +105,62 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
+    const updateData: any = {};
 
-    // Handle status update
+    // Handle order status update
     if (body.status !== undefined) {
       const validStatuses = [
         "pending",
-        "Ready to Take-away",
+        "ready to take-away",
         "delivered",
         "cancelled",
       ];
       if (!validStatuses.includes(body.status)) {
         return NextResponse.json({ error: "Invalid status" }, { status: 400 });
       }
-
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        { status: body.status },
-        { new: true, runValidators: true }
-      );
-
-      if (!updatedOrder) {
-        return NextResponse.json({ error: "Order not found" }, { status: 404 });
-      }
-
-      return NextResponse.json(updatedOrder);
+      updateData.status = body.status;
     }
 
     // Handle payment verification update
     if (body.isPaymentVerified !== undefined) {
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        { isPaymentVerified: body.isPaymentVerified },
-        { new: true, runValidators: true }
-      );
-
-      if (!updatedOrder) {
-        return NextResponse.json({ error: "Order not found" }, { status: 404 });
+      if (typeof body.isPaymentVerified !== "boolean") {
+        return NextResponse.json(
+          { error: "isPaymentVerified must be a boolean" },
+          { status: 400 }
+        );
       }
-
-      return NextResponse.json(updatedOrder);
+      updateData.isPaymentVerified = body.isPaymentVerified;
     }
 
-    return NextResponse.json(
-      { error: "Invalid update parameters" },
-      { status: 400 }
-    );
+    // If no valid update fields provided
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        { error: "No valid update parameters provided" },
+        { status: 400 }
+      );
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, {
+      new: true,
+      runValidators: true,
+      populate: [
+        { path: "user", select: "name email phone" },
+        {
+          path: "products.product",
+          select: "name category",
+          populate: {
+            path: "category",
+            select: "name",
+          },
+        },
+      ],
+    });
+
+    if (!updatedOrder) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedOrder);
   } catch (error) {
     console.error("Error updating order:", error);
     return NextResponse.json(
