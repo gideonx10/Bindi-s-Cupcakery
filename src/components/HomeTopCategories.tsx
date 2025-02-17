@@ -176,7 +176,7 @@ const TopCategories = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mx-4 md:mx-0">
           {categories.map((category, index) => (
             <motion.div
               key={category.id}

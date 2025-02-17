@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface Review {
   _id: string;
@@ -25,6 +26,53 @@ export default function ReviewsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const { toast } = useToast();
+  const [userId, setUserId] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const sessionData = await res.json();
+      console.log(sessionData);
+      if (sessionData.authenticated) {
+        setUserId(sessionData.userId);
+      } else {
+        console.log("Not authenticated:", sessionData.message);
+        router.push("/admin/login");
+      }
+    };
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [userRes] = await Promise.all([
+          fetch(`/api/user/details?userId=${userId}`),
+          // fetch(`/api/orders?userId=${userId}`),
+        ]);
+
+        const userData = await userRes.json();
+        console.log(userData);
+        if (!userData || userData.user.role !== "admin") {
+          router.push("/admin/login");
+        }
+
+        // setOrders(ordersData.reverse()); // If you plan to use orders
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   useEffect(() => {
     fetchReviews();
@@ -53,7 +101,10 @@ export default function ReviewsPage() {
     }
   }
 
-  async function toggleisApproved(reviewId: string, currentisApproved: boolean) {
+  async function toggleisApproved(
+    reviewId: string,
+    currentisApproved: boolean
+  ) {
     try {
       setUpdatingId(reviewId);
       // Updated URL: use query parameter rather than path parameter.
@@ -85,7 +136,9 @@ export default function ReviewsPage() {
   }
 
   async function deleteReview(reviewId: string) {
-    const confirmation = window.confirm("Are you sure you want to delete this review?");
+    const confirmation = window.confirm(
+      "Are you sure you want to delete this review?"
+    );
     if (!confirmation) return;
     try {
       setUpdatingId(reviewId);
@@ -105,7 +158,8 @@ export default function ReviewsPage() {
       console.error("Error deleting review:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete review",
+        description:
+          error instanceof Error ? error.message : "Failed to delete review",
         variant: "destructive",
       });
     } finally {
@@ -144,7 +198,9 @@ export default function ReviewsPage() {
             <TableBody>
               {reviews.map((review) => (
                 <TableRow key={review._id}>
-                  <TableCell className="font-medium">{review.userName}</TableCell>
+                  <TableCell className="font-medium">
+                    {review.userName}
+                  </TableCell>
                   <TableCell>{review.phone}</TableCell>
                   <TableCell>{review.comment}</TableCell>
                   <TableCell>

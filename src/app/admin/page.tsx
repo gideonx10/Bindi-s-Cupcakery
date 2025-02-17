@@ -1,70 +1,78 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { Card, CardContent } from "@/components/ui/card";
-// import Products from './components/Products';
-// import Categories from './components/Categories';
-// import Users from './components/Users';
-// import Reviews from './components/Reviews';
-// import Orders from './components/Orders';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react"; // Import the Lottie animation component
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    // Simulate a delay before checking the session and loading data
+    const delayLoading = setTimeout(() => {
+      const checkSession = async () => {
+        const res = await fetch("/api/session", {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent with request
+        });
 
-  async function checkSession() {
-    try {
-      const response = await fetch("/api/admin/session");
-      if (!response.ok) {
-        router.push("/admin/login");
-        return;
+        const sessionData = await res.json();
+        console.log(sessionData);
+        if (sessionData.authenticated) {
+          setUserId(sessionData.userId);
+        } else {
+          console.log("Not authenticated:", sessionData.message);
+          router.push("/admin/login");
+          setLoading(false);
+        }
+      };
+
+      checkSession();
+    }, 2000); // Delay of 2 seconds
+
+    return () => clearTimeout(delayLoading);
+  }, [router]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [userRes] = await Promise.all([
+          fetch(`/api/user/details?userId=${userId}`),
+        ]);
+
+        const userData = await userRes.json();
+        console.log(userData);
+        if (!userData || userData.user.role !== "admin") {
+          router.push("/admin/login");
+          setLoading(false);
+        } else {
+          router.push("/admin/dashboard");
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
       }
-      await response.json();
-    } catch (error) {
-      console.error("Error fetching session:", error);
-      router.push("/admin/login");
-    } finally {
-      setLoading(false);
-    }
-  }
+    };
+
+    fetchData();
+  }, [userId, router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        {/* Lottie animation displayed during loading */}
+        <DotLottieReact
+          src="https://lottie.host/47b39909-6fe6-4eb5-aa5e-b7daadef22fc/tFSD54oLDo.lottie"
+          loop
+          autoplay
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+    );
   }
-
-  return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-      <Tabs defaultValue="products" className="w-full">
-        <TabsList>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-        </TabsList>
-
-        {/* <TabsContent value="products">
-          <Products />
-        </TabsContent>
-        <TabsContent value="categories">
-          <Categories />
-        </TabsContent>
-        <TabsContent value="users">
-          <Users />
-        </TabsContent>
-        <TabsContent value="reviews">
-          <Reviews />
-        </TabsContent>
-        <TabsContent value="orders">
-          <Orders />
-        </TabsContent> */}
-      </Tabs>
-    </div>
-  );
 }

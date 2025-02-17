@@ -6,24 +6,83 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import Cart from "./SidebarCart";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const pathname = usePathname();
-  if (pathname?.startsWith("/admin")) {
-    return null; // Don't render navbar for admin paths
-  }
+  if (pathname?.startsWith("/admin")) return null;
+  const [isPreloaderActive, setIsPreloaderActive] = useState(pathname === "/");
+
+  useEffect(() => {
+    if (pathname === "/") {
+      const handlePreloaderComplete = () => {
+        setIsPreloaderActive(false);
+      };
+
+      window.addEventListener("preloaderComplete", handlePreloaderComplete);
+      return () => {
+        window.removeEventListener(
+          "preloaderComplete",
+          handlePreloaderComplete
+        );
+      };
+    } else {
+      setIsPreloaderActive(false);
+    }
+  }, [pathname]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
+  const [showTextLogo, setShowTextLogo] = useState(!pathname?.startsWith("/")); // Initially show text logo except on homepage
 
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLLIElement[]>([]);
+  const [user, setUser] = useState<{
+    userId: string;
+    phone: string;
+    role: string;
+  } | null>(null);
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
 
-  const { data: session } = useSession();
-  const userId = (session?.user as { id: string })?.id;
+      const data = await res.json();
+      console.log(data);
+      if (data.authenticated) {
+        setUser({ userId: data.userId, phone: data.phone, role: data.role });
+      } else {
+        console.log("Not authenticated:", data.message);
+      }
+    };
+    checkSession();
+  }, []);
+  const userId = user?.userId;
+
+  // Handle scroll position for homepage
+  useEffect(() => {
+    const handleScroll = () => {
+      if (pathname === "/") {
+        const scrollPosition = window.scrollY;
+        const windowHeight = window.innerHeight;
+        setShowTextLogo(scrollPosition > windowHeight * 1); // 80vh threshold
+      }
+    };
+
+    if (pathname === "/") {
+      window.addEventListener("scroll", handleScroll);
+      handleScroll(); // Initial check
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname]);
 
   // ... (other state and refs)
 
@@ -188,25 +247,37 @@ const Navbar = () => {
     <>
       {/* Main Navbar */}
       <nav className="w-full bg-transperent px-[5%] p-8 flex justify-between items-center fixed top-0 left-0 z-50">
-        {/* Logo */}
+        {/* Conditional Logo Rendering */}
         <Link
           href="/"
           onClick={handleLinkClick}
           className="logo flex flex-col items-start leading-none"
         >
-          <span className="text-[3.8rem] font-bold text-[#3b0017] transform translate-y-1">
-            B
-          </span>
-          <div className="absolute ml-[3.3rem]">
-            <span className="text-[2.7rem] font-semibold text-[#3b0017]">
-              indi&apos;s
-            </span>
-          </div>
-          <div className="absolute ml-[3.05rem] mt-[2.4rem]">
-            <span className="text-[1.4rem] font-semibold text-[#3b0017]">
-              cupcakery
-            </span>
-          </div>
+          {pathname === "/" && !showTextLogo ? (
+            <Image
+              src="/images/icon.png"
+              alt="Bindi's Cupcakery"
+              width={80}
+              height={80}
+              className="transition-opacity duration-300"
+            />
+          ) : (
+            <div className="transition-opacity duration-300 -translate-y-10">
+              <span className="absolute text-[3.8rem] font-bold text-[#8d2954] transform translate-y-1">
+                B
+              </span>
+              <div className="absolute ml-[3.3rem]">
+                <span className="text-[2.7rem] font-semibold text-[#8d2954]">
+                  indi&apos;s
+                </span>
+              </div>
+              <div className="absolute ml-[3.05rem] mt-[2.4rem]">
+                <span className="text-[1.4rem] font-semibold text-[#8d2954]">
+                  cupcakery
+                </span>
+              </div>
+            </div>
+          )}
         </Link>
 
         {/* Right side icons */}
@@ -214,7 +285,7 @@ const Navbar = () => {
           {pathname.startsWith("/products") && (
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
-              className="text-[#3b0017] p-4 max-sm:p-2"
+              className="text-[#9B2C5D] p-4 max-sm:p-2"
             >
               <ShoppingBag
                 size={30}
@@ -231,7 +302,7 @@ const Navbar = () => {
             }`}
           >
             <svg
-              className="absolute size-full text-[#3b0017] max-sm:size-12"
+              className="absolute size-full text-[#9B2C5D] max-sm:size-12"
               width="105"
               height="105"
               viewBox="0 0 105 105"
@@ -250,11 +321,7 @@ const Navbar = () => {
                 <div
                   key={i}
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
-                    isMenuOpen
-                      ? "bg-yellow-400"
-                      : pathname.startsWith("/products")
-                      ? "bg-[#3e7496]"
-                      : "bg-yellow-400"
+                    isMenuOpen ? "bg-[#FFF0F7]" : "bg-[#FFF0F7]"
                   } rounded-full transition-all duration-300 ${
                     isMenuOpen
                       ? i === 1
@@ -277,7 +344,7 @@ const Navbar = () => {
 
       {/* Full screen menu */}
       <div
-        className={`fixed inset-0 bg-yellow-400 transition-transform duration-300 z-40 ${
+        className={`fixed inset-0 bg-[#FFF0F7] transition-transform duration-300 z-40 ${
           isMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -340,7 +407,7 @@ const Navbar = () => {
             </div>
 
             <div
-              className="bindi font-[pacifico] hover:scale-105 duration-300"
+              className="bindi font-[pacifico] hover:scale-105 duration-300 text-[#8d2954]"
               style={{
                 fontSize: "3rem",
                 letterSpacing: "0.05em",
@@ -352,7 +419,7 @@ const Navbar = () => {
 
           {/* Menu Items Section */}
           <div className="options w-1/2 h-full pt-[6%] pl-[5%]">
-            <ul className="text-[#3b0017] text-6xl font-bold space-y-8">
+            <ul className="text-[#9B2C5D] text-6xl font-bold space-y-8">
               {menuItems.map((item, index) => (
                 <li
                   key={index}
@@ -393,7 +460,7 @@ const Navbar = () => {
               position: "absolute",
               width: "100%",
               height: "30vh",
-              backgroundColor: "#3A0015",
+              backgroundColor: "#80224b",
               top: "100px",
               animation: "moveWave 10s linear infinite",
             }}
@@ -406,7 +473,7 @@ const Navbar = () => {
                   width: circleWidth,
                   height: "145px",
                   borderRadius: "50%",
-                  backgroundColor: "#3A0015",
+                  backgroundColor: "#80224b",
                   position: "relative",
                   top: "-65px",
                 }}

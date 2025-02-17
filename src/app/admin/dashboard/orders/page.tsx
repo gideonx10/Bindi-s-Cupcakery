@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 interface Category {
   _id: string;
@@ -87,11 +88,20 @@ const getPaymentStatusColor = (status: string) => {
   }
 };
 
-const ProductsModal = ({ products, customization }: { products: OrderProduct[], customization?: string }) => {
+const ProductsModal = ({
+  products,
+  customization,
+}: {
+  products: OrderProduct[];
+  customization?: string;
+}) => {
   return (
     <Dialog>
       <DialogTrigger>
-        <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+        <Badge
+          variant="secondary"
+          className="cursor-pointer hover:bg-secondary/80"
+        >
           {products.length} items
         </Badge>
       </DialogTrigger>
@@ -107,13 +117,15 @@ const ProductsModal = ({ products, customization }: { products: OrderProduct[], 
             >
               <div className="font-semibold text-lg">{item.product.name}</div>
               <div className="text-gray-600 mt-1">
-                Category: {
-                  typeof item.product.category === "object" && item.product.category !== null
-                    ? (item.product.category as Category).name
-                    : item.product.category
-                }
+                Category:{" "}
+                {typeof item.product.category === "object" &&
+                item.product.category !== null
+                  ? (item.product.category as Category).name
+                  : item.product.category}
               </div>
-              <div className="text-gray-600 mt-1">Quantity: {item.quantity}</div>
+              <div className="text-gray-600 mt-1">
+                Quantity: {item.quantity}
+              </div>
             </div>
           ))}
           {customization && (
@@ -141,6 +153,53 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { toast } = useToast();
+  const [userId, setUserId] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const sessionData = await res.json();
+      console.log(sessionData);
+      if (sessionData.authenticated) {
+        setUserId(sessionData.userId);
+      } else {
+        console.log("Not authenticated:", sessionData.message);
+        router.push("/admin/login");
+      }
+    };
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [userRes] = await Promise.all([
+          fetch(`/api/user/details?userId=${userId}`),
+          // fetch(`/api/orders?userId=${userId}`),
+        ]);
+
+        const userData = await userRes.json();
+        console.log(userData);
+        if (!userData || userData.user.role !== "admin") {
+          router.push("/admin/login");
+        }
+
+        // setOrders(ordersData.reverse()); // If you plan to use orders
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   useEffect(() => {
     fetchOrders();
@@ -155,7 +214,8 @@ export default function OrdersPage() {
         (order) =>
           order._id.toLowerCase().includes(term) ||
           order.user.name.toLowerCase().includes(term) ||
-          (order.transactionId && order.transactionId.toLowerCase().includes(term))
+          (order.transactionId &&
+            order.transactionId.toLowerCase().includes(term))
       );
       setFilteredOrders(filtered);
     }
@@ -197,13 +257,17 @@ export default function OrdersPage() {
       console.error("Error updating order:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update order",
+        description:
+          error instanceof Error ? error.message : "Failed to update order",
         variant: "destructive",
       });
     }
   }
 
-  async function updatePaymentVerification(orderId: string, isVerified: boolean) {
+  async function updatePaymentVerification(
+    orderId: string,
+    isVerified: boolean
+  ) {
     try {
       const res = await fetch(`/api/admin/orders?orderId=${orderId}`, {
         method: "PUT",
@@ -220,7 +284,10 @@ export default function OrdersPage() {
       console.error("Error updating payment verification:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update payment verification",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update payment verification",
         variant: "destructive",
       });
     }
@@ -254,7 +321,9 @@ export default function OrdersPage() {
       {filteredOrders.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-gray-500">
-            {searchTerm ? "No orders found matching your search" : "No orders found"}
+            {searchTerm
+              ? "No orders found matching your search"
+              : "No orders found"}
           </p>
         </div>
       ) : (
@@ -293,7 +362,7 @@ export default function OrdersPage() {
                     {order.user.phone}
                   </TableCell>
                   <TableCell>
-                    <ProductsModal 
+                    <ProductsModal
                       products={order.products}
                       customization={order.customization}
                     />
@@ -301,8 +370,10 @@ export default function OrdersPage() {
                   <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
                   <TableCell>
                     <div className="space-y-3">
-                      <Badge 
-                        className={`${getPaymentStatusColor(getPaymentStatus(order))} font-medium`}
+                      <Badge
+                        className={`${getPaymentStatusColor(
+                          getPaymentStatus(order)
+                        )} font-medium`}
                       >
                         {getPaymentStatus(order)}
                       </Badge>
@@ -311,20 +382,27 @@ export default function OrdersPage() {
                         <div className="text-sm">
                           <span className="font-medium">Transaction ID:</span>
                           <br />
-                          <span className="font-mono text-xs">{order.transactionId}</span>
+                          <span className="font-mono text-xs">
+                            {order.transactionId}
+                          </span>
                         </div>
                       )}
 
                       <div className="flex items-center space-x-2">
                         <Switch
                           checked={order.isPaymentVerified}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             updatePaymentVerification(order._id, checked)
                           }
                           id={`payment-verify-${order._id}`}
                         />
-                        <Label htmlFor={`payment-verify-${order._id}`} className="text-sm">
-                          {order.isPaymentVerified ? "Mark as Not Paid" : "Mark as Paid"}
+                        <Label
+                          htmlFor={`payment-verify-${order._id}`}
+                          className="text-sm"
+                        >
+                          {order.isPaymentVerified
+                            ? "Mark as Not Paid"
+                            : "Mark as Paid"}
                         </Label>
                       </div>
                     </div>
@@ -348,7 +426,9 @@ export default function OrdersPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="ready to take-away">Ready to take-away</SelectItem>
+                        <SelectItem value="ready to take-away">
+                          Ready to take-away
+                        </SelectItem>{" "}
                         <SelectItem value="delivered">Delivered</SelectItem>
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>

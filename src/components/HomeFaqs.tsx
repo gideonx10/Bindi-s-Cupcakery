@@ -43,7 +43,7 @@ const FAQs = () => {
     };
   
     return (
-      <section className="min-h-screen bg-[#FFF0F7] pt-8 md:pt-10 lg:pt-12 pb-20">
+      <section className="min-h-screen bg-[#FFF0F7] pt-5 md:pt-10 lg:pt-12 pb-[7rem]">
         <div className="flex flex-col gap-16 md:gap-20 max-w-6xl mx-auto px-4">
           {/* Header */}
           <motion.div 
