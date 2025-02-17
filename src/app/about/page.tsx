@@ -73,7 +73,7 @@ export default function About() {
         stagger: 0.2,
         scrollTrigger: {
           trigger: promiseElements,
-          start: "top 80%",
+          start: "top 70%",
           end: "bottom 20%",
           toggleActions: "play none none reverse",
         },
@@ -92,9 +92,10 @@ export default function About() {
           duration: 1,
           scrollTrigger: {
             trigger: feedbackForm,
-            start: "top 80%",
+            start: "top 90%",
             end: "bottom 20%",
             toggleActions: "play none none reverse",
+            onEnter: () => ScrollTrigger.refresh(),
           },
         }
       );
@@ -111,18 +112,21 @@ export default function About() {
           duration: 1,
           scrollTrigger: {
             trigger: contactInfo,
-            start: "top 80%",
+            start: "top 70%",
             end: "bottom 20%",
             toggleActions: "play none none reverse",
+            onEnter: () => ScrollTrigger.refresh(),
           },
         }
       );
     }
+
+    ScrollTrigger.refresh();
   }, []);
 
   return (
     <>
-      <main className="bg-[#FCFBE4] min-h-screen max-w-full overflow-hidden ">
+      <main className="bg-[#E6F7FF] min-h-screen max-w-full overflow-hidden ">
         {/* About Us Hero Section */}
         <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto">
           <div className="container mx-auto px-4 translate-y-10 fade-up">
@@ -146,7 +150,7 @@ export default function About() {
                 {/* Responsive Shop Now Button */}
                 <Link
                   href="/products"
-                  className="bg-[#f9f7cf] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
+                  className="bg-[#D1EAFE] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
                 max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-semibold font-ancient"
                 >
                   Shop Now
@@ -171,7 +175,10 @@ export default function About() {
       <section className="py-16 bg-[#FFF0F8]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
-            <h2 className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif" style={{ fontFamily: "Barlow Condensed, sans-serif" }}>
+            <h2
+              className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif"
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+            >
               Our Promise
             </h2>
             <div className="flex justify-center">
