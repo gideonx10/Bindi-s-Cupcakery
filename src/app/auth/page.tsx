@@ -159,6 +159,11 @@ const AuthForm = () => {
       return;
     }
 
+    if (!/^\d{9,11}$/.test(phoneNumber)) {
+      alert("Phone number must be between 9 and 11 digits");
+      return;
+    }
+
     try {
       await sendOtp(phoneNumber);
       setIsOtpSent(true);

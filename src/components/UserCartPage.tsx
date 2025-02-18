@@ -135,7 +135,14 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
       const userRes = await fetch(`/api/user/details?userId=${userId}`);
       if (!userRes.ok) throw new Error("Failed to fetch user details");
       const userData = await userRes.json();
-      console.log("U: ", userData);
+
+      if (paymentMethod === "Online") {
+        if (!transactionId || !/^\d{10,18}$/.test(transactionId)) {
+          throw new Error(
+            "Transaction ID must be a number between 10 and 18 digits"
+          );
+        }
+      }
 
       const orderData = {
         userId,
@@ -155,7 +162,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
         paymentMethod,
         transactionId: paymentMethod === "Online" ? transactionId : null,
         isHamper,
-        isPaymentVerified: paymentMethod === "Online",
+        isPaymentVerified: false,
       };
 
       const res = await fetch("/api/orders", {
@@ -171,7 +178,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phoneNumber: "+917600960068",
+          phoneNumber: "7600960068",
           message: `Order Confirmed! 📦\n\nOrder ID: ${orderId}\nUser ID: ${userId}\n📞 *Contact:* ${
             userData.user.phone
           }\n
