@@ -33,6 +33,11 @@ const UserPage = () => {
       });
       const data = await res.json();
       // console.log(data);
+      if (!data.authenticated) {
+        router.push(
+          `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+      }
       if (data.authenticated) {
         setUser({
           userId: data.userId,
@@ -48,6 +53,14 @@ const UserPage = () => {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isHovered, setIsHovered] = useState<string | null>(null);
 
+  // useEffect(() => {
+
+  // }, [router]);
+
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
   const routes = [
     {
       label: "Home",
@@ -91,15 +104,6 @@ const UserPage = () => {
     },
   ];
 
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push(
-        `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
-      );
-    }
-  }, [status, router]);
-
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
     if (tabFromUrl !== activeTab) {
@@ -107,13 +111,13 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FFF0F7]">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-pink-500"></div>
-      </div>
-    );
-  }
+  // if (status === "loading") {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+  //     </div>
+  //   );
+  // }
 
   const handleTabChange = (tab: string) => {
     if (tab !== activeTab) {
@@ -169,8 +173,8 @@ const UserPage = () => {
                   className={cn(
                     "w-full justify-start transition-all duration-300 py-6 text-base font-medium",
                     "hover:scale-[1.02]",
-                    activeTab === route.id 
-                      ? `${route.activeColor} ${route.color} font-semibold` 
+                    activeTab === route.id
+                      ? `${route.activeColor} ${route.color} font-semibold`
                       : "hover:bg-[#FFE4F0]", // Changed hover background color
                     route.hoverColor
                   )}
@@ -213,26 +217,19 @@ const UserPage = () => {
               {renderContent()}
             </div>
           </div>
-          {/* Keep your existing mobile logout button as is */}
-          <div className="lg:hidden flex justify-center mt-6 pb-4 px-4">
-            <Button
-              variant="outline"
-              onClick={() => signOut()}
-              className={cn(
-                "flex items-center gap-3 justify-start w-full",
-                "text-red-500 hover:bg-[#FFE4F0] hover:text-red-600",
-                "transition-all duration-300 hover:scale-[1.02]",
-                "py-6 text-base font-medium"
-              )}
+          <div className="lg:hidden flex justify-center mt-4 pb-4">
+            <button
+              onClick={() => handleLogout()}
+              className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#FFF0F7] text-red-500 hover:bg-[#ffd1e6] transition-colors duration-200"
             >
               <LogOut className="mr-3 h-5 w-5" />
               <span>Logout</span>
-            </Button>
+            </button>
           </div>
         </div>
       </div>
     </>
-);
+  );
 };
 
 export default UserPage;

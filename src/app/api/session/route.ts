@@ -21,10 +21,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       authenticated: true,
       userId: decoded.userId,
-      phone: decoded.phone,
-      // role: decoded.role,
-      name: decoded.name,
-      email: decoded.email,
+      // phone: decoded.phone,
+      // // role: decoded.role,
+      // name: decoded.name,
+      // email: decoded.email,
     });
   } catch (error) {
     return NextResponse.json({

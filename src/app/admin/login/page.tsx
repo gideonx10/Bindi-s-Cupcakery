@@ -1,28 +1,109 @@
 "use client";
 
-import React, { useState } from "react";
-import { signIn } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({
-    identifier: "",
-    password: "",
-  });
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = await signIn("credentials", {
-      identifier: credentials.identifier,
-      password: credentials.password,
-      redirect: false,
-    });
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/session", {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
 
-    if (res?.ok) {
-      router.push("/admin");
-    } else {
-      alert("Invalid credentials or you are not authorized as admin.");
+        if (data.authenticated) {
+          const response = await fetch(
+            `/api/user/details?userId=${data.userId}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch user details");
+          const user = await response.json();
+
+          if (user.user.role === "admin") {
+            router.push("/admin/dashboard");
+          }
+        }
+      } catch (error) {
+        console.error("Session check failed:", error);
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  const handleSendOtp = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      // Validate phone number format
+      if (!/^\d{9,11}$/.test(phoneNumber)) {
+        alert("Phone number must be between 9 and 11 digits");
+        return;
+      }
+
+      const response = await fetch("/api/admin/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to send OTP");
+      }
+
+      setIsOtpSent(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      console.log("hello");
+      const response = await fetch("/api/admin/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber, otp }),
+      });
+      console.log("hi");
+
+      const data = await response.json();
+      console.log("Data", data);
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid OTP");
+      }
+
+      if (data.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        throw new Error("You are not authorized as an admin");
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,71 +141,134 @@ const AdminLogin = () => {
             </h2>
             <p className="text-slate-600 text-sm">
               <span className="font-semibold text-black">Hello Boss ! </span>
-              Please verify your credentials to access the administrative
+              Please verify your phone number to access the administrative
               dashboard
             </p>
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="identifier"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                Email or Phone
-              </label>
-              <input
-                id="identifier"
-                type="text"
-                value={credentials.identifier}
-                onChange={(e) =>
-                  setCredentials({
-                    ...credentials,
-                    identifier: e.target.value,
-                  })
-                }
-                className="w-full px-4 py-3 text-gray-700 rounded-lg border border-slate-300 bg-gray-100 transition-colors "
-                placeholder="Enter your email or phone number"
-                required
-              />
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-700 rounded-lg text-sm">
+              {error}
             </div>
+          )}
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-700 mb-2"
+          {/* OTP Form */}
+          {!isOtpSent ? (
+            <form onSubmit={handleSendOtp} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="phoneNumber"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Phone Number
+                </label>
+                <input
+                  id="phoneNumber"
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full px-4 py-3 text-gray-700 rounded-lg border border-slate-300 bg-gray-100 transition-colors"
+                  placeholder="Enter your phone number (e.g. +1234567890)"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow-2xl font-medium transition-colors flex items-center justify-center"
+                disabled={loading}
               >
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={credentials.password}
-                onChange={(e) =>
-                  setCredentials({
-                    ...credentials,
-                    password: e.target.value,
-                  })
-                }
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-slate-300 transition-colors text-gray-700 mb-3"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+                {loading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : null}
+                Send OTP
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="otp"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Enter OTP
+                </label>
+                <input
+                  id="otp"
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-slate-300 transition-colors text-gray-700 mb-3"
+                  placeholder="Enter the OTP sent to your phone"
+                  required
+                />
+              </div>
 
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow-2xl font-medium transition-colors"
-            >
-              Access Dashboard
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow-2xl font-medium transition-colors flex items-center justify-center"
+                disabled={loading}
+              >
+                {loading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : null}
+                Verify OTP
+              </button>
+
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOtpSent(false);
+                    setOtp("");
+                  }}
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                >
+                  Change phone number
+                </button>
+              </div>
+            </form>
+          )}
 
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-800 transition-colors">
-              Contect Developers for administrative credentials
+              Contact Developers for administrative access
             </p>
           </div>
         </div>
@@ -145,7 +289,7 @@ const AdminLogin = () => {
                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0"
               />
             </svg>
-            Secured by enterprise-grade encryption
+            Secured by OTP verification
           </p>
         </div>
       </div>

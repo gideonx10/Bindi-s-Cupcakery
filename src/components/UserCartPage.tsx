@@ -136,6 +136,14 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
       if (!userRes.ok) throw new Error("Failed to fetch user details");
       const userData = await userRes.json();
 
+      if (paymentMethod === "Online") {
+        if (!transactionId || !/^\d{10,18}$/.test(transactionId)) {
+          throw new Error(
+            "Transaction ID must be a number between 10 and 18 digits"
+          );
+        }
+      }
+
       const orderData = {
         userId,
         userName: userData.name,
@@ -154,7 +162,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
         paymentMethod,
         transactionId: paymentMethod === "Online" ? transactionId : null,
         isHamper,
-        isPaymentVerified: paymentMethod === "Online",
+        isPaymentVerified: false,
       };
 
       const res = await fetch("/api/orders", {
@@ -166,16 +174,15 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
       if (!res.ok) throw new Error("Failed to place order");
       const orderResponse = await res.json();
       const orderId = orderResponse.order._id;
-
       await fetch("/api/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phoneNumber: "+917600960068",
+          phoneNumber: "7600960068",
           message: `Order Confirmed! 📦\n\nOrder ID: ${orderId}\nUser ID: ${userId}\n📞 *Contact:* ${
-            userData.phoneNumber
+            userData.user.phone
           }\n
-          👤 *Customer:* ${userData.name}\nItems:\n${orderData.products
+          👤 *Customer:* ${userData.user.name}\nItems:\n${orderData.products
             .map((p) => `- ${p.name} x${p.quantity}`)
             .join("\n")}\n\nTotal: ₹${orderData.totalAmount}\nCustomization:${
             customization || "N/A"
@@ -189,10 +196,10 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          to: userData.email,
+          to: userData.user.email,
           subject: "Order Confirmation - Your Order is Placed!",
           text: `Dear ${
-            userData.name
+            userData.user.name
           },\n\nThank you for your order! Your order has been placed successfully. Below are the details:\n\nOrder ID: ${orderId}\nTotal Amount: ₹${
             orderData.totalAmount
           }\nPayment Method: ${paymentMethod}\nTransaction ID: ${
@@ -201,9 +208,11 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
             isHamper ? "Yes" : "No"
           }\n\nItems Ordered:\n${orderData.products
             .map((p) => `- ${p.name} x${p.quantity}`)
-            .join(
-              "\n"
-            )}\n\nWe will notify you once your order is ready.\n\nBest regards,\nBindi's Cupcakery`,
+            .join("\n")}\n\n${
+            paymentMethod === "Online"
+              ? "Your Payment will be verified soon"
+              : ""
+          }\nWe will notify you once your order is ready.\nHope you have a great time having cupcakes.\n\nBest regards,\nBindi's Cupcakery`,
         }),
       });
 

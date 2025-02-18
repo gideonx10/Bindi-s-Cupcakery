@@ -91,8 +91,8 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            phoneNumber: "+917600960068",
-            message: `🚫 *Order Cancelled!*\n\n📦 *Order ID:* ${orderId}\n👤 *Customer:* ${userData.name}\n📞 *Contact:* ${userData.phone}\n\nYour order has been successfully cancelled. If this was a mistake, please contact support.`,
+            phoneNumber: "7600960068",
+            message: `🚫 *Order Cancelled!*\n\n📦 *Order ID:* ${orderId}\n👤 *Customer:* ${userData.user.name}\n📞 *Contact:* ${userData.user.phone}\n\nYour order has been successfully cancelled. If this was a mistake, please contact support.`,
           }),
         });
 
@@ -100,9 +100,9 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            to: userData.email,
+            to: userData.user.email,
             subject: "Order Cancellation Confirmation",
-            text: `Dear ${userData.name},\n\nYour order (Order ID: ${orderId}) has been successfully cancelled.\n\nIf this was done by mistake, please contact our support team immediately.\n\nBest regards,\nBindi's Cupcakery`,
+            text: `Dear ${userData.user.name},\n\nYour order (Order ID: ${orderId}) has been successfully cancelled.\n\nIf this was done by mistake, please contact our support team immediately.\n\nBest regards,\nBindi's Cupcakery`,
           }),
         });
 
@@ -122,50 +122,57 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
       case "delivered":
         return {
           variant: "success" as const,
-          className: "bg-green-100 text-green-800 hover:bg-green-200 transition-colors duration-200",
+          className:
+            "bg-green-100 text-green-800 hover:bg-green-200 transition-colors duration-200",
         };
       case "pending":
         return {
           variant: "warning" as const,
-          className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors duration-200",
+          className:
+            "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors duration-200",
         };
       case "cancelled":
         return {
           variant: "destructive" as const,
-          className: "bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200",
+          className:
+            "bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200",
         };
       default:
         return {
           variant: "secondary" as const,
-          className: "bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors duration-200",
+          className:
+            "bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors duration-200",
         };
     }
   };
-
 
   const getPaymentBadgeProps = (isVerified: boolean, transactionId: number) => {
     if (isVerified && transactionId) {
       return {
         variant: "success" as const,
-        className: "bg-green-100 text-green-800 hover:bg-green-200 transition-colors duration-200",
+        className:
+          "bg-green-100 text-green-800 hover:bg-green-200 transition-colors duration-200",
         label: "Payment Verified",
       };
     } else if (isVerified && !transactionId) {
       return {
         variant: "success" as const,
-        className: "bg-green-100 text-green-800 hover:bg-green-200 transition-colors duration-200",
+        className:
+          "bg-green-100 text-green-800 hover:bg-green-200 transition-colors duration-200",
         label: "Payment Received",
       };
     } else if (!isVerified && transactionId) {
       return {
         variant: "warning" as const,
-        className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors duration-200",
+        className:
+          "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors duration-200",
         label: "Payment Not Verified",
       };
     } else {
       return {
         variant: "warning" as const,
-        className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors duration-200",
+        className:
+          "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors duration-200",
         label: "Payment Pending",
       };
     }
@@ -198,15 +205,17 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
             <Card
               key={order._id}
               className={`bg-white/40 transition-all duration-300 ${
-                order.isHamper 
-                  ? "bg-gradient-to-r from-pink-50/30 to-transparent hover:from-pink-100/40 hover:to-white/40" 
+                order.isHamper
+                  ? "bg-gradient-to-r from-pink-50/30 to-transparent hover:from-pink-100/40 hover:to-white/40"
                   : "hover:bg-white/50"
               }`}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Order ID</p>
-                  <p className="text-lg font-semibold text-gray-800">{order._id}</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {order._id}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   {order.isHamper && (
@@ -228,7 +237,8 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                     }
                   </Badge>
                   <Badge {...getStatusBadgeProps(order.status)}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
                   </Badge>
                 </div>
               </CardHeader>
@@ -242,7 +252,9 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                           Payment Mode
                         </p>
                         <p className="font-semibold text-gray-800">
-                          {order.transactionId > 0 ? "Online" : "Pay on take away"}
+                          {order.transactionId > 0
+                            ? "Online"
+                            : "Pay on take away"}
                         </p>
                       </div>
                     </div>
@@ -269,7 +281,7 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                       </div>
                     </div>
                   </div>
-  
+
                   <div className="mt-4">
                     <p className="text-sm font-medium text-gray-500 mb-2">
                       Products
@@ -302,10 +314,12 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                       )}
                     </div>
                   </div>
-  
+
                   {order.status === "pending" && (
                     <button
-                      onClick={() => handleCancelOrder(order._id, order.createdAt)}
+                      onClick={() =>
+                        handleCancelOrder(order._id, order.createdAt)
+                      }
                       disabled={isCanceling}
                       className="mt-4 w-full md:w-auto px-6 py-2 bg-pink-500 text-white rounded-lg
                       hover:bg-pink-600 active:translate-y-[1px]

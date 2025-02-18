@@ -6,6 +6,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
+import ImageSlider from "@/components/menu";
 // import { useSession } from "next-auth/react";
 
 interface Product {
@@ -67,6 +68,17 @@ export default function ProductsPage() {
     phone: string;
     role: string;
   } | null>(null);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   useEffect(() => {
     const checkSession = async () => {
       const res = await fetch("/api/session", {
@@ -440,6 +452,29 @@ export default function ProductsPage() {
                 size={20}
               />
             </div>
+            <div>
+              <button
+                onClick={toggleMenu}
+                className="rounded-2xl bg-[#d1eafe] shadow-xl text-[#08410c] px-4 py-2 font-semibold"
+              >
+                <span className="">&#9776;</span>
+              </button>
+              {menuOpen && (
+                <div
+                  className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center transition-transform duration-500 ease-in-out ${
+                    menuOpen ? "translate-y-0" : "-translate-y-full"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  <div
+                    className="relative bg-transparent w-11/12 md:w-3/4 lg:w-1/2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ImageSlider />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Mobile Filter Modal */}
@@ -670,6 +705,29 @@ export default function ProductsPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                   size={20}
                 />
+              </div>
+              <div>
+                <button
+                  onClick={toggleMenu}
+                  className="rounded-2xl bg-[#d1eafe] shadow-xl text-[#08410c] px-4 py-2 font-semibold"
+                >
+                  <span className="mr-2">&#9776;</span> Menu
+                </button>
+                {menuOpen && (
+                  <div
+                    className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center transition-transform duration-500 ease-in-out ${
+                      menuOpen ? "translate-y-0" : "-translate-y-full"
+                    }`}
+                    onClick={closeMenu}
+                  >
+                    <div
+                      className="relative bg-transparent p-8 w-11/12 md:w-3/4 lg:w-1/2 my-auto"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ImageSlider />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
