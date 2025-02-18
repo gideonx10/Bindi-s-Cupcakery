@@ -135,6 +135,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
       const userRes = await fetch(`/api/user/details?userId=${userId}`);
       if (!userRes.ok) throw new Error("Failed to fetch user details");
       const userData = await userRes.json();
+      console.log("U: ", userData);
 
       const orderData = {
         userId,
@@ -166,16 +167,15 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
       if (!res.ok) throw new Error("Failed to place order");
       const orderResponse = await res.json();
       const orderId = orderResponse.order._id;
-
       await fetch("/api/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phoneNumber: "+917600960068",
           message: `Order Confirmed! 📦\n\nOrder ID: ${orderId}\nUser ID: ${userId}\n📞 *Contact:* ${
-            userData.phoneNumber
+            userData.user.phone
           }\n
-          👤 *Customer:* ${userData.name}\nItems:\n${orderData.products
+          👤 *Customer:* ${userData.user.name}\nItems:\n${orderData.products
             .map((p) => `- ${p.name} x${p.quantity}`)
             .join("\n")}\n\nTotal: ₹${orderData.totalAmount}\nCustomization:${
             customization || "N/A"
@@ -189,10 +189,10 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          to: userData.email,
+          to: userData.user.email,
           subject: "Order Confirmation - Your Order is Placed!",
           text: `Dear ${
-            userData.name
+            userData.user.name
           },\n\nThank you for your order! Your order has been placed successfully. Below are the details:\n\nOrder ID: ${orderId}\nTotal Amount: ₹${
             orderData.totalAmount
           }\nPayment Method: ${paymentMethod}\nTransaction ID: ${

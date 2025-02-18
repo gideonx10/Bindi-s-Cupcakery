@@ -31,6 +31,11 @@ const UserPage = () => {
       });
       const data = await res.json();
       // console.log(data);
+      if (!data.authenticated) {
+        router.push(
+          `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+      }
       if (data.authenticated) {
         setUser({
           userId: data.userId,
@@ -47,12 +52,13 @@ const UserPage = () => {
   const [isHovered, setIsHovered] = useState<string | null>(null);
 
   // useEffect(() => {
-  //   if (status === "unauthenticated") {
-  //     router.push(
-  //       `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
-  //     );
-  //   }
-  // }, [status, router]);
+
+  // }, [router]);
+
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
@@ -61,13 +67,13 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-      </div>
-    );
-  }
+  // if (status === "loading") {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+  //     </div>
+  //   );
+  // }
 
   const handleTabChange = (tab: string) => {
     if (tab !== activeTab) {
@@ -175,7 +181,7 @@ const UserPage = () => {
           </div>
           <div className="lg:hidden flex justify-center mt-4 pb-4">
             <button
-              onClick={() => signOut()}
+              onClick={() => handleLogout()}
               className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#FFF0F7] text-red-500 hover:bg-[#ffd1e6] transition-colors duration-200"
             >
               <LogOut className="w-5 h-5" />

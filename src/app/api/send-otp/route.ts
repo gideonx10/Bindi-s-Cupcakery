@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     await Otp.create({
       phoneNumber: phone,
       otp: hashedOtp,
-      expiresAt: new Date(Date.now() + 60 * 60000),
+      expiresAt: new Date(Date.now() + 2 * 60000),
     });
 
     // Send OTP via Twilio

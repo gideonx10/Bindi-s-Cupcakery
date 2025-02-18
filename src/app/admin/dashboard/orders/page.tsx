@@ -158,7 +158,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const res = await fetch("/api/session", {
+      const res = await fetch("/api/admin/session", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent with request
       });
@@ -347,7 +347,9 @@ export default function OrdersPage() {
               {filteredOrders.map((order) => (
                 <TableRow key={order._id}>
                   <TableCell className="font-medium">{order._id}</TableCell>
-                  <TableCell className={getDeletedUserStyle(order.userDeleted ?? false)}>
+                  <TableCell
+                    className={getDeletedUserStyle(order.userDeleted ?? false)}
+                  >
                     {order.user.name}
                     {order.userDeleted && (
                       <Badge variant="secondary" className="ml-2 text-xs">
@@ -355,10 +357,14 @@ export default function OrdersPage() {
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className={getDeletedUserStyle(order.userDeleted ?? false)}>
+                  <TableCell
+                    className={getDeletedUserStyle(order.userDeleted ?? false)}
+                  >
                     {order.user.email}
                   </TableCell>
-                  <TableCell className={getDeletedUserStyle(order.userDeleted ?? false)}>
+                  <TableCell
+                    className={getDeletedUserStyle(order.userDeleted ?? false)}
+                  >
                     {order.user.phone}
                   </TableCell>
                   <TableCell>

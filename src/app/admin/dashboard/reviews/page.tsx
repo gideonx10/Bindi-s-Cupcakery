@@ -31,7 +31,7 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const res = await fetch("/api/session", {
+      const res = await fetch("/api/admin/session", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent with request
       });

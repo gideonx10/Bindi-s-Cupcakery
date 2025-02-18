@@ -92,7 +92,7 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             phoneNumber: "+917600960068",
-            message: `🚫 *Order Cancelled!*\n\n📦 *Order ID:* ${orderId}\n👤 *Customer:* ${userData.name}\n📞 *Contact:* ${userData.phone}\n\nYour order has been successfully cancelled. If this was a mistake, please contact support.`,
+            message: `🚫 *Order Cancelled!*\n\n📦 *Order ID:* ${orderId}\n👤 *Customer:* ${userData.user.name}\n📞 *Contact:* ${userData.user.phone}\n\nYour order has been successfully cancelled. If this was a mistake, please contact support.`,
           }),
         });
 
@@ -100,9 +100,9 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            to: userData.email,
+            to: userData.user.email,
             subject: "Order Cancellation Confirmation",
-            text: `Dear ${userData.name},\n\nYour order (Order ID: ${orderId}) has been successfully cancelled.\n\nIf this was done by mistake, please contact our support team immediately.\n\nBest regards,\nBindi's Cupcakery`,
+            text: `Dear ${userData.user.name},\n\nYour order (Order ID: ${orderId}) has been successfully cancelled.\n\nIf this was done by mistake, please contact our support team immediately.\n\nBest regards,\nBindi's Cupcakery`,
           }),
         });
 

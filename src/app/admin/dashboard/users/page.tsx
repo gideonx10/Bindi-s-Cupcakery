@@ -53,7 +53,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const res = await fetch("/api/session", {
+      const res = await fetch("/api/admin/session", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent with request
       });
@@ -188,12 +188,19 @@ export default function UsersPage() {
                   <TableCell>{formatPhone(user.phone)}</TableCell>
                   <TableCell>{user.area}</TableCell>
                   <TableCell className="text-center space-x-2">
-                    <Button onClick={() => fetchOrderHistory(user)} variant="outline" size="sm">
+                    <Button
+                      onClick={() => fetchOrderHistory(user)}
+                      variant="outline"
+                      size="sm"
+                    >
                       Order History
                     </Button>
                     {user.phone && (
                       <a
-                        href={`https://wa.me/${formatPhone(user.phone).replace(/\D/g, "")}`}
+                        href={`https://wa.me/${formatPhone(user.phone).replace(
+                          /\D/g,
+                          ""
+                        )}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
