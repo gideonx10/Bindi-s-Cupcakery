@@ -212,8 +212,10 @@ const UserPage = () => {
 
         {/* Main Content */}
         <div className="flex-1 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
-          <div className="w-full mx-auto px-4">
-            <div className="rounded-lg">{renderContent()}</div>
+          <div className="max-w-4xl mx-auto px-4">
+            <div className=" rounded-lg">
+              {renderContent()}
+            </div>
           </div>
           <div className="lg:hidden flex justify-center mt-4 pb-4">
             <button

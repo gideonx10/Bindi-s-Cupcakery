@@ -46,8 +46,9 @@ const AdminLogin = () => {
 
     try {
       // Validate phone number format
-      if (!phoneNumber.match(/^\+?[1-9]\d{9,14}$/)) {
-        throw new Error("Please enter a valid phone number");
+      if (!/^\d{9,11}$/.test(phoneNumber)) {
+        alert("Phone number must be between 9 and 11 digits");
+        return;
       }
 
       const response = await fetch("/api/admin/send-otp", {

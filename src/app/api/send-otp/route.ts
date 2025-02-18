@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     // Save OTP in DB with 2-minute expiry
     await Otp.create({
-      phoneNumber: phone,
+      phoneNumber: `+91${phone}`,
       otp: hashedOtp,
       expiresAt: new Date(Date.now() + 2 * 60000),
     });
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     const response = await client.messages.create({
       body: `Your OTP code is ${otpCode}`,
       from: process.env.TWILIO_PHONE_NUMBER_SMS,
-      to: phone,
+      to: `+91${phone}`,
     });
     console.log("Twilio Response:", response);
 

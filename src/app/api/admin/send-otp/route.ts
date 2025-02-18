@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       await twilioClient.messages.create({
         body: `Your ADMIN login OTP is: ${generatedOtp}. Valid for 5 minutes. Do not share this code with anyone.`,
         from: process.env.TWILIO_PHONE_NUMBER_SMS,
-        to: normalizedPhone,
+        to: `+91${normalizedPhone}`,
       });
     } catch (twilioError) {
       // If Twilio fails, delete the OTP record
