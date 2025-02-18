@@ -208,16 +208,19 @@ const UserPage = () => {
 
         {/* Main Content */}
         <div className="flex-1 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
-          <div className="w-full mx-auto px-4">
-            <div className="rounded-lg">{renderContent()}</div>
+          <div className="max-w-4xl mx-auto px-4">
+            <div className=" rounded-lg">
+              {renderContent()}
+            </div>
           </div>
+          {/* Keep your existing mobile logout button as is */}
           <div className="lg:hidden flex justify-center mt-6 pb-4 px-4">
             <Button
               variant="outline"
               onClick={() => signOut()}
               className={cn(
                 "flex items-center gap-3 justify-start w-full",
-                "text-red-500 hover:bg-[#FFE4F0] hover:text-red-600", // Changed hover background color
+                "text-red-500 hover:bg-[#FFE4F0] hover:text-red-600",
                 "transition-all duration-300 hover:scale-[1.02]",
                 "py-6 text-base font-medium"
               )}
