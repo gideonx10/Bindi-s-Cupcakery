@@ -39,7 +39,7 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const res = await fetch("/api/admin/session", {
+      const res = await fetch("/api/session", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent with request
       });

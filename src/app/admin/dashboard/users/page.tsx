@@ -43,7 +43,7 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  // State for order history modal
+  // For order modal
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -53,7 +53,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const res = await fetch("/api/admin/session", {
+      const res = await fetch("/api/session", {
         method: "GET",
         credentials: "include", // ✅ Ensures cookies are sent with request
       });
@@ -126,7 +126,7 @@ export default function UsersPage() {
   async function fetchOrderHistory(user: User) {
     try {
       setOrdersLoading(true);
-      // Save selected user to display the name in modal header
+      // Save the selected user to display name in modal
       setSelectedUser(user);
       const response = await fetch(`/api/admin/orders?userId=${user._id}`, {
         headers: { "Cache-Control": "no-cache" },
@@ -147,14 +147,6 @@ export default function UsersPage() {
     } finally {
       setOrdersLoading(false);
     }
-  }
-
-  // Helper function to format phone number with country code "91"
-  function formatPhone(phone: string) {
-    if (!phone) return "N/A";
-    // Remove any existing '+91' or '91' prefix and re-add it
-    const cleanPhone = phone.toString().replace(/^(\+91|91)/, "");
-    return `+91${cleanPhone}`;
   }
 
   return (
@@ -185,7 +177,7 @@ export default function UsersPage() {
                 <TableRow key={user._id}>
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{formatPhone(user.phone)}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
                   <TableCell>{user.area}</TableCell>
                   <TableCell className="text-center space-x-2">
                     <Button
@@ -195,20 +187,17 @@ export default function UsersPage() {
                     >
                       Order History
                     </Button>
-                    {user.phone && (
-                      <a
-                        href={`https://wa.me/${formatPhone(user.phone).replace(
-                          /\D/g,
-                          ""
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="secondary" size="sm">
-                          WhatsApp
-                        </Button>
-                      </a>
-                    )}
+                    <a
+                      href={`https://wa.me/91${(user.phone ?? "")
+                        .toString()
+                        .replace(/^(\+91|91)/, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="secondary" size="sm">
+                        WhatsApp
+                      </Button>
+                    </a>
                   </TableCell>
                 </TableRow>
               ))}
