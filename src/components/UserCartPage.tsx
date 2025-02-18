@@ -208,9 +208,11 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
             isHamper ? "Yes" : "No"
           }\n\nItems Ordered:\n${orderData.products
             .map((p) => `- ${p.name} x${p.quantity}`)
-            .join(
-              "\n"
-            )}\n\nWe will notify you once your order is ready.\n\nBest regards,\nBindi's Cupcakery`,
+            .join("\n")}\n\n${
+            paymentMethod === "Online"
+              ? "Your Payment will be verified soon"
+              : ""
+          }\nWe will notify you once your order is ready.\nHope you have a great time having cupcakes.\n\nBest regards,\nBindi's Cupcakery`,
         }),
       });
 
