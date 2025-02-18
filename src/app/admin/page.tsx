@@ -2,12 +2,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { Card, CardContent } from "@/components/ui/card";
-// import Products from './components/Products';
-// import Categories from './components/Categories';
-// import Users from './components/Users';
-// import Reviews from './components/Reviews';
-// import Orders from './components/Orders';
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);

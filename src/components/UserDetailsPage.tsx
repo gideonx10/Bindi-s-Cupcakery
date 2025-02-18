@@ -126,24 +126,26 @@ const UserDetails = ({ userId }: { userId: string }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-pink-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-600 font-medium">Error: {error}</p>
+      <div className="p-4 bg-pink-50 border border-pink-200 rounded-lg">
+        <p className="text-pink-600 font-medium">Error: {error}</p>
       </div>
     );
   }
 
   return (
-    <Card className="m-6 p-4 md:p-8 bg-[#FFF0F7] shadow-xl">
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <User className="w-6 h-6 text-blue-500" />
+    <Card className="mx-auto my-6 p-6 bg-[#FFF0F7] border-none max-w-[1000px]">
+      <CardHeader className="mb-6">
+        <div className="flex items-center gap-4 border-b border-pink-100 pb-5">
+          <div className="p-3 bg-pink-100 rounded-full">
+            <User className="w-7 h-7 text-pink-500" />
+          </div>
           <h2 className="text-2xl font-bold text-gray-800">User Details</h2>
         </div>
       </CardHeader>
@@ -151,61 +153,61 @@ const UserDetails = ({ userId }: { userId: string }) => {
         {user ? (
           <div className="space-y-6">
             {isEditing ? (
-              <div className="space-y-4">
-                <div className="relative">
-                  <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <div className="grid grid-cols-2 gap-5">
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full h-[52px] pl-12 pr-4 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
                     placeholder="Name"
                   />
                 </div>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full h-[52px] pl-12 pr-4 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
                     placeholder="Email"
                   />
                 </div>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <div className="relative group">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
                   <input
                     type="text"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full h-[52px] pl-12 pr-4 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
                     placeholder="Phone"
                   />
                 </div>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <div className="relative group">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
                   <input
                     type="text"
                     name="area"
                     value={formData.area}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full h-[52px] pl-12 pr-4 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
                     placeholder="Area"
                   />
                 </div>
-                <div className="flex gap-2 pt-4">
+                <div className="flex gap-4 col-span-2 mt-2">
                   <button
                     onClick={handleUpdate}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="flex-1 bg-pink-500 text-white h-[52px] rounded-xl transition-all hover:bg-pink-600 font-semibold text-lg"
                   >
                     Save Changes
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="flex-1 bg-white text-gray-700 h-[52px] rounded-xl transition-all hover:bg-pink-50 hover:text-pink-600 font-semibold text-lg"
                   >
                     Cancel
                   </button>
@@ -213,60 +215,71 @@ const UserDetails = ({ userId }: { userId: string }) => {
               </div>
             ) : (
               <div>
-                <div className="grid gap-6">
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <User className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Name</p>
-                      <p className="font-semibold text-xl">{user.name}</p>
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="flex items-center gap-5 p-6 bg-white/80 rounded-xl group transition-all hover:bg-white hover:scale-[1.02]">
+                    <div className="p-4 bg-pink-50 rounded-xl group-hover:bg-pink-100 transition-colors">
+                      <User className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-500 group-hover:text-pink-500 transition-colors">Name</p>
+                      <p className="font-semibold text-xl text-gray-800 group-hover:text-pink-600 transition-colors mt-1">{user.name}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <Mail className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Email</p>
-                      <p className="font-semibold text-xl">{user.email}</p>
+                  <div className="flex items-center gap-5 p-6 bg-white/80 rounded-xl group transition-all hover:bg-white hover:scale-[1.02]">
+                    <div className="p-4 bg-pink-50 rounded-xl group-hover:bg-pink-100 transition-colors">
+                      <Mail className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-500 group-hover:text-pink-500 transition-colors">Email</p>
+                      <p className="font-semibold text-xl text-gray-800 group-hover:text-pink-600 transition-colors mt-1">{user.email}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <Phone className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Phone</p>
-                      <p className="font-semibold text-xl">{user.phone}</p>
+                  <div className="flex items-center gap-5 p-6 bg-white/80 rounded-xl group transition-all hover:bg-white hover:scale-[1.02]">
+                    <div className="p-4 bg-pink-50 rounded-xl group-hover:bg-pink-100 transition-colors">
+                      <Phone className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-500 group-hover:text-pink-500 transition-colors">Phone</p>
+                      <p className="font-semibold text-xl text-gray-800 group-hover:text-pink-600 transition-colors mt-1">{user.phone}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <MapPin className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Area</p>
-                      <p className="font-semibold text-xl">{user.area}</p>
+                  <div className="flex items-center gap-5 p-6 bg-white/80 rounded-xl group transition-all hover:bg-white hover:scale-[1.02]">
+                    <div className="p-4 bg-pink-50 rounded-xl group-hover:bg-pink-100 transition-colors">
+                      <MapPin className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-500 group-hover:text-pink-500 transition-colors">Area</p>
+                      <p className="font-semibold text-xl text-gray-800 group-hover:text-pink-600 transition-colors mt-1">{user.area}</p>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-6">
+                
+                <div className="flex gap-4 mt-6">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-xl"
+                    className="flex-1 bg-pink-500 text-white h-[52px] rounded-xl transition-all hover:bg-pink-600 font-semibold text-lg"
                   >
                     Edit Profile
                   </button>
                   <button
                     onClick={() => setShowChangePassword(!showChangePassword)}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 shadow-xl"
+                    className="flex-1 bg-white text-gray-700 h-[52px] rounded-xl transition-all hover:bg-pink-500 hover:text-white font-semibold text-lg relative overflow-hidden group"
                   >
-                    Change Password
+                    <span className="relative z-10">Change Password</span>
                   </button>
                 </div>
               </div>
             )}
 
             {showChangePassword && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-md">
-                <div className="flex items-center gap-2 mb-4">
-                  <KeyRound className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-lg font-semibold">Change Password</h3>
+              <div className="mt-8 p-6 bg-white/80 rounded-xl">
+                <div className="flex items-center gap-4 mb-6 pb-4 border-b border-pink-100">
+                  <div className="p-3 bg-pink-50 rounded-xl">
+                    <KeyRound className="w-6 h-6 text-pink-500" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800">Change Password</h3>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <input
                     type="password"
                     placeholder="Current Password"
@@ -277,42 +290,44 @@ const UserDetails = ({ userId }: { userId: string }) => {
                         oldPassword: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full h-[52px] px-5 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
                   />
-                  <input
-                    type="password"
-                    placeholder="New Password"
-                    value={passwordData.newPassword}
-                    onChange={(e) =>
-                      setPasswordData({
-                        ...passwordData,
-                        newPassword: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Confirm New Password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) =>
-                      setPasswordData({
-                        ...passwordData,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  />
-                  <div className="flex gap-2 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="password"
+                      placeholder="New Password"
+                      value={passwordData.newPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      className="w-full h-[52px] px-5 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm New Password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) =>
+                        setPasswordData({
+                          ...passwordData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                      className="w-full h-[52px] px-5 bg-white/80 border-2 border-transparent rounded-xl focus:border-pink-400 focus:bg-white transition-all outline-none text-lg"
+                    />
+                  </div>
+                  <div className="flex gap-4 mt-6">
                     <button
                       onClick={handlePasswordChange}
-                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                      className="flex-1 bg-pink-500 text-white h-[52px] rounded-xl transition-all hover:bg-pink-600 font-semibold text-lg"
                     >
                       Update Password
                     </button>
                     <button
                       onClick={() => setShowChangePassword(false)}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                      className="flex-1 bg-white text-gray-700 h-[52px] rounded-xl transition-all hover:bg-pink-50 hover:text-pink-600 font-semibold text-lg"
                     >
                       Cancel
                     </button>
@@ -322,9 +337,11 @@ const UserDetails = ({ userId }: { userId: string }) => {
             )}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No user data found.</p>
+          <div className="text-center py-12">
+            <div className="p-4 bg-pink-50 rounded-xl w-fit mx-auto mb-4">
+              <User className="w-16 h-16 text-pink-300" />
+            </div>
+            <p className="text-gray-500 text-lg">No user data found.</p>
           </div>
         )}
       </CardContent>
