@@ -119,19 +119,10 @@ function Sidebar({ className }: SidebarProps) {
     },
   ];
 
-  async function handleLogout() {
-    try {
-      const response = await fetch("/api/admin/logout", {
-        method: "POST",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to logout");
-      }
-      router.push("/admin/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  }
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
 
   return (
     <div className={cn("pb-12 w-64 flex flex-col justify-between", className)}>
@@ -159,8 +150,8 @@ function Sidebar({ className }: SidebarProps) {
         </div>
       </div>
       <div className="px-3">
-        <Button 
-          onClick={handleLogout} 
+        <Button
+          onClick={handleLogout}
           variant="ghost"
           className="w-full justify-start"
         >

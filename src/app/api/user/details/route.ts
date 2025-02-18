@@ -12,15 +12,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
-    const user = await User.findById(userId).select(
-      "-password -resetPasswordToken -resetPasswordExpires"
-    );
+    const user = await User.findById(userId).select("name email phone role");
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        user,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching user details:", error);
     return NextResponse.json(

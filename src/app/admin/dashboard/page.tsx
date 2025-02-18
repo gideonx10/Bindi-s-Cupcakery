@@ -3,11 +3,30 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { TrendingUp, Users as UsersIcon, ShoppingCart, DollarSign, AlertTriangle } from "lucide-react";
+import {
+  TrendingUp,
+  Users as UsersIcon,
+  ShoppingCart,
+  DollarSign,
+  AlertTriangle,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface KPIs {
   dailyRevenue: number;
@@ -54,11 +73,64 @@ export default function DashboardPage() {
   const { toast } = useToast();
 
   const [stats, setStats] = useState<StatsData | null>(null);
-  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>(
+    []
+  );
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<{ [key: number]: string }>({});
-  const [selectedProducts, setSelectedProducts] = useState<{ [key: number]: string }>({});
+  const [selectedCategories, setSelectedCategories] = useState<{
+    [key: number]: string;
+  }>({});
+  const [selectedProducts, setSelectedProducts] = useState<{
+    [key: number]: string;
+  }>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [userId, setUserId] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const sessionData = await res.json();
+      console.log(sessionData);
+      if (sessionData.authenticated) {
+        setUserId(sessionData.userId);
+      } else {
+        console.log("Not authenticated:", sessionData.message);
+        router.push("/admin/login");
+      }
+    };
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [userRes] = await Promise.all([
+          fetch(`/api/user/details?userId=${userId}`),
+          // fetch(`/api/orders?userId=${userId}`),
+        ]);
+
+        const userData = await userRes.json();
+        console.log(userData);
+        if (!userData || userData.user.role !== "admin") {
+          router.push("/admin/login");
+        }
+
+        // setOrders(ordersData.reverse()); // If you plan to use orders
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   // Fetch stats, categories, and products data on mount
   useEffect(() => {
@@ -119,54 +191,42 @@ export default function DashboardPage() {
             <TrendingUp className="h-6 w-6 text-blue-500" />
             <CardTitle>Daily Revenue</CardTitle>
           </CardHeader>
-          <CardContent>
-            ${stats?.kpis.dailyRevenue.toFixed(2)}
-          </CardContent>
+          <CardContent>${stats?.kpis.dailyRevenue.toFixed(2)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="flex items-center gap-2">
             <TrendingUp className="h-6 w-6 text-green-500" />
             <CardTitle>Weekly Revenue</CardTitle>
           </CardHeader>
-          <CardContent>
-            ${stats?.kpis.weeklyRevenue.toFixed(2)}
-          </CardContent>
+          <CardContent>${stats?.kpis.weeklyRevenue.toFixed(2)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="flex items-center gap-2">
             <TrendingUp className="h-6 w-6 text-purple-500" />
             <CardTitle>Monthly Revenue</CardTitle>
           </CardHeader>
-          <CardContent>
-            ${stats?.kpis.monthlyRevenue.toFixed(2)}
-          </CardContent>
+          <CardContent>${stats?.kpis.monthlyRevenue.toFixed(2)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="flex items-center gap-2">
             <ShoppingCart className="h-6 w-6 text-orange-500" />
             <CardTitle>Total Orders</CardTitle>
           </CardHeader>
-          <CardContent>
-            {stats?.kpis.totalOrders}
-          </CardContent>
+          <CardContent>{stats?.kpis.totalOrders}</CardContent>
         </Card>
         <Card>
           <CardHeader className="flex items-center gap-2">
             <DollarSign className="h-6 w-6 text-yellow-500" />
             <CardTitle>Average Order Value</CardTitle>
           </CardHeader>
-          <CardContent>
-            ${stats?.kpis.avgOrderValue.toFixed(2)}
-          </CardContent>
+          <CardContent>${stats?.kpis.avgOrderValue.toFixed(2)}</CardContent>
         </Card>
         <Card>
           <CardHeader className="flex items-center gap-2">
             <UsersIcon className="h-6 w-6 text-red-500" />
             <CardTitle>Registered Users</CardTitle>
           </CardHeader>
-          <CardContent>
-            {stats?.kpis.registeredUsers}
-          </CardContent>
+          <CardContent>{stats?.kpis.registeredUsers}</CardContent>
         </Card>
       </div>
 
@@ -212,7 +272,9 @@ export default function DashboardPage() {
                   <TableRow key={order.id}>
                     <TableCell>{order.id}</TableCell>
                     <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                    <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </TableCell>
                     <TableCell>{order.status}</TableCell>
                   </TableRow>
                 ))}
@@ -238,7 +300,9 @@ export default function DashboardPage() {
                   <TableRow key={review.id}>
                     <TableCell>{review.userName}</TableCell>
                     <TableCell>{review.comment}</TableCell>
-                    <TableCell>{new Date(review.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -287,7 +351,9 @@ export default function DashboardPage() {
 
       {/* Featured Categories */}
       <div>
-        <h2 className="text-2xl font-semibold">Select Top 4 Categories for Homepage</h2>
+        <h2 className="text-2xl font-semibold">
+          Select Top 4 Categories for Homepage
+        </h2>
         <p className="text-sm text-muted-foreground">
           Choose one category for each slot below.
         </p>
@@ -295,7 +361,7 @@ export default function DashboardPage() {
           {[1, 2, 3, 4].map((slot) => (
             <div key={`cat-slot-${slot}`} className="space-y-2">
               <label className="block font-medium">Category Slot {slot}</label>
-              <Select 
+              <Select
                 defaultValue={selectedCategories[slot]}
                 onValueChange={(value) =>
                   setSelectedCategories((prev) => ({ ...prev, [slot]: value }))
@@ -318,15 +384,19 @@ export default function DashboardPage() {
 
       {/* Featured Bestsellers */}
       <div>
-        <h2 className="text-2xl font-semibold">Select Top 4 Bestsellers for Homepage</h2>
+        <h2 className="text-2xl font-semibold">
+          Select Top 4 Bestsellers for Homepage
+        </h2>
         <p className="text-sm text-muted-foreground">
           Choose one product for each slot below.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           {[1, 2, 3, 4].map((slot) => (
             <div key={`prod-slot-${slot}`} className="space-y-2">
-              <label className="block font-medium">Bestseller Slot {slot}</label>
-              <Select 
+              <label className="block font-medium">
+                Bestseller Slot {slot}
+              </label>
+              <Select
                 defaultValue={selectedProducts[slot]}
                 onValueChange={(value) =>
                   setSelectedProducts((prev) => ({ ...prev, [slot]: value }))

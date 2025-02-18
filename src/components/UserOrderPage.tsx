@@ -20,7 +20,7 @@ interface Order {
   isHamper: boolean;
 }
 
-export default function OrdersPage({ userId }: { userId: string }) {
+export default function OrdersPage({ userId }: { userId: string | undefined }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCanceling, setIsCanceling] = useState(false);

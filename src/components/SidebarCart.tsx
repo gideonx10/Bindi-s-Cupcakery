@@ -21,7 +21,7 @@ export default function Cart({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  userId: string;
+  userId: string | undefined;
 }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);

@@ -58,7 +58,7 @@ const PreLoader = () => {
   return (
     <div
       ref={component}
-      className=" h-screen w-full flex flex-col items-center justify-center bg-[#fcfbe4] overflow-hidden"
+      className=" h-screen w-full flex flex-col items-center justify-center bg-[#F5E6ED] overflow-hidden"
     >
       <div className="relative w-32 h-40">
         {/* Roof image */}
@@ -126,7 +126,7 @@ const PreLoader = () => {
       {/* Company name */}
       <div
         ref={textRef}
-        className="bindi font-[pacifico]"
+        className="bindi font-[pacifico] text-center"
         style={{
           fontSize: "3rem",
           letterSpacing: "0.05em",

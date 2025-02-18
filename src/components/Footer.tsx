@@ -49,19 +49,19 @@ const Footer = () => {
             <div className="flex md:flex-col gap-4 md:gap-6 items-center">
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
-                href=""
+                href="/user"
               >
                 PROFILE
               </a>
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
-                href=""
+                href="/products"
               >
                 PRODUCTS
               </a>
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
-                href=""
+                href="/about"
               >
                 ABOUT US
               </a>

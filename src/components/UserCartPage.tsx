@@ -21,7 +21,7 @@ interface CartItem {
   quantity: number;
 }
 
-export default function CartPage({ userId }: { userId: string }) {
+export default function CartPage({ userId }: { userId: string | undefined }) {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);

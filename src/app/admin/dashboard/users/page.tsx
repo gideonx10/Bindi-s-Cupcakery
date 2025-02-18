@@ -19,6 +19,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/router";
 
 interface User {
   _id: string;
@@ -42,11 +43,58 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  // For order modal
+  // State for order history modal
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [userId, setUserId] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const sessionData = await res.json();
+      console.log(sessionData);
+      if (sessionData.authenticated) {
+        setUserId(sessionData.userId);
+      } else {
+        console.log("Not authenticated:", sessionData.message);
+        router.push("/admin/login");
+      }
+    };
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [userRes] = await Promise.all([
+          fetch(`/api/user/details?userId=${userId}`),
+          // fetch(`/api/orders?userId=${userId}`),
+        ]);
+
+        const userData = await userRes.json();
+        console.log(userData);
+        if (!userData || userData.user.role !== "admin") {
+          router.push("/admin/login");
+        }
+
+        // setOrders(ordersData.reverse()); // If you plan to use orders
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   useEffect(() => {
     fetchUsers();
@@ -78,7 +126,7 @@ export default function UsersPage() {
   async function fetchOrderHistory(user: User) {
     try {
       setOrdersLoading(true);
-      // Save the selected user to display name in modal
+      // Save selected user to display the name in modal header
       setSelectedUser(user);
       const response = await fetch(`/api/admin/orders?userId=${user._id}`, {
         headers: { "Cache-Control": "no-cache" },
@@ -99,6 +147,14 @@ export default function UsersPage() {
     } finally {
       setOrdersLoading(false);
     }
+  }
+
+  // Helper function to format phone number with country code "91"
+  function formatPhone(phone: string) {
+    if (!phone) return "N/A";
+    // Remove any existing '+91' or '91' prefix and re-add it
+    const cleanPhone = phone.toString().replace(/^(\+91|91)/, "");
+    return `+91${cleanPhone}`;
   }
 
   return (
@@ -129,25 +185,23 @@ export default function UsersPage() {
                 <TableRow key={user._id}>
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>{formatPhone(user.phone)}</TableCell>
                   <TableCell>{user.area}</TableCell>
                   <TableCell className="text-center space-x-2">
-                    <Button
-                      onClick={() => fetchOrderHistory(user)}
-                      variant="outline"
-                      size="sm"
-                    >
+                    <Button onClick={() => fetchOrderHistory(user)} variant="outline" size="sm">
                       Order History
                     </Button>
-                    <a
-                      href={`https://wa.me/91${(user.phone ?? "").toString().replace(/^(\+91|91)/, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="secondary" size="sm">
-                        WhatsApp
-                      </Button>
-                    </a>
+                    {user.phone && (
+                      <a
+                        href={`https://wa.me/${formatPhone(user.phone).replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button variant="secondary" size="sm">
+                          WhatsApp
+                        </Button>
+                      </a>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -161,7 +215,9 @@ export default function UsersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedUser ? `${selectedUser.name}'s Order History` : "Order History"}
+              {selectedUser
+                ? `${selectedUser.name}'s Order History`
+                : "Order History"}
             </DialogTitle>
             <DialogDescription>
               Below is the order history for the selected user.
@@ -187,7 +243,9 @@ export default function UsersPage() {
                     <TableRow key={order._id}>
                       <TableCell>{order._id}</TableCell>
                       <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                      <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </TableCell>
                       <TableCell>{order.status}</TableCell>
                     </TableRow>
                   ))}
