@@ -6,7 +6,9 @@ import CartPage from "@/components/UserCartPage";
 import HomeTab from "@/components/Hometab";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Home,
   User,
@@ -31,6 +33,11 @@ const UserPage = () => {
       });
       const data = await res.json();
       // console.log(data);
+      if (!data.authenticated) {
+        router.push(
+          `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+      }
       if (data.authenticated) {
         setUser({
           userId: data.userId,
@@ -47,12 +54,55 @@ const UserPage = () => {
   const [isHovered, setIsHovered] = useState<string | null>(null);
 
   // useEffect(() => {
-  //   if (status === "unauthenticated") {
-  //     router.push(
-  //       `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
-  //     );
-  //   }
-  // }, [status, router]);
+
+  // }, [router]);
+
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
+  const routes = [
+    {
+      label: "Home",
+      icon: Home,
+      id: "home",
+      color: "text-pink-500",
+      hoverColor: "hover:text-pink-600",
+      activeColor: "bg-pink-100",
+    },
+    {
+      label: "Details",
+      icon: User,
+      id: "details",
+      color: "text-violet-500",
+      hoverColor: "hover:text-violet-600",
+      activeColor: "bg-violet-50",
+    },
+    {
+      label: "Orders",
+      icon: ShoppingBag,
+      id: "orders",
+      color: "text-orange-500",
+      hoverColor: "hover:text-orange-600",
+      activeColor: "bg-orange-50",
+    },
+    {
+      label: "Cart",
+      icon: ShoppingCart,
+      id: "cart",
+      color: "text-green-500",
+      hoverColor: "hover:text-green-600",
+      activeColor: "bg-green-50",
+    },
+    {
+      label: "General",
+      icon: Settings,
+      id: "general",
+      color: "text-blue-500",
+      hoverColor: "hover:text-blue-600",
+      activeColor: "bg-blue-50",
+    },
+  ];
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
@@ -61,13 +111,13 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-      </div>
-    );
-  }
+  // if (status === "loading") {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+  //     </div>
+  //   );
+  // }
 
   const handleTabChange = (tab: string) => {
     if (tab !== activeTab) {
@@ -75,23 +125,6 @@ const UserPage = () => {
       router.push(tab === "home" ? "/user" : `/user?tab=${tab}`, {
         scroll: false,
       });
-    }
-  };
-
-  const getTabIcon = (tab: string) => {
-    switch (tab) {
-      case "home":
-        return <Home className="w-5 h-5 lg:w-5 lg:h-5" />;
-      case "details":
-        return <User className="w-5 h-5 lg:w-5 lg:h-5" />;
-      case "orders":
-        return <ShoppingBag className="w-5 h-5 lg:w-5 lg:h-5" />;
-      case "cart":
-        return <ShoppingCart className="w-5 h-5 lg:w-5 lg:h-5" />;
-      case "general":
-        return <Settings className="w-5 h-5 lg:w-5 lg:h-5" />;
-      default:
-        return null;
     }
   };
 
@@ -109,77 +142,86 @@ const UserPage = () => {
         return <div className="p-4">General Information Content</div>;
       default:
         return (
-          <div className="p-4 text-lg">Select a tab from the sidebar.</div>
+          <div className="p-4 text-lg text-pink-800">
+            Select a tab from the sidebar.
+          </div>
         );
     }
   };
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full h-[14vh] shadow-xl bg-[#F1F5ED] z-20"></div>
-      <div className="min-h-screen bg-gray-100">
+      <div className="fixed top-0 left-0 w-full h-[14vh] bg-[#FFF0F7] z-20"></div>
+      <div className="min-h-screen bg-[#fff0f7]">
         {/* Responsive Sidebar/Bottom Navigation */}
-        <div className="fixed lg:w-64 lg:left-0 lg:top-[14vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 shadow-xl bg-[#F1F5ED] transition-all duration-300">
+        <div className="fixed lg:w-72 lg:left-0 lg:top-[14vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 bg-[#fff0f7] transition-all duration-300">
           {/* Desktop Header - Hidden on Mobile */}
           <div className="hidden lg:block p-8">
-            <h2 className="text-2xl font-bold mb-8 py-2 rounded-lg tracking-tight text-center bg-slate-500 shadow-lg shadow-slate-500 text-white">
+            <h2 className="text-2xl font-bold mb-8 py-3 rounded-lg tracking-tight text-center bg-pink-500 text-white">
               Hey There ! 👋
             </h2>
           </div>
 
           {/* Navigation Items */}
-          <div className="h-full lg:px-8">
-            <div className="flex  lg:flex-col h-full lg:space-y-2 justify-around lg:justify-start items-center lg:items-stretch">
-              {["home", "details", "orders", "cart", "general"].map((tab) => (
-                <button
-                  key={tab}
-                  className={`flex flex-col md:flex-row items-center md:justify-start gap-1 md:gap-2 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 ${
-                    activeTab === tab
-                      ? "bg-slate-500 text-white shadow-lg shadow-slate-500/30 scale-105"
-                      : "text-gray-600 hover:bg-gray-200"
-                  } ${
-                    isHovered === tab && activeTab !== tab
-                      ? "bg-gray-200 transform scale-102"
-                      : ""
-                  }
-                  lg:w-full`}
-                  onClick={() => handleTabChange(tab)}
-                  onMouseEnter={() => setIsHovered(tab)}
-                  onMouseLeave={() => setIsHovered(null)}
+          <div className="h-full lg:px-6">
+            <div className="flex lg:flex-col h-full lg:space-y-3 justify-around lg:justify-start items-center lg:items-stretch">
+              {routes.map((route) => (
+                <Button
+                  key={route.id}
+                  variant={activeTab === route.id ? "secondary" : "ghost"}
+                  onClick={() => handleTabChange(route.id)}
+                  className={cn(
+                    "w-full justify-start transition-all duration-300 py-6 text-base font-medium",
+                    "hover:scale-[1.02]",
+                    activeTab === route.id
+                      ? `${route.activeColor} ${route.color} font-semibold`
+                      : "hover:bg-[#FFE4F0]", // Changed hover background color
+                    route.hoverColor
+                  )}
                 >
-                  {getTabIcon(tab)}
-                  <span className="font-medium text-sm lg:text-base">
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </span>
-                </button>
+                  <route.icon
+                    className={cn(
+                      "mr-3 h-5 w-5 transition-transform duration-300",
+                      route.color,
+                      activeTab === route.id && "scale-110"
+                    )}
+                  />
+                  {route.label}
+                </Button>
               ))}
 
               {/* Logout Button - Desktop Only */}
               {pathname === "/user" && (
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => signOut()}
-                  className="hidden lg:flex items-center gap-3 px-4 py-3 mt-8 rounded-xl text-red-500 hover:bg-red-50 transition-colors duration-200 w-full"
+                  className={cn(
+                    "hidden lg:flex items-center gap-3 w-full justify-start",
+                    "text-red-500 hover:bg-[#FFE4F0] hover:text-red-600", // Changed hover background color
+                    "transition-all duration-300 hover:scale-[1.02]",
+                    "mt-4 py-6 text-base font-medium"
+                  )}
                 >
-                  <LogOut className="w-5 h-5" />
-                  <span className="font-medium">Logout</span>
-                </button>
+                  <LogOut className="mr-3 h-5 w-5 transition-transform duration-300" />
+                  Logout
+                </Button>
               )}
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 pt-[14vh] lg:pl-[16rem] pb-[8vh] lg:pb-[4vh]">
-          <div className="w-full mx-auto">
-            <div className="">{renderContent()}</div>
+        <div className="flex-1 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
+          <div className="w-full mx-auto px-4">
+            <div className="rounded-lg">{renderContent()}</div>
           </div>
           <div className="lg:hidden flex justify-center mt-4 pb-4">
             <button
-              onClick={() => signOut()}
+              onClick={() => handleLogout()}
               className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#FFF0F7] text-red-500 hover:bg-[#ffd1e6] transition-colors duration-200"
             >
-              <LogOut className="w-5 h-5" />
-              <span className="font-medium">Logout</span>
+              <LogOut className="mr-3 h-5 w-5" />
+              <span>Logout</span>
             </button>
           </div>
         </div>

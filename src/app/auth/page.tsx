@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Simple reusable button component
 const Button = ({
@@ -59,6 +60,10 @@ const Input = ({
 );
 
 const AuthForm = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -111,17 +116,29 @@ const AuthForm = () => {
     }
   };
 
-  const verifyOtp = async (phoneNumber: string, otpCode: string) => {
+  const verifyOtp = async (
+    phoneNumber: string,
+    otpCode: string,
+    userData?: { name?: string; email?: string }
+  ) => {
     try {
+      const payload: any = {
+        phone: phoneNumber,
+        otp: otpCode,
+      };
+
+      // Add user data if provided (for signup)
+      if (userData) {
+        if (userData.name) payload.name = userData.name;
+        if (userData.email) payload.email = userData.email;
+      }
+
       const response = await fetch("/api/verify-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          phone: phoneNumber,
-          otp: otpCode,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
 
@@ -177,10 +194,9 @@ const AuthForm = () => {
     try {
       await verifyOtp(phoneNumber, otp);
       alert("Login successful!");
-      // Here you can add additional logic like:
-      // - Setting auth tokens
-      // - Redirecting to dashboard
-      // - Updating user context
+
+      // Redirect to the callback URL or home if not specified
+      router.push(callbackUrl);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
@@ -201,8 +217,8 @@ const AuthForm = () => {
 
     setLoading(true);
     try {
-      // First verify the OTP
-      await verifyOtp(phone, signUpOtp);
+      // First verify the OTP - pass user data along with OTP
+      await verifyOtp(phone, signUpOtp, { name, email });
 
       // If OTP verification is successful, proceed with user creation
       const response = await fetch("/api/user", {

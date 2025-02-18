@@ -71,76 +71,90 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+      <div className="flex items-center justify-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-pink-200 border-t-pink-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-600 font-medium">Error: {error}</p>
+      <div className="max-w-3xl mx-auto p-4 bg-red-50 rounded-lg">
+        <p className="text-red-600 font-medium text-center">{error}</p>
       </div>
     );
   }
 
   return (
-    <Card className="m-6 p-4 md:p-8 bg-[#FFF0F7] shadow-xl">
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <User className="w-6 h-6 text-blue-500" />
-          <h2 className="text-2xl font-bold text-gray-800">User Details</h2>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
+      <div className="mb-8">
+        <div className="flex items-center gap-4 border-b border-gray-100 pb-6">
+          <div className="p-3.5 bg-pink-50 rounded-lg">
+            <User className="w-7 h-7 text-pink-500" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800  transition-colors">
+            User Details
+          </h2>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+
+      <div className="space-y-6">
         {user ? (
-          <div className="space-y-6">
+          <div>
             {isEditing ? (
-              <div className="space-y-4">
-                <div className="relative">
-                  <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Name"
-                  />
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2 ml-1">Name</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 rounded-lg outline-none transition-colors focus:border-pink-400 text-base"
+                      placeholder="Enter your name"
+                    />
+                  </div>
                 </div>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Email"
-                  />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2 ml-1">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 rounded-lg outline-none transition-colors focus:border-pink-400 text-base"
+                      placeholder="Enter your email"
+                    />
+                  </div>
                 </div>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Phone"
-                  />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2 ml-1">Phone</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-400" />
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 rounded-lg outline-none transition-colors focus:border-pink-400 text-base"
+                      placeholder="Enter your phone"
+                    />
+                  </div>
                 </div>
-                <div className="flex gap-2 pt-4">
+                <div className="flex flex-col sm:flex-row gap-4 pt-2">
                   <button
                     onClick={handleUpdate}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="w-full sm:w-1/2 h-12 bg-pink-500 text-white rounded-lg transition-colors hover:bg-pink-600 font-medium text-base"
                   >
                     Save Changes
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="w-full sm:w-1/2 h-12 bg-gray-200 text-gray-700 rounded-lg transition-colors hover:bg-gray-300 font-medium text-base"
                   >
                     Cancel
                   </button>
@@ -148,50 +162,67 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
               </div>
             ) : (
               <div>
-                <div className="grid gap-6">
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <User className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Name</p>
-                      <p className="font-semibold text-xl">{user.name}</p>
+                <div className="grid gap-5">
+                  <div className="flex items-start gap-5 p-5 sm:p-6 bg-white rounded-lg border border-gray-100">
+                    <div className="p-3.5 bg-pink-50 rounded-lg mt-1">
+                      <User className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="min-w-0 group">
+                      <p className="text-sm font-medium text-gray-500 group-hover:text-pink-500 transition-colors">
+                        Name
+                      </p>
+                      <p className="text-lg sm:text-xl font-semibold text-gray-800 truncate mt-1 group-hover:text-pink-500 transition-colors">
+                        {user.name}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <Mail className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Email</p>
-                      <p className="font-semibold text-xl">{user.email}</p>
+                  <div className="flex items-start gap-5 p-5 sm:p-6 bg-white rounded-lg border border-gray-100">
+                    <div className="p-3.5 bg-pink-50 rounded-lg mt-1">
+                      <Mail className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="min-w-0 group">
+                      <p className="text-sm font-medium text-gray-500 group-hover:text-pink-500 transition-colors">
+                        Email
+                      </p>
+                      <p className="text-lg sm:text-xl font-semibold text-gray-800 truncate mt-1 group-hover:text-pink-500 transition-colors">
+                        {user.email}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg shadow-md">
-                    <Phone className="w-6 h-6 text-blue-500" />
-                    <div>
-                      <p className="text-base text-gray-500">Phone</p>
-                      <p className="font-semibold text-xl">{user.phone}</p>
+                  <div className="flex items-start gap-5 p-5 sm:p-6 bg-white rounded-lg border border-gray-100">
+                    <div className="p-3.5 bg-pink-50 rounded-lg mt-1">
+                      <Phone className="w-6 h-6 text-pink-500" />
+                    </div>
+                    <div className="min-w-0 group">
+                      <p className="text-sm font-medium text-gray-500 group-hover:text-pink-500 transition-colors">
+                        Phone
+                      </p>
+                      <p className="text-lg sm:text-xl font-semibold text-gray-800 truncate mt-1 group-hover:text-pink-500 transition-colors">
+                        {user.phone}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-6">
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-xl"
-                  >
-                    Edit Profile
-                  </button>
-                </div>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="w-full h-12 bg-pink-500 text-white rounded-lg transition-colors hover:bg-pink-600 font-medium text-base mt-6"
+                >
+                  Edit Profile
+                </button>
               </div>
-              
             )}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <div className="text-center py-10">
+            <div className="p-4 bg-pink-50 rounded-lg w-fit mx-auto mb-3">
+              <User className="w-12 h-12 text-pink-300" />
+            </div>
             <p className="text-gray-500">No user data found.</p>
           </div>
         )}
-      </CardContent>
-    </Card>
-  );
+      </div>
+    </div>
+);
 };
 
 export default UserDetails;
