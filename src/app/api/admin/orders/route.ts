@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/connectDB";
 import Order from "@/models/Order";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,6 +5,82 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import "@/models/Product";
 import "@/models/User";
 import "@/models/Category";
+import nodemailer from "nodemailer";
+
+// Create a nodemailer transporter using environment variables 
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST, // e.g., "smtp.gmail.com"
+  port: Number(process.env.SMTP_PORT), // e.g., 587
+  secure: process.env.SMTP_SECURE === "true", // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+async function sendStatusEmail(order: any, status: string) {
+  let subject = "";
+  let text = "";
+
+  switch (status) {
+    case "pending":
+      subject = "Your Order is Pending";
+      text = `Hello ${order.user.name},\n\nYour order ${order._id} has been received and is pending. We are preparing your items.\n\nThank you.`;
+      break;
+    case "ready to take-away":
+      subject = "Your Order is Ready for Pick-up";
+      text = `Hello ${order.user.name},\n\nGood news! Your order ${order._id} is now ready to take-away from our shop.\n\nThank you.`;
+      break;
+    case "delivered":
+      subject = "Your Order has been Delivered";
+      text = `Hello ${order.user.name},\n\nWe are happy to inform you that your order ${order._id} has been delivered. Enjoy your purchase!`;
+      break;
+    case "cancelled":
+      subject = "Your Order has been Cancelled";
+      text = `Hello ${order.user.name},\n\nWe regret to inform you that your order ${order._id} was cancelled due to unavoidable reasons. Please contact us for more details.`;
+      break;
+    default:
+      return;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM, // your email address as the sender
+      to: order.user.email,
+      subject,
+      text,
+    });
+    console.log(`Email sent to ${order.user.email} for status ${status}`);
+  } catch (error) {
+    console.error("Error sending status email:", error);
+  }
+}
+
+async function sendPaymentEmail(order: any, isVerified: boolean) {
+  let subject = "";
+  let text = "";
+
+  if (isVerified) {
+    subject = "Payment Verified";
+    text = `Hello ${order.user.name},\n\nYour payment for order ${order._id} has been verified successfully. Thank you for your purchase.`;
+  } else {
+    subject = "Payment Not Verified";
+    text = `Hello ${order.user.name},\n\nWe encountered an issue verifying the payment for order ${order._id}. Please contact support for further assistance.`;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: order.user.email,
+      subject,
+      text,
+    });
+    console.log(`Email sent to ${order.user.email} for payment verification update`);
+  } catch (error) {
+    console.error("Error sending payment email:", error);
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
@@ -185,6 +259,14 @@ export async function PUT(req: NextRequest) {
 
     if (!updatedOrder) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // Send email notification based on update
+    if (updateData.status) {
+      sendStatusEmail(updatedOrder, updateData.status);
+    }
+    if (updateData.isPaymentVerified !== undefined) {
+      sendPaymentEmail(updatedOrder, updateData.isPaymentVerified);
     }
 
     return NextResponse.json(updatedOrder);

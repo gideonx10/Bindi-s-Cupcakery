@@ -9,309 +9,239 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
-import {
-  TrendingUp,
-  Users as UsersIcon,
   ShoppingCart,
-  DollarSign,
   AlertTriangle,
+  Plus,
+  Trash,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-
-interface KPIs {
-  dailyRevenue: number;
-  weeklyRevenue: number;
-  monthlyRevenue: number;
-  totalOrders: number;
-  avgOrderValue: number;
-  registeredUsers: number;
-}
-
-interface StatsData {
-  kpis: KPIs;
-  alerts: string[];
-  recentOrders: {
-    id: string;
-    totalAmount: number;
-    createdAt: string;
-    status: string;
-  }[];
-  latestReviews: {
-    id: string;
-    userName: string;
-    comment: string;
-    createdAt: string;
-  }[];
-}
 
 interface Category {
   id: string;
   name: string;
-  image: string;
-  description: string;
-  productCount: number;
 }
 
 interface Product {
   id: string;
   name: string;
-  image: string;
-  isFeatured: boolean;
 }
 
-export default function DashboardPage() {
-  const { toast } = useToast();
+interface MenuImage {
+  _id: string;
+  url: string;
+}
 
-  const [stats, setStats] = useState<StatsData | null>(null);
-  const [availableCategories, setAvailableCategories] = useState<Category[]>(
-    []
-  );
-  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<{
-    [key: number]: string;
-  }>({});
-  const [selectedProducts, setSelectedProducts] = useState<{
-    [key: number]: string;
-  }>({});
-  const [loading, setLoading] = useState<boolean>(true);
-  const [userId, setUserId] = useState<string>("");
+interface HomePageConfigData {
+  topCategories: string[];
+  topBestsellers: string[];
+}
+
+export default function LandingPage() {
+  const { toast } = useToast();
   const router = useRouter();
 
+  // States for total orders and pending alerts
+  const [totalOrders, setTotalOrders] = useState<number>(0);
+  const [pendingAlerts, setPendingAlerts] = useState<string[]>([]);
+
+  // States for Top 4 Menus and Bestsellers selections
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+  const [selectedMenus, setSelectedMenus] = useState<{ [key: number]: string }>({});
+  const [selectedBestsellers, setSelectedBestsellers] = useState<{ [key: number]: string }>({});
+
+  // States for Menu Images Management
+  const [menuImages, setMenuImages] = useState<MenuImage[]>([]);
+  const [newImageUrl, setNewImageUrl] = useState<string>("");
+
+  // Loading state
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Fetch various data on mount
   useEffect(() => {
-    const checkSession = async () => {
-      const res = await fetch("/api/session", {
-        method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent with request
-      });
-
-      const sessionData = await res.json();
-      console.log(sessionData);
-      if (sessionData.authenticated) {
-        setUserId(sessionData.userId);
-      } else {
-        console.log("Not authenticated:", sessionData.message);
-        router.push("/admin/login");
-      }
-    };
-    checkSession();
-  }, []);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchData = async () => {
+    async function fetchDashboardData() {
       try {
-        const [userRes] = await Promise.all([
-          fetch(`/api/user/details?userId=${userId}`),
-          // fetch(`/api/orders?userId=${userId}`),
-        ]);
+        // Fetch Total Orders & Pending Alerts
+        const ordersRes = await fetch("/api/admin/stats/orders");
+        if (!ordersRes.ok) throw new Error("Failed to fetch total orders");
+        const ordersData = await ordersRes.json();
+        setTotalOrders(ordersData.totalOrders);
+        // pendingAlerts is expected to be an array from the orders stats endpoint.
+        setPendingAlerts(ordersData.pendingAlerts);
 
-        const userData = await userRes.json();
-        console.log(userData);
-        if (!userData || userData.user.role !== "admin") {
-          router.push("/admin/login");
-        }
-
-        // setOrders(ordersData.reverse()); // If you plan to use orders
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-    fetchData();
-  }, [userId]);
-
-  // Fetch stats, categories, and products data on mount
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        // Fetch stats from your stats endpoints in the stats folder.
-        const statsRes = await fetch("/api/admin/stats/overview");
-        if (!statsRes.ok) throw new Error("Failed to fetch stats");
-        const statsData: StatsData = await statsRes.json();
-        setStats(statsData);
-
-        // Fetch available categories
+        // Fetch available categories for top menus
         const catRes = await fetch("/api/admin/categories");
         if (!catRes.ok) throw new Error("Failed to fetch categories");
         const categories: Category[] = await catRes.json();
         setAvailableCategories(categories);
 
-        // Fetch available products (for bestsellers)
+        // Fetch available products for bestsellers
         const prodRes = await fetch("/api/admin/products?featured=true");
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const products: Product[] = await prodRes.json();
         setAvailableProducts(products);
-      } catch (error) {
+
+        // Fetch existing menu images
+        const imageRes = await fetch("/api/admin/menu-images");
+        if (!imageRes.ok) throw new Error("Failed to fetch menu images");
+        const images: MenuImage[] = await imageRes.json();
+        setMenuImages(images);
+
+        // Fetch existing homepage configuration for top menus and bestsellers
+        const configRes = await fetch("/api/admin/homepage-config");
+        if (!configRes.ok) throw new Error("Failed to fetch homepage configuration");
+        const configData: HomePageConfigData = await configRes.json();
+        // Initialize selections from config data. Slot keys are 1-indexed.
+        const menus: { [key: number]: string } = {};
+        configData.topCategories.forEach((catId, idx) => {
+          menus[idx + 1] = catId;
+        });
+        setSelectedMenus(menus);
+        const bestsellers: { [key: number]: string } = {};
+        configData.topBestsellers.forEach((prodId, idx) => {
+          bestsellers[idx + 1] = prodId;
+        });
+        setSelectedBestsellers(bestsellers);
+      } catch (error: any) {
         console.error("Error fetching dashboard data:", error);
         toast({
           title: "Error",
-          description: "Failed to load dashboard data.",
+          description: error.message || "Failed to load some dashboard data.",
           variant: "destructive",
         });
       } finally {
         setLoading(false);
       }
     }
-    fetchData();
+    fetchDashboardData();
   }, [toast]);
 
-  function handleSaveSelections() {
-    // In a real implementation you would send the selectedCategories and selectedProducts to an API endpoint to save preferences.
-    toast({
-      title: "Selections Saved",
-      description: "Your top categories and bestsellers have been updated.",
-    });
+  // Handler for saving top menus and bestsellers selections
+  async function handleSaveSelections() {
+    try {
+      // Prepare arrays for homepage config
+      const topCategories: string[] = [];
+      const topBestsellers: string[] = [];
+      for (let slot = 1; slot <= 4; slot++) {
+        if (selectedMenus[slot]) {
+          topCategories.push(selectedMenus[slot]);
+        }
+        if (selectedBestsellers[slot]) {
+          topBestsellers.push(selectedBestsellers[slot]);
+        }
+      }
+      const res = await fetch("/api/admin/homepage-config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topCategories, topBestsellers }),
+      });
+      if (!res.ok) throw new Error("Failed to update homepage configuration");
+      const updatedConfig = await res.json();
+      toast({
+        title: "Selections Saved",
+        description: "Your top menus and bestsellers have been updated.",
+      });
+    } catch (error: any) {
+      console.error("Error saving selections:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Unable to save selections.",
+        variant: "destructive",
+      });
+    }
   }
 
-  if (loading) {
-    return <div>Loading dashboard data...</div>;
+  // Handler for adding a new menu image
+  async function handleAddImage() {
+    if (!newImageUrl.trim()) {
+      toast({
+        title: "Image URL missing",
+        description: "Please provide an image URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/menu-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: newImageUrl }),
+      });
+      if (!res.ok) throw new Error("Failed to add image");
+      const addedImage = await res.json();
+      setMenuImages((prev) => [...prev, addedImage]);
+      setNewImageUrl("");
+      toast({
+        title: "Image added",
+        description: "Menu image added successfully.",
+      });
+    } catch (error: any) {
+      console.error("Error adding image:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add image.",
+        variant: "destructive",
+      });
+    }
   }
+
+  // Handler for deleting a menu image
+  async function handleDeleteImage(imageId: string) {
+    try {
+      const res = await fetch(`/api/admin/menu-images?imageId=${imageId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete image");
+      setMenuImages((prev) => prev.filter((img) => img._id !== imageId));
+      toast({
+        title: "Image deleted",
+        description: "Menu image deleted successfully.",
+      });
+    } catch (error: any) {
+      console.error("Error deleting image:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete image.",
+        variant: "destructive",
+      });
+    }
+  }
+
+  if (loading) return <div>Loading dashboard data...</div>;
 
   return (
     <div className="p-6 space-y-6">
-      {/* Title */}
-      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+      {/* KPI: Total Orders */}
+      <Card>
+        <CardHeader className="flex items-center gap-2">
+          <ShoppingCart className="h-6 w-6 text-orange-500" />
+          <CardTitle>Total Orders</CardTitle>
+        </CardHeader>
+        <CardContent>{totalOrders}</CardContent>
+      </Card>
 
-      {/* KPI Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-blue-500" />
-            <CardTitle>Daily Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>${stats?.kpis.dailyRevenue.toFixed(2)}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-green-500" />
-            <CardTitle>Weekly Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>${stats?.kpis.weeklyRevenue.toFixed(2)}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-purple-500" />
-            <CardTitle>Monthly Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>${stats?.kpis.monthlyRevenue.toFixed(2)}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <ShoppingCart className="h-6 w-6 text-orange-500" />
-            <CardTitle>Total Orders</CardTitle>
-          </CardHeader>
-          <CardContent>{stats?.kpis.totalOrders}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <DollarSign className="h-6 w-6 text-yellow-500" />
-            <CardTitle>Average Order Value</CardTitle>
-          </CardHeader>
-          <CardContent>${stats?.kpis.avgOrderValue.toFixed(2)}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <UsersIcon className="h-6 w-6 text-red-500" />
-            <CardTitle>Registered Users</CardTitle>
-          </CardHeader>
-          <CardContent>{stats?.kpis.registeredUsers}</CardContent>
-        </Card>
-      </div>
-
-      {/* Alerts Section */}
-      <div>
-        <Card>
-          <CardHeader className="flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-red-500" />
-            <CardTitle>Pending Alerts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {stats?.alerts.length === 0 ? (
-              <p>No pending tasks.</p>
-            ) : (
-              <ul className="list-disc list-inside">
-                {stats?.alerts.map((alert, index) => (
-                  <li key={index}>{alert}</li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Orders & Latest Reviews Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stats?.recentOrders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell>{order.id}</TableCell>
-                    <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                    <TableCell>
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{order.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Latest Reviews</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Comment</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stats?.latestReviews.map((review) => (
-                  <TableRow key={review.id}>
-                    <TableCell>{review.userName}</TableCell>
-                    <TableCell>{review.comment}</TableCell>
-                    <TableCell>
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Separator />
+      {/* Pending Alerts */}
+      <Card>
+        <CardHeader className="flex items-center gap-2">
+          <AlertTriangle className="h-6 w-6 text-red-500" />
+          <CardTitle>Pending Alerts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {pendingAlerts.length === 0 ? (
+            <p>No pending alerts.</p>
+          ) : (
+            <ul className="list-disc list-inside">
+              {pendingAlerts.map((alert, index) => (
+                <li key={index}>{alert}</li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Common Admin Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -349,22 +279,19 @@ export default function DashboardPage() {
 
       <Separator />
 
-      {/* Featured Categories */}
+      {/* Selections for Top 4 Menus */}
       <div>
         <h2 className="text-2xl font-semibold">
-          Select Top 4 Categories for Homepage
+          Select Top 4 Menus for Homepage
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Choose one category for each slot below.
-        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           {[1, 2, 3, 4].map((slot) => (
-            <div key={`cat-slot-${slot}`} className="space-y-2">
-              <label className="block font-medium">Category Slot {slot}</label>
+            <div key={`menu-slot-${slot}`} className="space-y-2">
+              <label className="block font-medium">Menu Slot {slot}</label>
               <Select
-                defaultValue={selectedCategories[slot]}
+                defaultValue={selectedMenus[slot]}
                 onValueChange={(value) =>
-                  setSelectedCategories((prev) => ({ ...prev, [slot]: value }))
+                  setSelectedMenus((prev) => ({ ...prev, [slot]: value }))
                 }
               >
                 <SelectTrigger className="w-full">
@@ -382,24 +309,19 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Featured Bestsellers */}
+      {/* Selections for Top 4 Bestsellers */}
       <div>
         <h2 className="text-2xl font-semibold">
           Select Top 4 Bestsellers for Homepage
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Choose one product for each slot below.
-        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           {[1, 2, 3, 4].map((slot) => (
-            <div key={`prod-slot-${slot}`} className="space-y-2">
-              <label className="block font-medium">
-                Bestseller Slot {slot}
-              </label>
+            <div key={`bestseller-slot-${slot}`} className="space-y-2">
+              <label className="block font-medium">Bestseller Slot {slot}</label>
               <Select
-                defaultValue={selectedProducts[slot]}
+                defaultValue={selectedBestsellers[slot]}
                 onValueChange={(value) =>
-                  setSelectedProducts((prev) => ({ ...prev, [slot]: value }))
+                  setSelectedBestsellers((prev) => ({ ...prev, [slot]: value }))
                 }
               >
                 <SelectTrigger className="w-full">
@@ -417,6 +339,50 @@ export default function DashboardPage() {
         </div>
       </div>
       <Button onClick={handleSaveSelections}>Save Selections</Button>
+
+      <Separator />
+
+      {/* Menu Images Management */}
+      <div>
+        <h2 className="text-2xl font-semibold">
+          Manage Menu Images (Products Page)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Add new image URLs, update, or delete existing ones.
+        </p>
+        <div className="flex items-center gap-2 my-4">
+          <Input
+            type="url"
+            value={newImageUrl}
+            onChange={(e) => setNewImageUrl(e.target.value)}
+            placeholder="Enter image URL (Drive link)"
+          />
+          <Button onClick={handleAddImage}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Image
+          </Button>
+        </div>
+        {menuImages.length === 0 ? (
+          <p>No menu images found.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {menuImages.map((img) => (
+              <Card key={img._id} className="relative">
+                <img src={img.url} alt="Menu" className="w-full aspect-video object-cover rounded-t-lg" />
+                <div className="absolute top-2 right-2">
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    onClick={() => handleDeleteImage(img._id)}
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

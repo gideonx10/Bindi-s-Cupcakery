@@ -19,7 +19,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface User {
   _id: string;
@@ -55,7 +55,7 @@ export default function UsersPage() {
     const checkSession = async () => {
       const res = await fetch("/api/session", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent with request
+        credentials: "include", // Ensures cookies are sent with the request
       });
 
       const sessionData = await res.json();
@@ -85,12 +85,8 @@ export default function UsersPage() {
         if (!userData || userData.user.role !== "admin") {
           router.push("/admin/login");
         }
-
-        // setOrders(ordersData.reverse()); // If you plan to use orders
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
-        // setLoading(false);
       }
     };
     fetchData();
@@ -126,7 +122,6 @@ export default function UsersPage() {
   async function fetchOrderHistory(user: User) {
     try {
       setOrdersLoading(true);
-      // Save the selected user to display name in modal
       setSelectedUser(user);
       const response = await fetch(`/api/admin/orders?userId=${user._id}`, {
         headers: { "Cache-Control": "no-cache" },
@@ -135,6 +130,7 @@ export default function UsersPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const orders = await response.json();
+      // Ensure that we only show order history for the selected user
       setOrderHistory(Array.isArray(orders) ? orders : []);
       setIsOrderModalOpen(true);
     } catch (error) {
@@ -224,7 +220,7 @@ export default function UsersPage() {
           ) : orderHistory.length === 0 ? (
             <p className="text-gray-500">No orders found for this user.</p>
           ) : (
-            <div className="mt-4">
+            <div className="mt-4 max-h-96 overflow-y-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -251,7 +247,9 @@ export default function UsersPage() {
           )}
           <DialogFooter>
             <DialogClose asChild>
-              <Button onClick={() => setIsOrderModalOpen(false)}>Close</Button>
+              <Button onClick={() => setIsOrderModalOpen(false)}>
+                Close
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

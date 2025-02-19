@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import connectDB from "@/lib/connectDB";
 import User from "@/models/User";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -29,11 +27,11 @@ export async function GET(req: NextRequest) {
     const userData = await res.json();
     console.log(userData);
 
-    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+    if (!userData || !userData.user?.role || userData.user.role !== "admin") {
       return NextResponse.redirect("/admin/login");
     }
 
-    // Fetch all users and select only required fields: name, email, phone, area
+    // Fetch all users and select only the required fields: name, email, phone, area
     const users = await User.find({}, "name email phone area");
     return NextResponse.json(users);
   } catch (error) {

@@ -409,7 +409,7 @@ export default function OrdersPage() {
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="ready to take-away">
                           Ready to take-away
-                        </SelectItem>{" "}
+                        </SelectItem>
                         <SelectItem value="delivered">Delivered</SelectItem>
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>
