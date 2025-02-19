@@ -66,13 +66,19 @@ export default function LandingPage() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        // Fetch Total Orders & Pending Alerts
+        // Fetch orders including pending ones
         const ordersRes = await fetch("/api/admin/stats/orders");
-        if (!ordersRes.ok) throw new Error("Failed to fetch total orders");
+        console.log(ordersRes);
+        if (!ordersRes.ok) throw new Error("Failed to fetch orders");
         const ordersData = await ordersRes.json();
-        setTotalOrders(ordersData.totalOrders);
-        // pendingAlerts is expected to be an array from the orders stats endpoint.
-        setPendingAlerts(ordersData.pendingAlerts);
+
+        // Filter pending orders
+        const pendingOrders = ordersData.filter(
+          (order: any) => order.status === "pending"
+        );
+
+        setTotalOrders(ordersData.length);
+        setPendingAlerts(pendingOrders);
 
         // Fetch available categories for top menus
         const catRes = await fetch("/api/admin/categories");
@@ -227,18 +233,43 @@ export default function LandingPage() {
       </Card>
 
       {/* Pending Alerts */}
+      {/* Pending Alerts */}
       <Card>
         <CardHeader className="flex items-center gap-2">
           <AlertTriangle className="h-6 w-6 text-red-500" />
-          <CardTitle>Pending Alerts</CardTitle>
+          <CardTitle>Pending Orders</CardTitle>
         </CardHeader>
         <CardContent>
           {pendingAlerts.length === 0 ? (
-            <p>No pending alerts.</p>
+            <p>No pending orders.</p>
           ) : (
-            <ul className="list-disc list-inside">
-              {pendingAlerts.map((alert, index) => (
-                <li key={index}>{alert}</li>
+            <ul className="list-disc list-inside space-y-2">
+              {pendingAlerts.map((order: any) => (
+                <li key={order._id} className="border p-2 rounded">
+                  <p>
+                    <strong>Order ID:</strong> {order._id}
+                  </p>
+                  <p>
+                    <strong>Customer:</strong> {order.user.name}
+                  </p>
+                  <p>
+                    <strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}
+                  </p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span className="text-red-500">{order.status}</span>
+                  </p>
+                  <p>
+                    <strong>Products:</strong>
+                  </p>
+                  <ul className="ml-4">
+                    {order.products.map((item: any) => (
+                      <li key={item.product._id}>
+                        {item.product.name} - {item.quantity}x
+                      </li>
+                    ))}
+                  </ul>
+                </li>
               ))}
             </ul>
           )}

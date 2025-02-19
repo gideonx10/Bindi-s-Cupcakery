@@ -27,7 +27,6 @@ interface User {
   name: string;
   email: string;
   phone: string;
-  area: string;
 }
 
 interface Order {
@@ -194,9 +193,9 @@ export default function UsersPage() {
                       <TableHead className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold">
                         Phone
                       </TableHead>
-                      <TableHead className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold">
+                      {/* <TableHead className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold">
                         Area
-                      </TableHead>
+                      </TableHead> */}
                       <TableHead className="bg-slate-50/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-center">
                         Actions
                       </TableHead>
@@ -217,9 +216,9 @@ export default function UsersPage() {
                         <TableCell className="text-slate-600 dark:text-slate-300">
                           {user.phone}
                         </TableCell>
-                        <TableCell className="text-slate-600 dark:text-slate-300">
+                        {/* <TableCell className="text-slate-600 dark:text-slate-300">
                           {user.area}
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell className="text-center space-x-2">
                           <Button
                             onClick={() => fetchOrderHistory(user)}
