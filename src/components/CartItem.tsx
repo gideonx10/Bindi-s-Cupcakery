@@ -23,7 +23,7 @@ export default function CartItem({
   removeItem,
 }: CartItemProps) {
   return (
-    <div className="relative border border-gray-200 p-6 rounded-2xl shadow-lg bg-white/30 backdrop-blur-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1">
+    <div className="relative border border-blue-200 p-6 rounded-2xl shadow-lg bg-blue-50 backdrop-blur-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1">
       {/* Remove Button - Neumorphic Style */}
       <button
         onClick={() => removeItem(item.product._id)}

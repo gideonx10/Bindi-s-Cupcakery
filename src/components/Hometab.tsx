@@ -58,7 +58,7 @@ const HomeTab = ({ userId }: { userId: string | undefined }) => {
     );
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 min-h-screen w-full">
+    <div className="p-2 sm:p-4 space-y-4 sm:space-y-6 min-h-screen w-full">
       <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
         <div className="p-4 sm:p-6 lg:p-8 rounded-2xl border border-blue-200 bg-white/80 backdrop-blur-sm w-full lg:w-3/4 font-ancient transition-all duration-300 hover:shadow-lg hover:border-blue-300">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-blue-800">

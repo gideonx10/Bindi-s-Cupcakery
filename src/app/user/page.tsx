@@ -54,11 +54,6 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    window.location.reload();
-  };
-
   const routes = [
     {
       label: "Home",
@@ -114,7 +109,7 @@ const UserPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "home":
-        return userId ? <HomeTab userId={userId} /> : <p>Loading...</p>;
+        return userId ? <HomeTab userId={userId} /> : "";
       case "details":
         return <UserpageDetails userId={userId} />;
       case "orders":
@@ -134,16 +129,11 @@ const UserPage = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full h-[14vh] bg-[#E0F2FE] z-20"></div>
+      <div className="fixed top-0 left-0 w-full h-[10vh] md:h-[12vh] bg-[#E0F2FE] z-20"></div>
       <div className="min-h-screen bg-[#E0F2FE]">
         {/* Responsive Sidebar/Bottom Navigation */}
-        <div className="fixed lg:w-72 lg:left-0 lg:top-[14vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 bg-[#E0F2FE] transition-all duration-300">
+        <div className="fixed lg:w-72 lg:left-0 lg:top-[18vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 bg-[#E0F2FE] transition-all duration-300">
           {/* Desktop Header */}
-          <div className="hidden lg:block p-8">
-            <h2 className="text-2xl font-bold mb-8 py-3 rounded-lg tracking-tight text-center bg-blue-500 text-white">
-              Hey There! 👋
-            </h2>
-          </div>
 
           {/* Navigation Items */}
           <div className="h-full lg:px-6">
@@ -154,7 +144,7 @@ const UserPage = () => {
                   variant={activeTab === route.id ? "secondary" : "ghost"}
                   onClick={() => handleTabChange(route.id)}
                   className={cn(
-                    "w-full justify-start transition-all duration-300 py-6 text-base font-medium",
+                    "w-full justify-center md:justify-start transition-all duration-300 py-6 text-base font-medium",
                     "hover:scale-[1.02]",
                     activeTab === route.id
                       ? `${route.activeColor} ${route.color} font-semibold`
@@ -162,14 +152,16 @@ const UserPage = () => {
                     route.hoverColor
                   )}
                 >
-                  <route.icon
-                    className={cn(
-                      "mr-3 h-5 w-5 transition-transform duration-300",
-                      route.color,
-                      activeTab === route.id && "scale-110"
-                    )}
-                  />
-                  {route.label}
+                  <div className="flex flex-col lg:flex-row items-center">
+                    <route.icon
+                      className={cn(
+                        "h-5 w-5 mb-1 md:mb-0 md:mr-3 transition-transform duration-300",
+                        route.color,
+                        activeTab === route.id && "scale-110"
+                      )}
+                    />
+                    {route.label}
+                  </div>
                 </Button>
               ))}
 
@@ -194,18 +186,9 @@ const UserPage = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
-          <div className="max-w-4xl mx-auto px-4">
+        <div className="flex-1 -translate-y-10 lg:-translate-y-0 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
+          <div className="max-w-4xl mx-auto md:px-4 xl:-translate-x-[5vh]">
             <div className="rounded-lg">{renderContent()}</div>
-          </div>
-          <div className="lg:hidden flex justify-center mt-4 pb-4">
-            <button
-              onClick={() => handleLogout()}
-              className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#E0F2FE] text-red-500 hover:bg-[#B9E6FE] transition-colors duration-200"
-            >
-              <LogOut className="mr-3 h-5 w-5" />
-              <span>Logout</span>
-            </button>
           </div>
         </div>
       </div>

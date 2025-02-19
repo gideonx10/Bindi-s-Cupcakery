@@ -180,13 +180,10 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-        <div className="relative">
-          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-[3px] border-blue-200 border-t-blue-500"></div>
-          <p className="absolute top-full mt-4 text-sm sm:text-base font-medium text-blue-700 font-ancient whitespace-nowrap">
-            Loading orders...
-          </p>
-        </div>
+      <div className="flex items-center justify-center min-h-[200px] w-full bg-[#E0F2FE]">
+        <p className="text-base sm:text-lg font-semibold text-blue-700 font-ancient">
+          Loading...
+        </p>
       </div>
     );
   }
@@ -214,7 +211,9 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
               <Card
                 key={order._id}
                 className={`${
-                  order.isHamper ? "bg-purple-50 border border-purple-500" : ""
+                  order.isHamper
+                    ? "bg-purple-50 border border-purple-500"
+                    : "border-blue-200"
                 }`}
               >
                 <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0 pb-2">
