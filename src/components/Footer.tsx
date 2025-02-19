@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Phone, Mail } from "lucide-react";
+import QRCode from "react-qr-code";
 
 const Footer = () => {
   const [user, setUser] = useState<{
@@ -72,7 +73,7 @@ const Footer = () => {
             >
               Quick Links
             </h3>
-            <div className="flex md:flex-col gap-3 md:gap-4 items-center font-ancient" >
+            <div className="flex md:flex-col gap-3 md:gap-4 items-center font-ancient">
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
                 href={user ? "/user" : "/auth"}
@@ -104,13 +105,14 @@ const Footer = () => {
           <div className="flex flex-col items-center w-full md:w-1/2 gap-6 justify-center font-ancient">
             {/* QR Code */}
             <div className="w-36 h-36 p-2">
-              <Image
+              {/* <Image
                 src="/images/footerQR.png"
                 alt="Footer QR"
                 width={140}
                 height={140}
                 className="transform"
-              />
+              /> */}
+              <QRCode value="https://wa.me/918849130189?" size={140} />
             </div>
             <span className="text-[#4A0D2C] font-medium text-xl md:text-2xl">
               Scan QR to Order
