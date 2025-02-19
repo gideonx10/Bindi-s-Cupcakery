@@ -92,14 +92,14 @@ const UserPage = () => {
       hoverColor: "hover:text-teal-600",
       activeColor: "bg-teal-50",
     },
-    {
-      label: "General",
-      icon: Settings,
-      id: "general",
-      color: "text-sky-500",
-      hoverColor: "hover:text-sky-600",
-      activeColor: "bg-sky-50",
-    },
+    // {
+    //   label: "General",
+    //   icon: Settings,
+    //   id: "general",
+    //   color: "text-sky-500",
+    //   hoverColor: "hover:text-sky-600",
+    //   activeColor: "bg-sky-50",
+    // },
   ];
 
   const handleTabChange = (tab: string) => {
@@ -121,9 +121,9 @@ const UserPage = () => {
         return <OrdersPage userId={userId} />;
       case "cart":
         return <CartPage userId={userId} />;
-      case "general":
-        return <div className="p-4">General Information Content</div>;
-      default:
+        // case "general":
+        //   return <div className="p-4">General Information Content</div>;
+        // default:
         return (
           <div className="p-4 text-lg text-blue-800">
             Select a tab from the sidebar.

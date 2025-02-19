@@ -44,7 +44,7 @@ const categories: Category[] = [
   },
   {
     id: 2,
-    name: "Specialty Flavors",
+    name: "Chessecake",
     image: "/images/img2.jpg",
     description: "Unique and innovative combinations",
     colors: {
@@ -59,7 +59,7 @@ const categories: Category[] = [
   },
   {
     id: 3,
-    name: "Wedding Collections",
+    name: "Cake pops",
     image: "/images/img3.jpg",
     description: "Elegant and sophisticated choices",
     colors: {
@@ -74,7 +74,7 @@ const categories: Category[] = [
   },
   {
     id: 4,
-    name: "Seasonal Specials",
+    name: "Ice-cream Frenzy",
     image: "/images/img4.jpg",
     description: "Limited edition seasonal delights",
     colors: {
