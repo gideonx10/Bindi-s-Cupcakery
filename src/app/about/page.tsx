@@ -126,7 +126,7 @@ export default function About() {
 
   return (
     <>
-      <main className="bg-[#E6F7FF] min-h-[107vh] max-w-full overflow-hidden bg-b-gradient from-[#F2F4FF] to-[#FFF0F8]">
+      <main className="bg-[#FFF0F8]  max-w-full overflow-hidden ">
         {/* About Us Hero Section */}
         <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto overflow-hidden">
           <div className="container mx-auto px-4 translate-y-10 fade-up">
@@ -150,7 +150,7 @@ export default function About() {
                 {/* Responsive Shop Now Button */}
                 <Link
                   href="/products"
-                  className="bg-[#D1EAFE] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fce8d2] shadow-xl hover:shadow-2xl transition-shadow mt-6 
+                  className="bg-[#fee5f2] text-black px-6 py-3 rounded-full text-lg duration-300 hover:bg-[#fbd4e9] shadow-xl hover:shadow-2xl transition-shadow mt-6 
                 max-w-[250px] md:w-auto md:inline-block mx-auto md:mx-0 font-semibold font-ancient"
                 >
                   Shop Now
@@ -172,8 +172,8 @@ export default function About() {
           </div>
         </section>
       </main>
-      <div className="absolute  left-0 w-full h-32 bg-gradient-to-b from-[#E6F7FF] to-[#FFF0F8]" />
-      <section className="py-10 bg-[#FFF0F8] overflow-hidden">
+      <div className="absolute left-0 w-full h-32 bg-gradient-to-b from-[#FFF0F8] to-[#F4EADE]" />
+      <section className="py-10 bg-[#F4EADE] overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
             <h2
@@ -262,16 +262,16 @@ export default function About() {
 
             {/* Right side - Contact Info */}
             <div className="md:w-1/2 bg-[#F6F5F5] p-8 rounded-2xl shadow-lg contact-info overflow-hidden">
-              <h2 className="text-3xl font-bold text-amber-700 mb-6 font-ancient">
+              <h2 className="text-3xl font-bold text-[#c23471] mb-6 font-ancient">
                 Contact Information
               </h2>
 
               <div className="space-y-6">
                 {/* Address */}
                 <div className="flex items-start gap-4">
-                  <MapPin className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
+                  <MapPin className="w-6 h-6 text-[#c23471] mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-xl text-gray-800 mb-2 font-ancient">
+                    <h3 className="font-semibold text-xl text-[#c23471] mb-2 font-ancient">
                       Our Location
                     </h3>
                     <p className="text-gray-600 leading-relaxed font-ancient font-semibold">
@@ -286,15 +286,15 @@ export default function About() {
 
                 {/* Phone */}
                 <div className="flex items-start gap-4">
-                  <Phone className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
+                  <Phone className="w-6 h-6 text-[#c23471] mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-xl text-gray-800 mb-2 font-ancient font-semibold">
+                    <h3 className="text-xl text-[#c23471] mb-2 font-ancient font-semibold">
                       Phone
                     </h3>
                     <p className="text-gray-600">
                       <a
                         href="tel:+918849130189"
-                        className="hover:text-amber-700 transition-colors font-ancient font-semibold"
+                        className="hover:text-[#c23471] transition-colors font-ancient font-semibold"
                       >
                         +91 8849130189
                       </a>
@@ -304,15 +304,15 @@ export default function About() {
 
                 {/* Email */}
                 <div className="flex items-start gap-4">
-                  <Mail className="w-6 h-6 text-amber-700 mt-1 flex-shrink-0" />
+                  <Mail className="w-6 h-6 text-[#c23471] mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-xl text-gray-800 mb-2 font-ancient font-semibold">
+                    <h3 className="text-xl text-[#c23471] mb-2 font-ancient font-semibold">
                       Email
                     </h3>
                     <p className="text-gray-600">
                       <a
                         href="mailto:bindis_cupcakery@gmail.com"
-                        className="hover:text-amber-700 transition-colors font-ancient font-semibold"
+                        className="hover:text-[#c23471] transition-colors font-ancient font-semibold"
                       >
                         bindis_cupcakery@gmail.com
                       </a>
@@ -321,8 +321,8 @@ export default function About() {
                 </div>
 
                 {/* Business Hours */}
-                <div className="mt-8 pt-6 border-t border-amber-700">
-                  <h3 className="text-xl text-gray-800 mb-3 font-ancient font-semibold">
+                <div className="mt-8 pt-6 border-t border-[#c23471]">
+                  <h3 className="text-xl text-[#c23471] mb-3 font-ancient font-semibold">
                     Business Hours
                   </h3>
                   <div className="space-y-2 text-gray-600 font-ancient font-semibold">
