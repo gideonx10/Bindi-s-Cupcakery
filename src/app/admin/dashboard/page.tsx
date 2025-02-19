@@ -11,12 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import {
-  ShoppingCart,
-  AlertTriangle,
-  Plus,
-  Trash,
-} from "lucide-react";
+import { ShoppingCart, AlertTriangle, Plus, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -49,10 +44,16 @@ export default function LandingPage() {
   const [pendingAlerts, setPendingAlerts] = useState<string[]>([]);
 
   // States for Top 4 Menus and Bestsellers selections
-  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>(
+    []
+  );
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
-  const [selectedMenus, setSelectedMenus] = useState<{ [key: number]: string }>({});
-  const [selectedBestsellers, setSelectedBestsellers] = useState<{ [key: number]: string }>({});
+  const [selectedMenus, setSelectedMenus] = useState<{ [key: number]: string }>(
+    {}
+  );
+  const [selectedBestsellers, setSelectedBestsellers] = useState<{
+    [key: number]: string;
+  }>({});
 
   // States for Menu Images Management
   const [menuImages, setMenuImages] = useState<MenuImage[]>([]);
@@ -93,7 +94,8 @@ export default function LandingPage() {
 
         // Fetch existing homepage configuration for top menus and bestsellers
         const configRes = await fetch("/api/admin/homepage-config");
-        if (!configRes.ok) throw new Error("Failed to fetch homepage configuration");
+        if (!configRes.ok)
+          throw new Error("Failed to fetch homepage configuration");
         const configData: HomePageConfigData = await configRes.json();
         // Initialize selections from config data. Slot keys are 1-indexed.
         const menus: { [key: number]: string } = {};
@@ -317,7 +319,9 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           {[1, 2, 3, 4].map((slot) => (
             <div key={`bestseller-slot-${slot}`} className="space-y-2">
-              <label className="block font-medium">Bestseller Slot {slot}</label>
+              <label className="block font-medium">
+                Bestseller Slot {slot}
+              </label>
               <Select
                 defaultValue={selectedBestsellers[slot]}
                 onValueChange={(value) =>
@@ -368,7 +372,11 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {menuImages.map((img) => (
               <Card key={img._id} className="relative">
-                <img src={img.url} alt="Menu" className="w-full aspect-video object-cover rounded-t-lg" />
+                <img
+                  src={img.url}
+                  alt="Menu"
+                  className="w-full aspect-video object-cover rounded-t-lg"
+                />
                 <div className="absolute top-2 right-2">
                   <Button
                     size="icon"
