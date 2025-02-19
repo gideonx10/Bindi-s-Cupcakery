@@ -60,15 +60,20 @@ export default function Home() {
         </div>
       )}
 
-      <div ref={homeRef} className="relative opacity-0 ">
-        <HomeLanding />
-        <InfiniteName />
+<div ref={homeRef} className="relative opacity-0">
+  {/* Landing Page */}
+  <HomeLanding />
 
-        {/* Top Categories Section */}
-        <div className="relative bg-gradient-to-b from-[#E6F7FF] to-[#F5F3FF]">
-          <TopCategories />
-          <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#F5F3FF]" />
-        </div>
+  {/* Infinite Name (Placed Between Landing & Categories) */}
+  <div className="relative -mt-10 z-10">
+    <InfiniteName />
+  </div>
+
+  {/* Top Categories Section */}
+  <div className="relative bg-gradient-to-b from-[#E6F7FF] to-[#F5F3FF] z-0">
+    <TopCategories />
+    <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#F5F3FF]" />
+  </div>
 
         {/* Image Gallery Section */}
         <div className="relative bg-gradient-to-b from-[#F5F3FF] to-[#FFF0F7]">

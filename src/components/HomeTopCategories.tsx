@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -39,8 +39,8 @@ const categories: Category[] = [
       buttonHoverBg: "hover:bg-[#FF7088]",
       buttonHoverText: "hover:text-white",
       title: "text-[#D23F57]",
-      description: "text-[#FF6B8B]/80"
-    }
+      description: "text-[#FF6B8B]/80",
+    },
   },
   {
     id: 2,
@@ -54,8 +54,8 @@ const categories: Category[] = [
       buttonHoverBg: "hover:bg-[#4A9CC7]",
       buttonHoverText: "hover:text-white",
       title: "text-[#2B6CB0]",
-      description: "text-[#3182CE]/80"
-    }
+      description: "text-[#3182CE]/80",
+    },
   },
   {
     id: 3,
@@ -69,8 +69,8 @@ const categories: Category[] = [
       buttonHoverBg: "hover:bg-[#805AD5]",
       buttonHoverText: "hover:text-white",
       title: "text-[#553C9A]",
-      description: "text-[#6B46C1]/80"
-    }
+      description: "text-[#6B46C1]/80",
+    },
   },
   {
     id: 4,
@@ -84,9 +84,9 @@ const categories: Category[] = [
       buttonHoverBg: "hover:bg-[#D97706]",
       buttonHoverText: "hover:text-white",
       title: "text-[#92400E]",
-      description: "text-[#B45309]/80"
-    }
-  }
+      description: "text-[#B45309]/80",
+    },
+  },
 ];
 
 const evenFloatingAnimation = {
@@ -96,9 +96,9 @@ const evenFloatingAnimation = {
       duration: 3,
       repeat: Infinity,
       repeatType: "reverse" as const,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 const oddFloatingAnimation = {
@@ -108,9 +108,9 @@ const oddFloatingAnimation = {
       duration: 3,
       repeat: Infinity,
       repeatType: "reverse" as const,
-      ease: "easeInOut"
-    }
-  }
+      ease: "easeInOut",
+    },
+  },
 };
 
 const TopCategories = () => {
@@ -119,7 +119,7 @@ const TopCategories = () => {
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
@@ -132,7 +132,7 @@ const TopCategories = () => {
       gsap.set(card, {
         opacity: 0,
         y: 100,
-        scale: 0.9
+        scale: 0.9,
       });
 
       gsap.to(card, {
@@ -146,32 +146,29 @@ const TopCategories = () => {
           start: "top bottom-=100",
           end: "top center",
           toggleActions: "play none none reverse",
-          scrub: 1
-        }
+          scrub: 1,
+        },
       });
     });
   }, []);
 
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
       className="py-20 pt-8 md:pt-10 lg:pt-12 bg-[#E6F7FF] relative overflow-hidden min-h-screen"
     >
-      <motion.div 
+      <motion.div
         style={{ y, opacity }}
         className="max-w-7xl mx-auto relative z-10"
       >
         <div className="pt-12 pb-16 flex-shrink-0">
-          <h1 
+          <h1
             className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl text-center text-[#2B4C7E] uppercase tracking-tight leading-none font-black"
-            style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
+            style={{ fontFamily: "Barlow Condensed, sans-serif" }}
           >
             TOP CATEGORIES
           </h1>
-          <div 
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#4A739B] tracking-wider font-medium font-ancient"
-            
-          >
+          <div className="text-base sm:text-lg md:text-xl lg:text-2xl text-center mt-4 text-[#4A739B] tracking-wider font-medium font-ancient">
             EXPLORE OUR HANDCRAFTED COLLECTION
           </div>
         </div>
@@ -184,7 +181,9 @@ const TopCategories = () => {
                 cardsRef.current[index] = el || null;
               }}
               className="relative group cursor-pointer h-[450px]"
-              variants={index % 2 === 0 ? evenFloatingAnimation : oddFloatingAnimation}
+              variants={
+                index % 2 === 0 ? evenFloatingAnimation : oddFloatingAnimation
+              }
               animate="animate"
               initial="initial"
             >
@@ -202,15 +201,17 @@ const TopCategories = () => {
 
                 <div className="p-6 flex flex-col flex-grow justify-between">
                   <div>
-                    <h3 className={`text-2xl font-bold ${category.colors.title} mb-3 transition-colors duration-300`}
-                        style={{ fontFamily: 'Barlow Condensed, sans-serif' }}>
+                    <h3
+                      className={`text-2xl font-bold ${category.colors.title} mb-3 transition-colors duration-300`}
+                      style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+                    >
                       {category.name}
                     </h3>
                     <p className={`${category.colors.description} mb-4`}>
                       {category.description}
                     </p>
                   </div>
-                  <button className={`
+                  {/* <button className={`
                     w-full ${category.colors.buttonBg} ${category.colors.buttonText} 
                     font-semibold py-3 px-4 rounded-lg
                     transform transition-all duration-300
@@ -218,7 +219,7 @@ const TopCategories = () => {
                     hover:shadow-md
                   `}>
                     Explore Collection
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </motion.div>

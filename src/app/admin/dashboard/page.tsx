@@ -11,12 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import {
-  ShoppingCart,
-  AlertTriangle,
-  Plus,
-  Trash,
-} from "lucide-react";
+import { ShoppingCart, AlertTriangle, Plus, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import {
@@ -57,13 +52,19 @@ export default function LandingPage() {
 
   // States for total orders and pending alerts
   const [totalOrders, setTotalOrders] = useState<number>(0);
-  const [pendingAlerts, setPendingAlerts] = useState<string[]>([]);
+  // const [pendingAlerts, setPendingAlerts] = useState<string[]>([]);
 
   // States for Top 4 Menus and Bestsellers selections
-  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>(
+    []
+  );
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
-  const [selectedMenus, setSelectedMenus] = useState<{ [key: number]: string }>({});
-  const [selectedBestsellers, setSelectedBestsellers] = useState<{ [key: number]: string }>({});
+  const [selectedMenus, setSelectedMenus] = useState<{ [key: number]: string }>(
+    {}
+  );
+  const [selectedBestsellers, setSelectedBestsellers] = useState<{
+    [key: number]: string;
+  }>({});
 
   // States for Menu Images Management
   const [menuImages, setMenuImages] = useState<MenuImage[]>([]);
@@ -77,33 +78,44 @@ export default function LandingPage() {
     async function fetchDashboardData() {
       try {
         // Fetch Total Orders & Pending Alerts
-        const ordersRes = await fetch("/api/admin/stats/orders", { credentials: "include" });
+        const ordersRes = await fetch("/api/admin/stats/orders", {
+          credentials: "include",
+        });
         if (!ordersRes.ok) throw new Error("Failed to fetch total orders");
         const ordersData = await ordersRes.json();
         setTotalOrders(ordersData.totalOrders);
-        setPendingAlerts(ordersData.pendingAlerts);
+        // setPendingAlerts(ordersData.pendingAlerts);
 
         // Fetch available categories for top menus
-        const catRes = await fetch("/api/admin/categories", { credentials: "include" });
+        const catRes = await fetch("/api/admin/categories", {
+          credentials: "include",
+        });
         if (!catRes.ok) throw new Error("Failed to fetch categories");
         const categories: Category[] = await catRes.json();
         setAvailableCategories(categories);
 
         // Fetch available products for bestsellers
-        const prodRes = await fetch("/api/admin/products?featured=true", { credentials: "include" });
+        const prodRes = await fetch("/api/admin/products?featured=true", {
+          credentials: "include",
+        });
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const products: Product[] = await prodRes.json();
         setAvailableProducts(products);
 
         // Fetch existing menu images
-        const imageRes = await fetch("/api/admin/menu-images", { credentials: "include" });
+        const imageRes = await fetch("/api/admin/menu-images", {
+          credentials: "include",
+        });
         if (!imageRes.ok) throw new Error("Failed to fetch menu images");
         const images: MenuImage[] = await imageRes.json();
         setMenuImages(images);
 
         // Fetch existing homepage configuration for top menus and bestsellers
-        const configRes = await fetch("/api/admin/homepage-config", { credentials: "include" });
-        if (!configRes.ok) throw new Error("Failed to fetch homepage configuration");
+        const configRes = await fetch("/api/admin/homepage-config", {
+          credentials: "include",
+        });
+        if (!configRes.ok)
+          throw new Error("Failed to fetch homepage configuration");
         const configData: HomePageConfigData = await configRes.json();
         const menus: { [key: number]: string } = {};
         configData.topCategories.forEach((catId, idx) => {
@@ -222,81 +234,65 @@ export default function LandingPage() {
     }
   }
 
-  if (loading) return <div>Loading dashboard data...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading dashboard data...
+      </div>
+    );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8">
       {/* KPI: Total Orders */}
-      <Card>
-        <CardHeader className="flex items-center gap-2">
-          <ShoppingCart className="h-6 w-6 text-orange-500" />
-          <CardTitle>Total Orders</CardTitle>
-        </CardHeader>
-        <CardContent>{totalOrders}</CardContent>
-      </Card>
-
-      {/* Pending Alerts */}
-      <Card>
-        <CardHeader className="flex items-center gap-2">
-          <AlertTriangle className="h-6 w-6 text-red-500" />
-          <CardTitle>Pending Alerts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {pendingAlerts.length === 0 ? (
-            <p>No pending alerts.</p>
-          ) : (
-            <ul className="list-disc list-inside">
-              {pendingAlerts.map((alert, index) => (
-                <li key={`alert-${index}`}>{alert}</li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <CardHeader className="flex flex-row items-center space-x-4 pb-2">
+            <ShoppingCart className="h-6 w-6 text-orange-500" />
+            <CardTitle className="text-xl">Total Orders</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4 text-3xl font-bold">
+            {totalOrders}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Common Admin Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="shadow-md hover:shadow-lg transition-shadow duration-200">
           <CardHeader>
-            <CardTitle>Add New Product</CardTitle>
+            <CardTitle className="text-lg">Add New Product</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild>
+            <Button asChild className="w-full">
               <a href="/admin/dashboard/products/">Go</a>
             </Button>
           </CardContent>
         </Card>
-        {/* <Card>
+        <Card className="shadow-md hover:shadow-lg transition-shadow duration-200">
           <CardHeader>
-            <CardTitle>Create New Order</CardTitle>
+            <CardTitle className="text-lg">Manage Reviews</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild>
-              <a href="/admin/dashboard/orders/new">Go</a>
-            </Button>
-          </CardContent>
-        </Card> */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Manage Reviews</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
+            <Button asChild className="w-full">
               <a href="/admin/dashboard/reviews">Go</a>
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      <Separator />
+      <Separator className="my-8" />
 
-      {/* Selections for Top 4 Menus */}
-      <div>
-        <h2 className="text-2xl font-semibold">Select Top 4 Menus for Homepage</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+      {/* Top 4 Menus Selection */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Select Top 4 Menus for Homepage
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((slot) => (
-            <div key={`menu-slot-${slot}`} className="space-y-2">
-              <label className="block font-medium">Menu Slot {slot}</label>
+            <div key={`menu-slot-${slot}`} className="space-y-3">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Menu Slot {slot}
+              </label>
               <Select
                 value={selectedMenus[slot] || ""}
                 onValueChange={(value) =>
@@ -305,7 +301,9 @@ export default function LandingPage() {
               >
                 <SelectTrigger className="w-full">
                   {selectedMenus[slot]
-                    ? availableCategories.find((cat) => cat._id === selectedMenus[slot])?.name || "Select category"
+                    ? availableCategories.find(
+                        (cat) => cat._id === selectedMenus[slot]
+                      )?.name || "Select category"
                     : "Select category"}
                 </SelectTrigger>
                 <SelectContent>
@@ -321,13 +319,17 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Selections for Top 4 Bestsellers */}
-      <div>
-        <h2 className="text-2xl font-semibold">Select Top 4 Bestsellers for Homepage</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+      {/* Top 4 Bestsellers Selection */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Select Top 4 Bestsellers for Homepage
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((slot) => (
-            <div key={`bestseller-slot-${slot}`} className="space-y-2">
-              <label className="block font-medium">Bestseller Slot {slot}</label>
+            <div key={`bestseller-slot-${slot}`} className="space-y-3">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Bestseller Slot {slot}
+              </label>
               <Select
                 value={selectedBestsellers[slot] || ""}
                 onValueChange={(value) =>
@@ -336,7 +338,9 @@ export default function LandingPage() {
               >
                 <SelectTrigger className="w-full">
                   {selectedBestsellers[slot]
-                    ? availableProducts.find((prod) => prod._id === selectedBestsellers[slot])?.name || "Select product"
+                    ? availableProducts.find(
+                        (prod) => prod._id === selectedBestsellers[slot]
+                      )?.name || "Select product"
                     : "Select product"}
                 </SelectTrigger>
                 <SelectContent>
@@ -351,47 +355,54 @@ export default function LandingPage() {
           ))}
         </div>
       </div>
-      {/* Save Selections with Confirmation */}
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button>Save Selections</Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Update Confirmation</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to update the Products and Menus?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSaveSelections}>
-              Save
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
-      <Separator />
+      {/* Save Button */}
+      <div className="flex justify-end mt-6">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="px-6">Save Selections</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Update Confirmation</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to update the Products and Menus?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleSaveSelections}>
+                Save
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
+      <Separator className="my-8" />
 
       {/* Menu Images Management */}
-      <div>
-        <h2 className="text-2xl font-semibold">
-          Manage Menu Images (Products Page)
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Add new image URLs, update, or delete existing ones.
-        </p>
-        <div className="flex items-center gap-2 my-4">
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Manage Menu Images
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Add new image URLs, update, or delete existing ones.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4">
           <Input
             type="url"
             value={newImageUrl}
             onChange={(e) => setNewImageUrl(e.target.value)}
             placeholder="Enter image URL (Drive link)"
+            className="flex-1"
           />
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button>
+              <Button className="whitespace-nowrap">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Image
               </Button>
@@ -412,39 +423,52 @@ export default function LandingPage() {
             </AlertDialogContent>
           </AlertDialog>
         </div>
+
         {menuImages.length === 0 ? (
-          <p>No menu images found.</p>
+          <p className="text-center text-muted-foreground py-8">
+            No menu images found.
+          </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menuImages.map((img) => (
-              <Card key={img._id} className="relative">
-                <img
-                  src={img.url}
-                  alt="Menu"
-                  className="w-full aspect-video object-cover rounded-t-lg"
-                />
-                <div className="absolute top-2 right-2">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button size="icon" variant="destructive">
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Confirmation</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete this image?
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteImage(img._id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+              <Card key={img._id} className="group relative overflow-hidden">
+                <div className="aspect-video relative">
+                  <img
+                    src={img.url}
+                    alt="Menu"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="destructive"
+                          className="h-8 w-8"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Delete Confirmation
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this image?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteImage(img._id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </Card>
             ))}

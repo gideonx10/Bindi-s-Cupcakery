@@ -9,31 +9,38 @@ interface FAQ {
 }
 
 const faqs: FAQ[] = [
-    {
-      question: "How do I place an order for cupcakes?",
-      answer: "You can place your order through our website's ordering system, by calling us directly, or visiting our store. For custom orders or large quantities, we recommend placing your order at least 48 hours in advance. Special designs and wedding orders should be placed 2-3 weeks ahead."
-    },
-    {
-      question: "What flavors and dietary options do you offer?",
-      answer: "We offer a wide variety of classic and seasonal flavors including Vanilla Bean, Double Chocolate, Red Velvet, and our signature Bindi's Special. We also cater to dietary restrictions with gluten-free, vegan, and nut-free options. All our ingredients are clearly labeled, and we're happy to discuss any specific dietary requirements."
-    },
-    {
-      question: "Do you deliver, and what are your delivery areas?",
-      answer: "Yes, we offer delivery services within a 15-mile radius of our bakery. Delivery fees vary based on distance and order size. We also offer special delivery arrangements for large events and weddings. For orders outside our standard delivery area, please contact us to discuss options."
-    },
-    {
-      question: "Can you accommodate large orders or events?",
-      answer: "Absolutely! We specialize in catering for events of all sizes - from small gatherings to large corporate events and weddings. We offer special pricing for bulk orders and can create custom displays and designs to match your event theme. Contact us for a personalized quote."
-    },
-    {
-      question: "What are your most popular cupcake flavors?",
-      answer: "Our most beloved flavors include our Classic Red Velvet with cream cheese frosting, Salted Caramel, Dark Chocolate Ganache, and our seasonal Strawberry Fresh Cream. We also have monthly special flavors that often become customer favorites!"
-    },
-    {
-      question: "Do you offer custom designs or personalization?",
-      answer: "Yes! We love creating custom designs. From corporate logos to personal messages, we can personalize cupcakes for any occasion. We also offer various decorating styles, edible prints, and custom toppers. Please provide design details when placing your order."
-    }
-  ];
+  {
+    question: "Where is Bindi’s Cupcakery located?",
+    answer:
+      "Bindi’s Cupcakery operates as a cloud kitchen in Parle Point, Surat. Since we do not have a physical storefront, customers can place their orders online and pick them up from our location. Our focus is on providing fresh, homemade, and preservative-free desserts while ensuring a seamless ordering and pickup experience.",
+  },
+  {
+    question: "Are all the products eggless and preservative-free?",
+    answer:
+      "Yes! At Bindi’s Cupcakery, we take pride in offering 100% vegetarian, eggless, and preservative-free desserts. Every treat is carefully crafted with high-quality, natural ingredients to ensure both great taste and a healthier alternative to conventional bakery products. Our commitment is to provide fresh, homemade desserts without any artificial additives.",
+  },
+  {
+    question: "How can I place an order?",
+    answer:
+      "Placing an order is simple! You can visit our website and customize your selection of desserts. Once you confirm your order, the details will be automatically sent to the owner’s WhatsApp for quick processing. This ensures a smooth and personalized experience for every customer. For special bulk orders, we recommend reaching out to us in advance to ensure availability.",
+  },
+  {
+    question: "Can I customize my order?",
+    answer:
+      "Absolutely! We offer a variety of customization options for our desserts, especially for special occasions like birthdays, weddings, and festivals. You can create personalized dessert hampers with your favorite cupcakes, brownies, cakes, and ice creams. If you have any special requests regarding flavors, themes, or decorations, feel free to let us know while placing your order.",
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer:
+      "We provide two easy payment options: QR-based UPI payments for quick and secure transactions and a 'Pay on Takeaway' option for those who prefer to pay upon collecting their order. Our QR-based payment system ensures a smooth, contactless transaction experience, while the Pay on Takeaway option offers flexibility to our customers.",
+  },
+  {
+    question: "Do you offer home delivery?",
+    answer:
+      "Currently, we operate as a cloud kitchen and do not provide home delivery. Customers are required to pick up their orders from our kitchen in Parle Point, Surat. However, we aim to offer a hassle-free pickup experience. If you're placing a bulk order and require delivery arrangements, you can contact us in advance to discuss possible options.",
+  },
+];
+
 
 const FAQs = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);

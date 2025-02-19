@@ -20,11 +20,16 @@ export async function GET(req: NextRequest) {
     // Get pending orders
     const pendingOrders = await Order.find({ status: "pending" });
     // For dashboard alerts, you might want to convert each pending order to a short message
-    const pendingAlerts = pendingOrders.map(order => `Order ${order._id} is pending`);
+    const pendingAlerts = pendingOrders.map(
+      (order) => `Order ${order._id} is pending`
+    );
 
     return NextResponse.json({ totalOrders, pendingAlerts });
   } catch (error: any) {
     console.error("Error in orders stats:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

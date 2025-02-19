@@ -32,20 +32,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Normalize phone number (remove spaces, ensure +country code format)
-    const normalizedPhone = phoneNumber.replace(/\s+/g, "");
-    if (!/^\+\d{10,15}$/.test(normalizedPhone)) {
-      return NextResponse.json(
-        {
-          error:
-            "Invalid phone number format. Use international format (+country code)",
-        },
-        { status: 400 }
-      );
-    }
+    // const normalizedPhone = phoneNumber.replace(/\s+/g, "");
+    // if (!/^\+\d{10,15}$/.test(normalizedPhone)) {
+    //   return NextResponse.json(
+    //     {
+    //       error:
+    //         "Invalid phone number format. Use international format (+country code)",
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Check rate limiting
     const now = Date.now();
-    const userAttempts = rateLimitMap.get(normalizedPhone) || [];
+    const userAttempts = rateLimitMap.get(phoneNumber) || [];
 
     // Clean up old attempts
     const recentAttempts = userAttempts.filter(
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if phone number is registered as admin
-    const user = await User.findOne({ phone: normalizedPhone, role: "admin" });
+    const user = await User.findOne({ phone: phoneNumber, role: "admin" });
     if (!user) {
       return NextResponse.json(
         { error: "Phone number not registered as admin" },
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete any existing OTP for this phone number
-    await OTP.deleteMany({ phoneNumber: normalizedPhone });
+    await OTP.deleteMany({ phoneNumber: phoneNumber });
 
     // Generate a random 6-digit OTP
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Save hashed OTP to database
     const otpRecord = new OTP({
-      phoneNumber: normalizedPhone,
+      phoneNumber: phoneNumber,
       otp: hashedOtp,
       expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes expiry
       attempts: 0,
@@ -94,14 +94,14 @@ export async function POST(request: NextRequest) {
     await otpRecord.save();
 
     // Update rate limiting
-    rateLimitMap.set(normalizedPhone, [...recentAttempts, now]);
+    rateLimitMap.set(phoneNumber, [...recentAttempts, now]);
 
     // Send OTP via Twilio with improved message
     try {
       await twilioClient.messages.create({
         body: `Your ADMIN login OTP is: ${generatedOtp}. Valid for 5 minutes. Do not share this code with anyone.`,
         from: process.env.TWILIO_PHONE_NUMBER_SMS,
-        to: `+91${normalizedPhone}`,
+        to: `+91${phoneNumber}`,
       });
     } catch (twilioError) {
       // If Twilio fails, delete the OTP record
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log successful OTP send (exclude actual OTP from logs)
-    console.log(`Admin OTP sent to ${normalizedPhone.slice(0, -4)}****`);
+    console.log(`Admin OTP sent to ${phoneNumber.slice(0, -4)}****`);
 
     return NextResponse.json(
       {
