@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import Cart from "./SidebarCart";
-// import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
@@ -237,7 +236,7 @@ const Navbar = () => {
   }, []);
 
   const menuItems = [
-    { href: "/user", text: "PROFILE" },
+    { href: user ? "/user" : "/auth", text: user ? "PROFILE" : "SIGN IN" },
     { href: "/products", text: "PRODUCTS" },
     { href: "/user?tab=cart", text: "CART" },
     { href: "/about", text: "ABOUT US" },
@@ -262,7 +261,7 @@ const Navbar = () => {
               className="md:w-[95px] md:h-[85px] w-[65px] h-[60px] transition-opacity duration-300 -translate-y-2 md:translate-y-0"
             />
           ) : (
-            <div className="transition-opacity duration-300 -translate-y-10" >
+            <div className="transition-opacity duration-300 -translate-y-10">
               <span className="absolute md:text-[3.8rem] text-[3rem] font-bold text-[#193b6d] transform translate-y-1">
                 B
               </span>

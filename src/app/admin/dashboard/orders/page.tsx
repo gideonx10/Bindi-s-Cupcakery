@@ -294,133 +294,209 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold mb-4">Orders Management</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="p-8 space-y-8 max-w-8xl mx-auto">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0 pb-6 border-b border-slate-200 dark:border-slate-700">
+          <div className="space-y-1">
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300">
+              Orders Management
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400">
+              Track and manage customer orders
+            </p>
+          </div>
 
-      <div className="relative w-full max-w-sm">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-gray-400" />
+          <div className="relative w-full md:w-96">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-slate-400" />
+            </div>
+            <Input
+              type="text"
+              placeholder="Search orders..."
+              className="pl-10 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border-slate-200 dark:border-slate-700 focus:ring-slate-400 dark:focus:ring-slate-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
-        <Input
-          type="text"
-          placeholder="Search by Order ID, Customer name, or Transaction ID..."
-          className="pl-10"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
 
-      {filteredOrders.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-gray-500">
-            {searchTerm
-              ? "No orders found matching your search"
-              : "No orders found"}
-          </p>
-        </div>
-      ) : (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Products</TableHead>
-                <TableHead>Total ($)</TableHead>
-                <TableHead>Payment Details</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Placed At</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order._id}>
-                  <TableCell className="font-medium">{order._id}</TableCell>
-                  <TableCell>{order.user.name}</TableCell>
-                  <TableCell>{order.user.email}</TableCell>
-                  <TableCell>{order.user.phone}</TableCell>
-                  <TableCell>
-                    <ProductsModal
-                      products={order.products}
-                      customization={order.customization}
-                    />
-                  </TableCell>
-                  <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <div className="space-y-3">
-                      <Badge
-                        className={`${getPaymentStatusColor(
-                          getPaymentStatus(order)
-                        )} font-medium`}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
+            </div>
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="text-center py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-500 dark:text-slate-400">
+              {searchTerm
+                ? "No orders found matching your search"
+                : "No orders found"}
+            </p>
+          </div>
+        ) : (
+          <div className="relative">
+            <div className="absolute inset-0 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm rounded-xl"></div>
+
+            <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
+              <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-50/50 dark:bg-slate-800/50 hover:bg-slate-100/50 dark:hover:bg-slate-700/50">
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Order ID
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Customer
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Contact
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Products
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Total
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Payment
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Status
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Date
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredOrders.map((order) => (
+                      <TableRow
+                        key={order._id}
+                        className="transition-all duration-200 hover:bg-slate-50/50 dark:hover:bg-slate-800/50"
                       >
-                        {getPaymentStatus(order)}
-                      </Badge>
-
-                      {order.transactionId && (
-                        <div className="text-sm">
-                          <span className="font-medium">Transaction ID:</span>
-                          <br />
-                          <span className="font-mono text-xs">
-                            {order.transactionId}
+                        <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                          {order._id}
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium text-slate-900 dark:text-slate-100">
+                            {order.user.name}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="text-sm text-slate-600 dark:text-slate-400">
+                              {order.user.email}
+                            </div>
+                            <div className="text-sm text-slate-600 dark:text-slate-400">
+                              {order.user.phone}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <ProductsModal
+                            products={order.products}
+                            customization={order.customization}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">
+                            ${order.totalAmount.toFixed(2)}
                           </span>
-                        </div>
-                      )}
-
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={order.isPaymentVerified}
-                          onCheckedChange={(checked) =>
-                            updatePaymentVerification(order._id, checked)
-                          }
-                          id={`payment-verify-${order._id}`}
-                        />
-                        <Label
-                          htmlFor={`payment-verify-${order._id}`}
-                          className="text-sm"
-                        >
-                          {order.isPaymentVerified
-                            ? "Mark as Not Paid"
-                            : "Mark as Paid"}
-                        </Label>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="capitalize">{order.status}</TableCell>
-                  <TableCell>
-                    {new Date(order.createdAt).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={order.status}
-                      onValueChange={(newStatus) => {
-                        updateOrderStatus(
-                          order._id,
-                          newStatus as Order["status"]
-                        );
-                      }}
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="ready to take-away">
-                          Ready to take-away
-                        </SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-3">
+                            <Badge
+                              className={`${getPaymentStatusColor(
+                                getPaymentStatus(order)
+                              )} font-medium`}
+                            >
+                              {getPaymentStatus(order)}
+                            </Badge>
+                            {order.transactionId && (
+                              <div className="text-sm">
+                                <span className="font-medium text-slate-600 dark:text-slate-400">
+                                  Transaction ID:
+                                </span>
+                                <br />
+                                <span className="font-mono text-xs text-slate-500 dark:text-slate-500">
+                                  {order.transactionId}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex items-center space-x-2">
+                              <Switch
+                                checked={order.isPaymentVerified}
+                                onCheckedChange={(checked) =>
+                                  updatePaymentVerification(order._id, checked)
+                                }
+                                id={`payment-verify-${order._id}`}
+                              />
+                              <Label
+                                htmlFor={`payment-verify-${order._id}`}
+                                className="text-sm text-slate-600 dark:text-slate-400"
+                              >
+                                {order.isPaymentVerified
+                                  ? "Mark as Not Paid"
+                                  : "Mark as Paid"}
+                              </Label>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="capitalize font-medium"
+                          >
+                            {order.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-slate-600 dark:text-slate-400">
+                            {new Date(order.createdAt).toLocaleString()}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={order.status}
+                            onValueChange={(newStatus) =>
+                              updateOrderStatus(
+                                order._id,
+                                newStatus as Order["status"]
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-[180px] bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700">
+                              <SelectValue placeholder="Update status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="ready to take-away">
+                                Ready to take-away
+                              </SelectItem>
+                              <SelectItem value="delivered">
+                                Delivered
+                              </SelectItem>
+                              <SelectItem value="cancelled">
+                                Cancelled
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
