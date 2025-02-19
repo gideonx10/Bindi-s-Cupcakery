@@ -13,8 +13,13 @@ const FEATURE_MESSAGES = [
 
 // SVG Components
 const SwirlyLineSVG = () => (
-  <svg width="200" height="400" viewBox="0 0 200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-
+  <svg
+    width="200"
+    height="400"
+    viewBox="0 0 200 400"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     {/* Main elegant swirl */}
     <path
       d="M80 0C40 80 160 120 80 200C30 280 150 320 80 400"
@@ -67,37 +72,67 @@ const SwirlyLineSVG = () => (
 );
 
 const HeartSVG = () => (
-  <svg width="50" height="60" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path 
-      d="M40 17C36-10 0 0 0 24C0 40 40 64 40 64C40 64 80 40 80 24C80 0 44-10 40 17Z" 
-      fill="#FF9ECD" 
-      opacity="0.6">
-      <animate 
-        attributeName="opacity" 
-        values="0.6;0.9;0.6" 
-        dur="2s" 
-        repeatCount="indefinite"/>
-      <animate 
-        attributeName="d" 
+  <svg
+    width="50"
+    height="60"
+    viewBox="0 0 80 80"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M40 17C36-10 0 0 0 24C0 40 40 64 40 64C40 64 80 40 80 24C80 0 44-10 40 17Z"
+      fill="#FF9ECD"
+      opacity="0.6"
+    >
+      <animate
+        attributeName="opacity"
+        values="0.6;0.9;0.6"
+        dur="2s"
+        repeatCount="indefinite"
+      />
+      <animate
+        attributeName="d"
         values="M40 17C36-10 0 0 0 24C0 40 40 64 40 64C40 64 80 40 80 24C80 0 44-10 40 17Z;
                 M40 20C36-7 3 3 3 27C3 43 40 67 40 67C40 67 77 43 77 27C77 3 44-7 40 20Z;
-                M40 17C36-10 0 0 0 24C0 40 40 64 40 64C40 64 80 40 80 24C80 0 44-10 40 17Z" 
-        dur="2s" 
-        repeatCount="indefinite"/>
+                M40 17C36-10 0 0 0 24C0 40 40 64 40 64C40 64 80 40 80 24C80 0 44-10 40 17Z"
+        dur="2s"
+        repeatCount="indefinite"
+      />
     </path>
   </svg>
 );
 
 const SparkleElement = () => (
-  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="60"
+    height="60"
+    viewBox="0 0 60 60"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <circle cx="30" cy="30" r="4" fill="#FF9ECD" className="animate-ping">
-      <animate attributeName="opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite"/>
+      <animate
+        attributeName="opacity"
+        values="1;0.2;1"
+        dur="2s"
+        repeatCount="indefinite"
+      />
     </circle>
     <circle cx="45" cy="15" r="3" fill="#FFB6E1">
-      <animate attributeName="r" values="3;4;3" dur="1.5s" repeatCount="indefinite"/>
+      <animate
+        attributeName="r"
+        values="3;4;3"
+        dur="1.5s"
+        repeatCount="indefinite"
+      />
     </circle>
     <circle cx="15" cy="45" r="3" fill="#FF82B8">
-      <animate attributeName="r" values="3;4;3" dur="2s" repeatCount="indefinite"/>
+      <animate
+        attributeName="r"
+        values="3;4;3"
+        dur="2s"
+        repeatCount="indefinite"
+      />
     </circle>
   </svg>
 );
@@ -179,20 +214,20 @@ export default function HomeLanding() {
             setCurrentFeature((prev) => (prev + 1) % FEATURE_MESSAGES.length);
             gsap.fromTo(
               featureTextRef.current,
-              { 
-                opacity: 0, 
+              {
+                opacity: 0,
                 y: 10,
-                scale: 0.95
+                scale: 0.95,
               },
               {
                 opacity: 1,
                 y: 0,
                 scale: 1,
                 duration: 0.4,
-                ease: "back.out(1.7)"
+                ease: "back.out(1.7)",
               }
             );
-          }
+          },
         });
       }
     }, 3000);
@@ -307,32 +342,33 @@ export default function HomeLanding() {
             alt="Bindi's Cupcakery aboutus"
             height={1080}
             width={1080}
-            className="w-[320px] h-auto"
+            className="w-[280px] h-auto"
           />
         </div>
 
         {/* Center Text */}
         <div className="maintext absolute left-1/2 top-[60%] md:top-[48%] -translate-x-1/2 -translate-y-[35%] whitespace-nowrap text-center">
-          <h1 className="text-[160px] font-semibold leading-none text-[#c23471] scale-x-[0.7] scale-y-[1.1] md:scale-y-[1.2] md:scale-x-100 transform-gpu">
+          <h1 className="text-[140px] md:text-[160px] font-semibold leading-none text-[#c23471] scale-x-[0.7] scale-y-[1.1] md:scale-y-[1.2] md:scale-x-100 transform-gpu">
             BINDI&apos;S
           </h1>
-          <h2 className="text-[85px] font-light font-Ananda text-[#c23471] text-center mt-6 scale-x-[0.7] scale-y-[0.9] md:scale-x-100 transform-gpu">
+          <h2 className="text-[75px] md:text-[85px] font-light font-Ananda text-[#c23471] text-center mt-6 scale-x-[0.7] scale-y-[0.9] md:scale-x-100 transform-gpu">
             Cupcakery
           </h2>
 
           {/* Animated Feature Text with Glass Effect */}
           <div className="relative mt-28 md:mt-36 -translate-y-[10vh]">
             {/* Glass Effect Background */}
-            <div className="absolute inset-0 w-full h-full rounded-xl 
+            <div
+              className="absolute inset-0 w-full h-full rounded-xl 
                           bg-white/5 backdrop-blur-[2px] 
                           border border-white/10
                           shadow-[0_4px_24px_0_rgba(31,38,135,0.10)]"
-                 style={{ WebkitBackdropFilter: "blur(2px)" ,}}
+              style={{ WebkitBackdropFilter: "blur(2px)" }}
             />
-            
+
             {/* Animated Content */}
             <div className="relative px-6 py-3 w-fit mx-auto">
-              <div 
+              <div
                 ref={featureTextRef}
                 className="flex items-center justify-center gap-3"
               >

@@ -404,7 +404,7 @@ const Navbar = () => {
 
           {/* Menu Items Section */}
           <div className="options w-1/2 h-full pt-[6%] pl-[5%]">
-            <ul className="text-[#2B4C7E] text-6xl font-bold space-y-8">
+            <ul className="text-[#2B4C7E] text-5xl md:text-6xl font-semibold md:font-bold space-y-6 md:space-y-8">
               {menuItems.map((item, index) => (
                 <li
                   key={index}
