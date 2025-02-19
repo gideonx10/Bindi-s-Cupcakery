@@ -172,12 +172,12 @@ export default function About() {
           </div>
         </section>
       </main>
-      <div className="absolute -bottom-[7vh] left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#FFF0F8]" />
+      <div className="absolute  left-0 w-full h-32 bg-gradient-to-b from-[#E6F7FF] to-[#FFF0F8]" />
       <section className="py-10 bg-[#FFF0F8] overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
             <h2
-              className="text-amber-700 mb-4 text-7xl md:text-8xl font-serif"
+              className="text-amber-700 mb-4 pt-6 text-7xl md:text-8xl font-serif"
               style={{ fontFamily: "Barlow Condensed, sans-serif" }}
             >
               Our Promise
@@ -221,7 +221,7 @@ export default function About() {
           className="relative w-full max-w-full h-auto md:scale-x-100 md:-translate-y-[10vh] -z-10 object-cover"
         />
       </div>
-      <section className="bg-white md:mx-8 mb-5 overflow-hidden md:-translate-y-[7vh]">
+      <section className="bg-white md:mx-8 mb-5  md:-translate-y-[7vh]">
         <div className="container mx-auto max-w-6xl ">
           <div className="flex flex-col md:flex-row gap-12 items-center bg-[#FFF0F8] p-10 md:rounded-3xl shadow-2xl feedback-form">
             {/* Left side - Text content */}
