@@ -182,8 +182,8 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
         <div className="relative">
-          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-[3px] border-pink-200 border-t-pink-500"></div>
-          <p className="absolute top-full mt-4 text-sm sm:text-base font-medium text-pink-700 font-ancient whitespace-nowrap">
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-[3px] border-blue-200 border-t-blue-500"></div>
+          <p className="absolute top-full mt-4 text-sm sm:text-base font-medium text-blue-700 font-ancient whitespace-nowrap">
             Loading orders...
           </p>
         </div>
@@ -194,16 +194,18 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
   return (
     <div className="min-h-screen w-full px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 text-pink-800 flex items-center gap-2 font-ancient">
-          <Package className="w-6 h-6 sm:w-7 sm:h-7 text-pink-800" />
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 text-blue-800 flex items-center gap-2 font-ancient">
+          <Package className="w-6 h-6 sm:w-7 sm:h-7 text-blue-800" />
           My Orders
         </h1>
 
         {orders.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center p-8 sm:p-12">
-              <Package className="w-12 h-12 sm:w-16 sm:h-16 text-pink-300 mb-4" />
-              <p className="text-base sm:text-lg text-pink-700 font-ancient">No orders found.</p>
+              <Package className="w-12 h-12 sm:w-16 sm:h-16 text-blue-300 mb-4" />
+              <p className="text-base sm:text-lg text-blue-700 font-ancient">
+                No orders found.
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -212,21 +214,21 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
               <Card
                 key={order._id}
                 className={`${
-                  order.isHamper
-                    ? "bg-gradient-to-r from-pink-50/80 to-white/80"
-                    : ""
+                  order.isHamper ? "bg-purple-50 border border-purple-500" : ""
                 }`}
               >
                 <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0 pb-2">
                   <div className="space-y-1">
-                    <p className="text-xs sm:text-sm font-medium text-pink-700">Order ID</p>
+                    <p className="text-xs sm:text-sm font-medium text-blue-700">
+                      Order ID
+                    </p>
                     <p className="text-sm sm:text-lg font-semibold text-gray-800 break-all">
                       {order._id}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {order.isHamper && (
-                      <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200 transition-colors duration-200">
+                      <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors duration-200">
                         Hamper
                       </Badge>
                     )}
@@ -244,7 +246,8 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                       }
                     </Badge>
                     <Badge {...getStatusBadgeProps(order.status)}>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      {order.status.charAt(0).toUpperCase() +
+                        order.status.slice(1)}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -253,21 +256,23 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                   <div className="space-y-4 sm:space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-white/40 transition-all duration-200 hover:bg-white/60">
-                        <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+                        <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                         <div className="font-ancient">
-                          <p className="text-xs sm:text-sm font-medium text-pink-700">
+                          <p className="text-xs sm:text-sm font-medium text-blue-700">
                             Payment Mode
                           </p>
                           <p className="text-sm sm:text-base font-semibold text-gray-800">
-                            {order.transactionId > 0 ? "Online" : "Pay on take away"}
+                            {order.transactionId > 0
+                              ? "Online"
+                              : "Pay on take away"}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-white/40 transition-all duration-200 hover:bg-white/60">
-                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                         <div className="font-ancient">
-                          <p className="text-xs sm:text-sm font-medium text-pink-700">
+                          <p className="text-xs sm:text-sm font-medium text-blue-700">
                             Placed On
                           </p>
                           <p className="text-sm sm:text-base font-semibold text-gray-800">
@@ -277,9 +282,9 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                       </div>
 
                       <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-white/40 transition-all duration-200 hover:bg-white/60">
-                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                         <div className="font-ancient">
-                          <p className="text-xs sm:text-sm font-medium text-pink-700">
+                          <p className="text-xs sm:text-sm font-medium text-blue-700">
                             Total Amount
                           </p>
                           <p className="text-sm sm:text-base font-semibold text-gray-800">
@@ -290,7 +295,7 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                     </div>
 
                     <div className="font-ancient">
-                      <p className="text-xs sm:text-sm font-medium text-pink-700 mb-2 sm:mb-3">
+                      <p className="text-xs sm:text-sm font-medium text-blue-700 mb-2 sm:mb-3">
                         Products
                       </p>
                       <div className="space-y-2 sm:space-y-3">
@@ -304,7 +309,7 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                                 {product.name}
                               </span>
                               <div className="flex items-center justify-between sm:gap-6">
-                                <span className="text-pink-600 text-sm sm:text-base">
+                                <span className="text-blue-600 text-sm sm:text-base">
                                   x{quantity}
                                 </span>
                                 <span className="font-semibold text-gray-800 text-sm sm:text-base">
@@ -315,7 +320,7 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
                           ) : (
                             <div
                               key={quantity}
-                              className="p-3 sm:p-4 bg-pink-50 text-pink-700 rounded-lg text-sm sm:text-base"
+                              className="p-3 sm:p-4 bg-blue-50 text-blue-700 rounded-lg text-sm sm:text-base"
                             >
                               Product details unavailable
                             </div>
@@ -326,13 +331,15 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
 
                     {order.status === "pending" && (
                       <button
-                        onClick={() => handleCancelOrder(order._id, order.createdAt)}
+                        onClick={() =>
+                          handleCancelOrder(order._id, order.createdAt)
+                        }
                         disabled={isCanceling}
-                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 
+                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 
                         text-white rounded-lg text-sm sm:text-base font-medium
-                        hover:from-pink-600 hover:to-pink-700 active:translate-y-[1px]
+                        hover:from-blue-600 hover:to-blue-700 active:translate-y-[1px]
                         transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
-                        disabled:hover:from-pink-500 disabled:hover:to-pink-600 disabled:active:translate-y-0
+                        disabled:hover:from-blue-500 disabled:hover:to-blue-600 disabled:active:translate-y-0
                         font-ancient"
                       >
                         {isCanceling ? "Cancelling..." : "Cancel Order"}
@@ -347,4 +354,4 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
       </div>
     </div>
   );
-};
+}

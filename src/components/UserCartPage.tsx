@@ -231,11 +231,11 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
     setShowQR(!showQR);
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-blue-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-600">
               Your Cart
             </h1>
             {cartItems.length > 0 && (
@@ -250,7 +250,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
           </div>
 
           {/* Hamper Toggle with enhanced styling */}
-          <div className="mb-6 bg-gray-50 p-4 rounded-xl">
+          <div className="mb-6 bg-blue-50 p-4 rounded-xl">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -258,8 +258,8 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
                 checked={isHamper}
                 onChange={(e) => setIsHamper(e.target.checked)}
               />
-              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-              <span className="ml-4 text-lg font-medium text-gray-900">
+              <div className="w-14 h-7 bg-blue-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-blue-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+              <span className="ml-4 text-lg font-medium text-blue-900">
                 Make it a Hamper 🎁
               </span>
             </label>
@@ -288,12 +288,12 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
 
           {displayedCartItems.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-2xl text-gray-400 font-medium">
+              <p className="text-2xl text-blue-400 font-medium">
                 Your cart is empty
               </p>
               <button
                 onClick={() => router.push("/products")}
-                className="mt-6 px-8 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                className="mt-6 px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
               >
                 Start Shopping
               </button>
@@ -310,21 +310,21 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
                 />
               ))}
 
-              <div className="mt-8 bg-gray-50 rounded-xl p-6">
-                <label className="block text-lg font-semibold mb-3 text-gray-700">
+              <div className="mt-8 bg-blue-50 rounded-xl p-6">
+                <label className="block text-lg font-semibold mb-3 text-blue-700">
                   Customization Details:
                 </label>
                 <textarea
                   value={customization}
                   onChange={(e) => setCustomization(e.target.value)}
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                  className="w-full p-4 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter any special requests or customization details..."
                   rows={3}
                 />
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
+                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-600">
                   Total: ₹
                   {displayedCartItems
                     .reduce(
@@ -357,7 +357,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
               </div>
 
               {showQR && (
-                <div className="mt-6 bg-gray-50 rounded-xl p-6 text-center">
+                <div className="mt-6 bg-blue-50 rounded-xl p-6 text-center">
                   <UPIQrCode
                     upiId={upiId}
                     name={upiName}
@@ -371,7 +371,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
                         .toFixed(2)
                     )}
                   />
-                  <p className="text-gray-600 mt-4">
+                  <p className="text-blue-600 mt-4">
                     Scan QR to pay ₹
                     {displayedCartItems
                       .reduce(
@@ -386,7 +386,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
                     placeholder="Enter Transaction ID"
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
-                    className="mt-4 w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="mt-4 w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <button
                     onClick={() => handleCheckout("Online")}
