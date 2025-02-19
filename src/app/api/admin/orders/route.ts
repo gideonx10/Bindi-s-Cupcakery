@@ -7,7 +7,7 @@ import "@/models/User";
 import "@/models/Category";
 import nodemailer from "nodemailer";
 
-// Create a nodemailer transporter using environment variables 
+// Create a nodemailer transporter using environment variables
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST, // e.g., "smtp.gmail.com"
   port: Number(process.env.SMTP_PORT), // e.g., 587
@@ -75,16 +75,19 @@ async function sendPaymentEmail(order: any, isVerified: boolean) {
       subject,
       text,
     });
-    console.log(`Email sent to ${order.user.email} for payment verification update`);
+    console.log(
+      `Email sent to ${order.user.email} for payment verification update`
+    );
   } catch (error) {
     console.error("Error sending payment email:", error);
   }
 }
-
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
     const token = req.cookies.get("token")?.value;
+    const searchParams = new URL(req.url).searchParams;
+    const targetUserId = searchParams.get("userId");
 
     if (!token) {
       return NextResponse.json({
@@ -93,23 +96,24 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Decode the token to get user data
+    // Decode the token to get admin user data
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    const userId = decoded.userId;
-    console.log("Decoded UserId:", userId);
+    const adminUserId = decoded.userId;
 
-    // Fetch user details from the backend API using the userId
+    // Verify admin status
     const res = await fetch(
-      `http://localhost:3000/api/user/details?userId=${userId}`
+      `http://localhost:3000/api/user/details?userId=${adminUserId}`
     );
     const userData = await res.json();
-    console.log(userData);
 
     if (!userData || !userData.user.role || userData.user.role !== "admin") {
       return NextResponse.redirect("/admin/login");
     }
 
-    const orders = await Order.find()
+    // Create query object based on whether a specific user's orders are requested
+    const query = targetUserId ? { user: targetUserId } : {};
+
+    const orders = await Order.find(query)
       .populate({
         path: "user",
         select: "name email phone",
@@ -137,27 +141,27 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 });
 
     // Transform orders to handle deleted users
-    const processedOrders = orders.map(order => {
+    const processedOrders = orders.map((order) => {
       const orderObj = order.toObject();
-      
+
       if (!orderObj.user) {
         return {
           ...orderObj,
           user: {
-            _id: 'deleted',
-            name: '(Deleted User)',
-            email: '<Account Removed>',
-            phone: '<Account Removed>'
+            _id: "deleted",
+            name: "(Deleted User)",
+            email: "<Account Removed>",
+            phone: "<Account Removed>",
           },
-          userDeleted: true // Add a flag to indicate deleted user
+          userDeleted: true,
         };
       }
       return {
         ...orderObj,
-        userDeleted: false
+        userDeleted: false,
       };
     });
-      
+
     return NextResponse.json(processedOrders);
   } catch (error) {
     console.error("Error fetching orders:", error);
