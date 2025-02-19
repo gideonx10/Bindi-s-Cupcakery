@@ -227,15 +227,25 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px] w-full bg-[#E0F2FE]">
+        <p className="text-base sm:text-lg font-semibold text-blue-700 font-ancient">
+          Loading...
+        </p>
+      </div>
+    );
+  }
+
   const handlePayOnlineClick = () => {
     setShowQR(!showQR);
   };
   return (
-    <div className="min-h-screen bg-blue-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+    <div className="min-h-screen pb-8">
+      <div className="max-w-4xl mx-auto sm:px-4 lg:px-8">
+        <div className="bg-transparent rounded-2xl p-6 sm:p-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-600">
+            <h1 className="text-3xl font-bold bg-clip-text text-blue-800 font-ancient">
               Your Cart
             </h1>
             {cartItems.length > 0 && (
@@ -250,7 +260,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
           </div>
 
           {/* Hamper Toggle with enhanced styling */}
-          <div className="mb-6 bg-blue-50 p-4 rounded-xl">
+          <div className="mb-6 bg-purple-50 p-4 rounded-xl border-2 border-blue-200">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -310,7 +320,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
                 />
               ))}
 
-              <div className="mt-8 bg-blue-50 rounded-xl p-6">
+              <div className="mt-8 bg-blue-50 rounded-xl p-6 shadow-xl">
                 <label className="block text-lg font-semibold mb-3 text-blue-700">
                   Customization Details:
                 </label>
@@ -357,7 +367,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
               </div>
 
               {showQR && (
-                <div className="mt-6 bg-blue-50 rounded-xl p-6 text-center">
+                <div className="mt-6 bg-[#EFF6FF] shadow-xl border-2 border-blue-200 rounded-xl p-6 text-center">
                   <UPIQrCode
                     upiId={upiId}
                     name={upiName}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { User, Phone, Mail } from "lucide-react";
+import { User, Phone, Mail, LogOut } from "lucide-react";
 
 interface UserData {
   name: string;
@@ -50,6 +50,11 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
+
   const handleUpdate = async () => {
     try {
       const res = await fetch(`/api/user/details`, {
@@ -71,7 +76,7 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[200px] w-full">
+      <div className="flex items-center justify-center min-h-[200px] w-full bg-[#E0F2FE]">
         <p className="text-base sm:text-lg font-semibold text-blue-700 font-ancient">
           Loading...
         </p>
@@ -90,7 +95,7 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
   }
 
   return (
-    <div className="min-h-screen w-full px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+    <div className="min-h-screen w-full px-2 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
       <div className="max-w-4xl mx-auto">
         <div className="p-4 sm:p-6 lg:p-8 rounded-2xl border border-blue-200 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:border-blue-300">
           <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4 sm:mb-6 text-blue-800 font-ancient">
@@ -228,6 +233,15 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
               </div>
             )}
           </div>
+        </div>
+        <div className="lg:hidden  mt-8 pb-4">
+          <button
+            onClick={() => handleLogout()}
+            className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#F9FCFF] text-red-500 hover:bg-[#B9E6FE] transition-colors duration-200"
+          >
+            <LogOut className="mr-3 h-5 w-5" />
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </div>
