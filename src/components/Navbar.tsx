@@ -257,22 +257,22 @@ const Navbar = () => {
             <Image
               src="/images/icon.png"
               alt="Bindi's Cupcakery"
-              width={80}
-              height={80}
-              className="transition-opacity duration-300"
+              width={90}
+              height={90}
+              className="md:w-[95px] md:h-[85px] w-[65px] h-[60px] transition-opacity duration-300 -translate-y-2 md:translate-y-0"
             />
           ) : (
-            <div className="transition-opacity duration-300 -translate-y-10">
-              <span className="absolute text-[3.8rem] font-bold text-[#8d2954] transform translate-y-1">
+            <div className="transition-opacity duration-300 -translate-y-10" >
+              <span className="absolute md:text-[3.8rem] text-[3rem] font-bold text-[#193b6d] transform translate-y-1">
                 B
               </span>
-              <div className="absolute ml-[3.3rem]">
-                <span className="text-[2.7rem] font-semibold text-[#8d2954]">
+              <div className="absolute md:ml-[3.3rem] ml-[2.7rem]">
+                <span className=" md:text-[2.7rem] text-[2.1rem] font-semibold text-[#193b6d]">
                   indi&apos;s
                 </span>
               </div>
-              <div className="absolute ml-[3.05rem] mt-[2.4rem]">
-                <span className="text-[1.4rem] font-semibold text-[#8d2954]">
+              <div className="absolute md:ml-[3.05rem] ml-[2.5rem] md:mt-[2.4rem] mt-[1.9rem]">
+                <span className="md:text-[1.4rem] text-[1.1rem] font-semibold text-[#193b6d]">
                   cupcakery
                 </span>
               </div>
@@ -281,11 +281,11 @@ const Navbar = () => {
         </Link>
 
         {/* Right side icons */}
-        <div className="flex items-center gap-7 max-sm:gap-2 max-sm:scale-85">
+        <div className="flex items-center gap-7 max-sm:gap-2 max-sm:scale-85 -translate-y-[1vh]">
           {pathname.startsWith("/products") && (
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
-              className="text-[#9B2C5D] p-4 max-sm:p-2"
+              className="text-[#193b6d] p-4 max-sm:p-2"
             >
               <ShoppingBag
                 size={30}
@@ -301,27 +301,13 @@ const Navbar = () => {
               isMenuOpen ? "rotate-90" : ""
             }`}
           >
-            <svg
-              className="absolute size-full text-[#9B2C5D] max-sm:size-12"
-              width="105"
-              height="105"
-              viewBox="0 0 105 105"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M48.8442 3.23316C50.2513 0.06423 54.7487 0.0642385 56.1558 3.23317L63.2789 19.2749C64.1436 21.2224 66.3833 22.1501 68.3719 21.3845L84.7519 15.078C87.9876 13.8322 91.1677 17.0124 89.922 20.2481L83.6155 36.6281C82.8499 38.6167 83.7776 40.8564 85.7251 41.7211L101.767 48.8442C104.936 50.2513 104.936 54.7487 101.767 56.1558L85.7251 63.2789C83.7776 64.1436 82.8499 66.3833 83.6155 68.3719L89.922 84.7519C91.1678 87.9876 87.9876 91.1677 84.7519 89.922L68.3719 83.6155C66.3833 82.8499 64.1436 83.7776 63.2789 85.7251L56.1558 101.767C54.7487 104.936 50.2513 104.936 48.8442 101.767L41.7211 85.7251C40.8564 83.7776 38.6167 82.8499 36.6281 83.6155L20.2481 89.922C17.0124 91.1678 13.8323 87.9876 15.078 84.7519L21.3845 68.3719C22.1501 66.3833 21.2224 64.1436 19.2749 63.2789L3.23318 56.1558C0.0642462 54.7487 0.0642381 50.2513 3.23317 48.8442L19.2749 41.7211C21.2224 40.8564 22.1501 38.6167 21.3845 36.6281L15.078 20.2481C13.8322 17.0124 17.0124 13.8323 20.2481 15.078L36.6281 21.3845C38.6167 22.1501 40.8564 21.2224 41.7211 19.2749L48.8442 3.23316Z"
-                fill="currentColor"
-              />
-            </svg>
-
             {/* Hamburger Icon */}
-            <div className="absolute flex flex-col items-center w-6 max-sm:w-4">
+            <div className="absolute flex flex-col items-center w-6 max-sm:w-4 -translate-y-0.5">
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
                   className={`absolute h-[3px] max-sm:h-[2px] w-[24px] max-sm:w-[18px] ${
-                    isMenuOpen ? "bg-[#FFF0F7]" : "bg-[#FFF0F7]"
+                    isMenuOpen ? "bg-[#193b6d]" : "bg-[#193b6d]"
                   } rounded-full transition-all duration-300 ${
                     isMenuOpen
                       ? i === 1
@@ -344,7 +330,7 @@ const Navbar = () => {
 
       {/* Full screen menu */}
       <div
-        className={`fixed inset-0 bg-[#FFF0F7] transition-transform duration-300 z-40 ${
+        className={`fixed inset-0 bg-[#E6F7FF] transition-transform duration-300 z-40 ${
           isMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -407,7 +393,7 @@ const Navbar = () => {
             </div>
 
             <div
-              className="bindi font-[pacifico] hover:scale-105 duration-300 text-[#8d2954]"
+              className="bindi font-[pacifico] hover:scale-105 duration-300 text-[#1b3a67]"
               style={{
                 fontSize: "3rem",
                 letterSpacing: "0.05em",
@@ -419,7 +405,7 @@ const Navbar = () => {
 
           {/* Menu Items Section */}
           <div className="options w-1/2 h-full pt-[6%] pl-[5%]">
-            <ul className="text-[#9B2C5D] text-6xl font-bold space-y-8">
+            <ul className="text-[#2B4C7E] text-6xl font-bold space-y-8">
               {menuItems.map((item, index) => (
                 <li
                   key={index}
@@ -460,7 +446,7 @@ const Navbar = () => {
               position: "absolute",
               width: "100%",
               height: "30vh",
-              backgroundColor: "#80224b",
+              backgroundColor: "#1f4276",
               top: "100px",
               animation: "moveWave 10s linear infinite",
             }}
@@ -473,7 +459,7 @@ const Navbar = () => {
                   width: circleWidth,
                   height: "145px",
                   borderRadius: "50%",
-                  backgroundColor: "#80224b",
+                  backgroundColor: "#1f4276",
                   position: "relative",
                   top: "-65px",
                 }}

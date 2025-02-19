@@ -61,6 +61,12 @@ const Footer = () => {
               </a>
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
+                href="/user?tab=cart"
+              >
+                CART
+              </a>
+              <a
+                className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
                 href="/about"
               >
                 ABOUT US
@@ -92,7 +98,10 @@ const Footer = () => {
               </span>
             </div>
             <div className="flex justify-center gap-6">
-              <a href="" className="text-[#4A0D2C]">
+              <a
+                href="https://www.instagram.com/bindis_cupcakery/?hl=en"
+                className="text-[#4A0D2C]"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -104,7 +113,10 @@ const Footer = () => {
                   />
                 </svg>
               </a>
-              <a href="" className="text-[#4A0D2C]">
+              <a
+                href="https://www.facebook.com/CakesByBindi/"
+                className="text-[#4A0D2C]"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -116,7 +128,7 @@ const Footer = () => {
                   />
                 </svg>
               </a>
-              <a href="" className="text-[#4A0D2C]">
+              <a href="tel:+918849130189" className="text-[#4A0D2C]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
@@ -141,7 +153,9 @@ const Footer = () => {
           </p>
           <p className="text-[#4A0D2C] text-lg md:text-xl flex items-center gap-2">
             <Mail className="w-6 h-6" />
-            bindis_cupcakery@gmail.com
+            <a href="mailto:bindis_cupcakery@gmail.com">
+              bindis_cupcakery@gmail.com
+            </a>
           </p>
         </div>
       </div>

@@ -428,7 +428,7 @@ export default function ProductsPage() {
     <div className="max-w-screen overflow-x-hidden min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%] font-ancient text-[#08410c]">
       {/* Category Filter */}
       <div className="flex-1 ">
-        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
+        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[80px] md:pt-[100px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
             <button
@@ -480,7 +480,7 @@ export default function ProductsPage() {
           {/* Mobile Filter Modal */}
           <div
             className={`
-              fixed left-1/2 -translate-x-[56%] top-[190px] w-[75%] duration-300 z-50 rounded-2xl
+              fixed left-1/2 -translate-x-[65%] top-[150px] w-[75%] duration-300 z-50 rounded-2xl
               ${
                 isMobileFilterOpen
                   ? "opacity-100"
@@ -733,7 +733,7 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="w-full pt-[175px] md:pt-[185px] ">
+        <div className="w-full pt-[140px] md:pt-[160px] ">
           <div ref={itemsRef} className="p-2 md:p-4 flex justify-center ">
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
               {renderProductCards()}

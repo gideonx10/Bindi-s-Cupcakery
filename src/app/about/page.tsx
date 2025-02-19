@@ -126,9 +126,9 @@ export default function About() {
 
   return (
     <>
-      <main className="bg-[#E6F7FF] min-h-screen max-w-full overflow-hidden ">
+      <main className="bg-[#E6F7FF] min-h-[107vh] max-w-full overflow-hidden bg-b-gradient from-[#F2F4FF] to-[#FFF0F8]">
         {/* About Us Hero Section */}
-        <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto">
+        <section className="w-[85%] pt-16 flex justify-center py-10 mx-auto overflow-hidden">
           <div className="container mx-auto px-4 translate-y-10 fade-up">
             <h1
               className="text-7xl md:text-8xl text-gray-800 mt-[6vh] text-center md:text-left lg:translate-y-10 drop-shadow-2xl"
@@ -172,7 +172,8 @@ export default function About() {
           </div>
         </section>
       </main>
-      <section className="py-16 bg-[#FFF0F8]">
+      <div className="absolute -bottom-[7vh] left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#FFF0F8]" />
+      <section className="py-10 bg-[#FFF0F8] overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 mt-12 mx-5">
             <h2
@@ -211,7 +212,7 @@ export default function About() {
           </div>
         </div>
       </section>
-      <div className="w-full flex justify-center mb-8 ">
+      <div className="w-full flex justify-center mb-5 overflow-hidden">
         <Image
           src="/images/about-section.png"
           alt="Bindi's Cupcakery aboutus"
@@ -220,8 +221,8 @@ export default function About() {
           className="relative w-full max-w-full h-auto md:scale-x-100 md:-translate-y-[10vh] -z-10 object-cover"
         />
       </div>
-      <section className="bg-white md:mx-8 mb-10">
-        <div className="container mx-auto max-w-6xl">
+      <section className="bg-white md:mx-8 mb-5 overflow-hidden md:-translate-y-[7vh]">
+        <div className="container mx-auto max-w-6xl ">
           <div className="flex flex-col md:flex-row gap-12 items-center bg-[#FFF0F8] p-10 md:rounded-3xl shadow-2xl feedback-form">
             {/* Left side - Text content */}
             <div className="md:w-1/2">
@@ -244,11 +245,11 @@ export default function About() {
           </div>
         </div>
       </section>
-      <section className="mb:py-[15vh] py-[6vh] bg-[#FFF0F8] md:mt-[15vh] border-t-0 rounded-t-xl md:rounded-t-[4rem] fade-up">
+      <section className="mb:py-[15vh] py-[6vh] bg-[#FFF0F8] md:mt-[8vh] border-t-0 rounded-t-xl md:rounded-t-[4rem] fade-up overflow-hidden">
         <div className="container mx-auto max-w-6xl px-8">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left side - Map */}
-            <div className="md:w-[60vw] h-[35vh] md:h-[63vh]">
+            <div className="md:w-[60vw] h-[35vh] md:h-[63vh] overflow-hidden">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.564594000922!2d72.78889622526047!3d21.169719080515115!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04de625fbddad%3A0xce09f32af9cfbeb4!2sParle%20Point%2C%20City%20Light%20Town%2C%20Athwa%2C%20Surat%2C%20Gujarat%20395007!5e0!3m2!1sen!2sin!4v1739370337983!5m2!1sen!2sin"
                 className="w-full h-full rounded-2xl shadow-lg"
@@ -260,7 +261,7 @@ export default function About() {
             </div>
 
             {/* Right side - Contact Info */}
-            <div className="md:w-1/2 bg-[#F6F5F5] p-8 rounded-2xl shadow-lg contact-info">
+            <div className="md:w-1/2 bg-[#F6F5F5] p-8 rounded-2xl shadow-lg contact-info overflow-hidden">
               <h2 className="text-3xl font-bold text-amber-700 mb-6 font-ancient">
                 Contact Information
               </h2>
@@ -292,7 +293,7 @@ export default function About() {
                     </h3>
                     <p className="text-gray-600">
                       <a
-                        href="tel:+919876543210"
+                        href="tel:+918849130189"
                         className="hover:text-amber-700 transition-colors font-ancient font-semibold"
                       >
                         +91 8849130189
@@ -310,7 +311,7 @@ export default function About() {
                     </h3>
                     <p className="text-gray-600">
                       <a
-                        href="mailto:info@bindiscupcakery.com"
+                        href="mailto:bindis_cupcakery@gmail.com"
                         className="hover:text-amber-700 transition-colors font-ancient font-semibold"
                       >
                         bindis_cupcakery@gmail.com
