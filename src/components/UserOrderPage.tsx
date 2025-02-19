@@ -180,161 +180,171 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-pink-500"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+        <div className="relative">
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-[3px] border-pink-200 border-t-pink-500"></div>
+          <p className="absolute top-full mt-4 text-sm sm:text-base font-medium text-pink-700 font-ancient whitespace-nowrap">
+            Loading orders...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-        <Package className="w-6 h-6 text-pink-500" />
-        My Orders
-      </h1>
-      {orders.length === 0 ? (
-        <Card className="bg-white/40">
-          <CardContent className="flex flex-col items-center justify-center p-8">
-            <Package className="w-16 h-16 text-pink-300 mb-4" />
-            <p className="text-lg text-gray-600">No orders found.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <Card
-              key={order._id}
-              className={`bg-white/40 transition-all duration-300 ${
-                order.isHamper
-                  ? "bg-gradient-to-r from-pink-50/30 to-transparent hover:from-pink-100/40 hover:to-white/40"
-                  : "hover:bg-white/50"
-              }`}
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Order ID</p>
-                  <p className="text-lg font-semibold text-gray-800">
-                    {order._id}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  {order.isHamper && (
-                    <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200 transition-colors duration-200">
-                      Hamper
-                    </Badge>
-                  )}
-                  <Badge
-                    {...getPaymentBadgeProps(
-                      order.isPaymentVerified,
-                      order.transactionId
+    <div className="min-h-screen w-full px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 sm:mb-8 text-pink-800 flex items-center gap-2 font-ancient">
+          <Package className="w-6 h-6 sm:w-7 sm:h-7 text-pink-800" />
+          My Orders
+        </h1>
+
+        {orders.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center p-8 sm:p-12">
+              <Package className="w-12 h-12 sm:w-16 sm:h-16 text-pink-300 mb-4" />
+              <p className="text-base sm:text-lg text-pink-700 font-ancient">No orders found.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4 sm:space-y-6">
+            {orders.map((order) => (
+              <Card
+                key={order._id}
+                className={`${
+                  order.isHamper
+                    ? "bg-gradient-to-r from-pink-50/80 to-white/80"
+                    : ""
+                }`}
+              >
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0 pb-2">
+                  <div className="space-y-1">
+                    <p className="text-xs sm:text-sm font-medium text-pink-700">Order ID</p>
+                    <p className="text-sm sm:text-lg font-semibold text-gray-800 break-all">
+                      {order._id}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {order.isHamper && (
+                      <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200 transition-colors duration-200">
+                        Hamper
+                      </Badge>
                     )}
-                  >
-                    {
-                      getPaymentBadgeProps(
+                    <Badge
+                      {...getPaymentBadgeProps(
                         order.isPaymentVerified,
                         order.transactionId
-                      ).label
-                    }
-                  </Badge>
-                  <Badge {...getStatusBadgeProps(order.status)}>
-                    {order.status.charAt(0).toUpperCase() +
-                      order.status.slice(1)}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="flex items-center gap-2 p-2 rounded-lg transition-all duration-200 hover:bg-white/30">
-                      <CreditCard className="w-4 h-4 text-pink-500" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Payment Mode
-                        </p>
-                        <p className="font-semibold text-gray-800">
-                          {order.transactionId > 0
-                            ? "Online"
-                            : "Pay on take away"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg transition-all duration-200 hover:bg-white/30">
-                      <Clock className="w-4 h-4 text-pink-500" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Placed On
-                        </p>
-                        <p className="font-semibold text-gray-800">
-                          {new Date(order.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg transition-all duration-200 hover:bg-white/30">
-                      <AlertCircle className="w-4 h-4 text-pink-500" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Total Amount
-                        </p>
-                        <p className="font-semibold text-gray-800">
-                          ₹{order.totalAmount.toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <p className="text-sm font-medium text-gray-500 mb-2">
-                      Products
-                    </p>
-                    <div className="grid gap-2">
-                      {order.products.map(({ product, quantity }) =>
-                        product ? (
-                          <div
-                            key={product._id}
-                            className="flex justify-between items-center p-3 bg-white/40 rounded-lg hover:bg-white/50 transition-all duration-200"
-                          >
-                            <span className="font-medium text-gray-800">
-                              {product.name}
-                            </span>
-                            <div className="flex items-center gap-4">
-                              <span className="text-gray-600">x{quantity}</span>
-                              <span className="font-semibold text-gray-800">
-                                ₹{(product.price * quantity).toFixed(2)}
-                              </span>
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            key={quantity}
-                            className="p-3 bg-rose-50 text-rose-700 rounded-lg"
-                          >
-                            Product details unavailable
-                          </div>
-                        )
                       )}
-                    </div>
-                  </div>
-
-                  {order.status === "pending" && (
-                    <button
-                      onClick={() =>
-                        handleCancelOrder(order._id, order.createdAt)
-                      }
-                      disabled={isCanceling}
-                      className="mt-4 w-full md:w-auto px-6 py-2 bg-pink-500 text-white rounded-lg
-                      hover:bg-pink-600 active:translate-y-[1px]
-                      transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
-                      disabled:hover:bg-pink-500 disabled:active:translate-y-0"
                     >
-                      {isCanceling ? "Cancelling..." : "Cancel Order"}
-                    </button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                      {
+                        getPaymentBadgeProps(
+                          order.isPaymentVerified,
+                          order.transactionId
+                        ).label
+                      }
+                    </Badge>
+                    <Badge {...getStatusBadgeProps(order.status)}>
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </Badge>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                      <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-white/40 transition-all duration-200 hover:bg-white/60">
+                        <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+                        <div className="font-ancient">
+                          <p className="text-xs sm:text-sm font-medium text-pink-700">
+                            Payment Mode
+                          </p>
+                          <p className="text-sm sm:text-base font-semibold text-gray-800">
+                            {order.transactionId > 0 ? "Online" : "Pay on take away"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-white/40 transition-all duration-200 hover:bg-white/60">
+                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+                        <div className="font-ancient">
+                          <p className="text-xs sm:text-sm font-medium text-pink-700">
+                            Placed On
+                          </p>
+                          <p className="text-sm sm:text-base font-semibold text-gray-800">
+                            {new Date(order.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 p-2 sm:p-3 rounded-lg bg-white/40 transition-all duration-200 hover:bg-white/60">
+                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+                        <div className="font-ancient">
+                          <p className="text-xs sm:text-sm font-medium text-pink-700">
+                            Total Amount
+                          </p>
+                          <p className="text-sm sm:text-base font-semibold text-gray-800">
+                            ₹{order.totalAmount.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="font-ancient">
+                      <p className="text-xs sm:text-sm font-medium text-pink-700 mb-2 sm:mb-3">
+                        Products
+                      </p>
+                      <div className="space-y-2 sm:space-y-3">
+                        {order.products.map(({ product, quantity }) =>
+                          product ? (
+                            <div
+                              key={product._id}
+                              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-white/40 rounded-lg hover:bg-white/60 transition-all duration-200"
+                            >
+                              <span className="font-medium text-gray-800 text-sm sm:text-base mb-2 sm:mb-0">
+                                {product.name}
+                              </span>
+                              <div className="flex items-center justify-between sm:gap-6">
+                                <span className="text-pink-600 text-sm sm:text-base">
+                                  x{quantity}
+                                </span>
+                                <span className="font-semibold text-gray-800 text-sm sm:text-base">
+                                  ₹{(product.price * quantity).toFixed(2)}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div
+                              key={quantity}
+                              className="p-3 sm:p-4 bg-pink-50 text-pink-700 rounded-lg text-sm sm:text-base"
+                            >
+                              Product details unavailable
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {order.status === "pending" && (
+                      <button
+                        onClick={() => handleCancelOrder(order._id, order.createdAt)}
+                        disabled={isCanceling}
+                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 
+                        text-white rounded-lg text-sm sm:text-base font-medium
+                        hover:from-pink-600 hover:to-pink-700 active:translate-y-[1px]
+                        transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
+                        disabled:hover:from-pink-500 disabled:hover:to-pink-600 disabled:active:translate-y-0
+                        font-ancient"
+                      >
+                        {isCanceling ? "Cancelling..." : "Cancel Order"}
+                      </button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
