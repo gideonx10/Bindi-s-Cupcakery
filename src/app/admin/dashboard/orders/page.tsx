@@ -90,12 +90,14 @@ const getPaymentStatusColor = (status: string) => {
 const ProductsModal = ({
   products,
   customization,
+  isHamper,
 }: {
   products: OrderProduct[];
   customization?: string;
+  isHamper: boolean;
 }) => {
   return (
-    <Dialog>
+<Dialog>
       <DialogTrigger>
         <Badge
           variant="secondary"
@@ -108,6 +110,12 @@ const ProductsModal = ({
         <DialogHeader>
           <DialogTitle>Order Products</DialogTitle>
         </DialogHeader>
+        {/* Attractive Hamper Notification */}
+        {isHamper && (
+          <div className="p-2 bg-purple-200 text-purple-800 rounded text-center transition-colors duration-200 hover:bg-purple-300 my-4">
+            <span className="font-semibold text-sm">Hamper Order</span>
+          </div>
+        )}
         <div className="space-y-4 mt-4">
           {products.map((item, idx) => (
             <div
@@ -400,6 +408,7 @@ export default function OrdersPage() {
                         </TableCell>
                         <TableCell>
                           <ProductsModal
+                            isHamper={order.isHamper}
                             products={order.products}
                             customization={order.customization}
                           />
