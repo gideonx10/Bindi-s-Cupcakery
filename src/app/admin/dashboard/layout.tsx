@@ -147,17 +147,17 @@ function Sidebar({ className }: SidebarProps) {
               ))}
             </div>
           </ScrollArea>
+          <div className="px-3">
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              <LogOut className="mr-2 h-4 w-4 text-red-500" />
+              Logout
+            </Button>
+          </div>
         </div>
-      </div>
-      <div className="px-3">
-        <Button
-          onClick={handleLogout}
-          variant="ghost"
-          className="w-full justify-start"
-        >
-          <LogOut className="mr-2 h-4 w-4 text-red-500" />
-          Logout
-        </Button>
       </div>
     </div>
   );

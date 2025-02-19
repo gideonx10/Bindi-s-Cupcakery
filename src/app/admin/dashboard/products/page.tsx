@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
+import { Plus, Search, Edit2, Trash2, Package } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -234,114 +235,190 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Products Management</h1>
-        <Input
-          placeholder="Search by name or category..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-md"
-        />
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setEditingProduct(null);
-                setIsDialogOpen(true);
-              }}
-            >
-              Add Product
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[525px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editingProduct?._id ? "Edit Product" : "Add New Product"}
-              </DialogTitle>
-            </DialogHeader>
-            <ProductForm
-              product={
-                editingProduct || {
-                  _id: "",
-                  name: "",
-                  price: 0,
-                  description: "",
-                  category: "",
-                  isFeatured: false,
-                  isSugarFree: false,
-                  images: "",
-                }
-              }
-              onSave={handleSave}
-              onCancel={() => {
-                setIsDialogOpen(false);
-                setEditingProduct(null);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="p-8 space-y-8 max-w-7xl mx-auto">
+        {/* Header Section with Glass Effect */}
+        <div className="relative p-6 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="absolute inset-0 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm"></div>
 
-      {filteredProducts.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-gray-500">
-            {products.length === 0
-              ? "No products found"
-              : "No products match your search"}
-          </p>
+          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300">
+                Products Management
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400">
+                Manage your product catalog
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-full sm:w-80 bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:ring-slate-400 dark:focus:ring-slate-500"
+                />
+              </div>
+
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    onClick={() => {
+                      setEditingProduct(null);
+                      setIsDialogOpen(true);
+                    }}
+                    className="bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 dark:from-slate-200 dark:to-slate-300 dark:hover:from-slate-300 dark:hover:to-slate-400 text-white dark:text-slate-900 shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <Plus className="w-4 h-4 mr-2" /> Add Product
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[525px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300">
+                      {editingProduct?._id ? "Edit Product" : "Add New Product"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <ProductForm
+                    product={
+                      editingProduct || {
+                        _id: "",
+                        name: "",
+                        price: 0,
+                        description: "",
+                        category: "",
+                        isFeatured: false,
+                        isSugarFree: false,
+                        images: "",
+                      }
+                    }
+                    onSave={handleSave}
+                    onCancel={() => {
+                      setIsDialogOpen(false);
+                      setEditingProduct(null);
+                    }}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Featured</TableHead>
-                <TableHead>Sugar Free</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProducts.map((product) => (
-                <TableRow key={product._id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
-                  <TableCell>{product.description}</TableCell>
-                  <TableCell>
-                    {typeof product.category === "object" &&
-                    product.category !== null
-                      ? (product.category as Category).name
-                      : product.category}
-                  </TableCell>
-                  <TableCell>{product.isFeatured ? "Yes" : "No"}</TableCell>
-                  <TableCell>{product.isSugarFree ? "Yes" : "No"}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setEditingProduct(product);
-                        setIsDialogOpen(true);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete(product._id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-200 dark:border-slate-700">
+            <Package className="w-12 h-12 mx-auto text-slate-400 dark:text-slate-500 mb-4" />
+            <p className="text-slate-500 dark:text-slate-400">
+              {products.length === 0
+                ? "No products found"
+                : "No products match your search"}
+            </p>
+          </div>
+        ) : (
+          <div className="relative">
+            <div className="absolute inset-0 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm rounded-xl"></div>
+
+            <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
+              <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-50/50 dark:bg-slate-800/50">
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Name
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Price
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Description
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Category
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Featured
+                      </TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-300">
+                        Sugar Free
+                      </TableHead>
+                      <TableHead className="text-right font-semibold text-slate-700 dark:text-slate-300">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProducts.map((product) => (
+                      <TableRow
+                        key={product._id}
+                        className="transition-all duration-200 hover:bg-slate-50/50 dark:hover:bg-slate-800/50"
+                      >
+                        <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                          {product.name}
+                        </TableCell>
+                        <TableCell className="font-mono text-slate-700 dark:text-slate-300">
+                          ${product.price.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-slate-600 dark:text-slate-400 max-w-md truncate">
+                          {product.description}
+                        </TableCell>
+                        <TableCell className="text-slate-600 dark:text-slate-400">
+                          {typeof product.category === "object" &&
+                          product.category !== null
+                            ? product.category.name
+                            : product.category}
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            ${
+                              product.isFeatured
+                                ? "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                                : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                            }`}
+                          >
+                            {product.isFeatured ? "Featured" : "Standard"}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            ${
+                              product.isSugarFree
+                                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                            }`}
+                          >
+                            {product.isSugarFree ? "Sugar Free" : "Regular"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setEditingProduct(product);
+                              setIsDialogOpen(true);
+                            }}
+                            className="bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700"
+                          >
+                            <Edit2 className="w-4 h-4 mr-2" /> Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleDelete(product._id)}
+                            className="bg-red-500 hover:bg-red-600 dark:bg-red-900/80 dark:hover:bg-red-900"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
