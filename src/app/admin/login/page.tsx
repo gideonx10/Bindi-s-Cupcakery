@@ -108,7 +108,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-300 to-indigo-50">
+    <div className="min-h-screen flex items-center justify-center bg-[#D9F0FA]">
       <div className="max-w-md w-full mx-4">
         {/* Header Section */}
         <div className="text-center mb-8">
@@ -155,11 +155,11 @@ const AdminLogin = () => {
 
           {/* OTP Form */}
           {!isOtpSent ? (
-            <form onSubmit={handleSendOtp} className="space-y-4">
+            <form onSubmit={handleSendOtp} className="space-y-8">
               <div>
                 <label
                   htmlFor="phoneNumber"
-                  className="block text-sm font-medium text-slate-700 mb-2"
+                  className="block text-lg font-semibold text-slate-700 mb-2"
                 >
                   Phone Number
                 </label>
@@ -169,14 +169,14 @@ const AdminLogin = () => {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="w-full px-4 py-3 text-gray-700 rounded-lg border border-slate-300 bg-gray-100 transition-colors"
-                  placeholder="Enter your phone number (e.g. +1234567890)"
+                  placeholder="Enter your phone number"
                   required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow-2xl font-medium transition-colors flex items-center justify-center"
+                className="w-full bg-indigo-700 hover:bg-indigo-800 hover:scale-[102%] text-white py-3 px-6 rounded-lg shadow-2xl font-medium transition-colors flex items-center justify-center"
                 disabled={loading}
               >
                 {loading ? (
