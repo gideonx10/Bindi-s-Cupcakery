@@ -48,7 +48,7 @@ const ImageSlider: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden" onDrag={handleDrag}>
+    <div className="relative md:scale-[85%] overflow-hidden" onDrag={handleDrag}>
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(${-currentIndex * 100}%)` }}

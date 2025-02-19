@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const AdminLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -47,7 +48,9 @@ const AdminLogin = () => {
     try {
       // Validate phone number format
       if (!/^\d{9,11}$/.test(phoneNumber)) {
-        alert("Phone number must be between 9 and 11 digits");
+        toast.error("Phone number must be between 9 and 11 digits", {
+          position: "top-center",
+        });
         return;
       }
 
@@ -249,19 +252,6 @@ const AdminLogin = () => {
                 ) : null}
                 Verify OTP
               </button>
-
-              <div className="text-center mt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOtpSent(false);
-                    setOtp("");
-                  }}
-                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                >
-                  Change phone number
-                </button>
-              </div>
             </form>
           )}
 

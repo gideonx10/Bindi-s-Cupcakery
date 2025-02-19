@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 
 // Simple reusable button component
 const Button = ({
@@ -155,58 +156,79 @@ const AuthForm = () => {
 
   const handleSendOtp = async () => {
     if (!phoneNumber) {
-      alert("Please enter your phone number");
+      toast.error("Please enter your phone number", { position: "top-center" });
       return;
     }
 
     if (!/^\d{9,11}$/.test(phoneNumber)) {
-      alert("Phone number must be between 9 and 11 digits");
+      toast.error("Phone number must be between 9 and 11 digits", {
+        position: "top-center",
+      });
+
       return;
     }
 
     try {
       await sendOtp(phoneNumber);
       setIsOtpSent(true);
-      alert("OTP sent successfully!");
+      toast.success("OTP sent successfully!", {
+        position: "top-center",
+      });
     } catch (error) {
-      alert("Error sending OTP. Please try again.");
+      toast.error("Error sending OTP. Please try again.", {
+        position: "top-center",
+      });
     }
   };
 
   const handleSendSignUpOtp = async () => {
     if (!name || !email || !phone) {
-      alert("Please fill in all fields");
+      toast.error("Please fill in all fields", {
+        position: "top-center",
+      });
       return;
     }
 
     try {
       await sendOtp(phone);
       setIsSignUpOtpSent(true);
-      alert("OTP sent successfully!");
+      toast.success("OTP sent successfully!", {
+        position: "top-center",
+      });
     } catch (error) {
-      alert("Error sending OTP. Please try again.");
+      toast.error("Error sending OTP. Please try again.", {
+        position: "top-center",
+      });
     }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneNumber || !otp) {
-      alert("Please enter both phone number and OTP");
+      toast.error("Please enter both phone number and OTP", {
+        position: "top-center",
+      });
       return;
     }
 
     setLoading(true);
     try {
       await verifyOtp(phoneNumber, otp);
-      alert("Login successful!");
+      toast.success("Login successful!", {
+        position: "top-center",
+      });
 
       // Redirect to the callback URL or home if not specified
       router.push(callbackUrl);
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message, {
+          position: "top-center",
+        });
       } else {
-        alert("Error verifying OTP. Please try again.");
+        toast.error("Error verifying OTP. Please try again.", {
+          position: "top-center",
+        });
       }
     } finally {
       setLoading(false);
@@ -216,7 +238,9 @@ const AuthForm = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !phone || !signUpOtp) {
-      alert("Please fill in all fields");
+      toast.error("Please fill in all fields", {
+        position: "top-center",
+      });
       return;
     }
 
@@ -245,7 +269,9 @@ const AuthForm = () => {
         throw new Error(data.error || "Failed to create account");
       }
 
-      alert("Signup successful! Please sign in.");
+      toast.success("Signup successful! Please sign in.", {
+        position: "top-center",
+      });
       setIsRightPanelActive(false);
 
       // Reset form
@@ -256,9 +282,13 @@ const AuthForm = () => {
       setIsSignUpOtpSent(false);
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message, {
+          position: "top-center",
+        });
       } else {
-        alert("Error during signup. Please try again.");
+        toast.error("Error during signup. Please try again.", {
+          position: "top-center",
+        });
       }
     } finally {
       setLoading(false);

@@ -79,7 +79,7 @@ export default function Cart({
           </div>
 
           {/* Cart Content */}
-          <div className="flex-1 overflow-y-auto px-3 py-4 scrollbar-hide shiny-background">
+          <div className="flex-1 overflow-y-auto px-3 py-4 shiny-background scrollbar-hide">
             {loading ? (
               <p className="text-[#3b0017] text-center">Loading...</p>
             ) : error ? (
@@ -114,7 +114,7 @@ export default function Cart({
 
           {/* Cart Footer - Sticky Checkout Button */}
           {cartItems.length > 0 && (
-            <div className="fixed bottom-0 right-0 w-full max-w-md md:w-96 p-4 rounded-s-2xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
+            <div className="sticky bottom-0 right-0 w-full max-w-md md:w-96 p-4 bg-[#f0faff] rounded-s-2xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
               <div className="flex justify-between text-lg font-semibold text-[#3b0017] mb-4">
                 <span>Total:</span>
                 <span>₹{totalPrice.toFixed(2)}</span>

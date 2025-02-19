@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { User, Phone, Mail, LogOut } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface UserData {
   name: string;
@@ -68,9 +69,14 @@ const UserDetails = ({ userId }: { userId: string | undefined }) => {
       const updatedUser = await res.json();
       setUser(updatedUser);
       setIsEditing(false);
-      alert("User details updated successfully!");
+      toast.success("User details updated successfully!", {
+        position: "top-center",
+      });
     } catch (err: unknown) {
-      if (err instanceof Error) alert(err.message);
+      if (err instanceof Error)
+        toast.error(err.message, {
+          position: "top-center",
+        });
     }
   };
 
