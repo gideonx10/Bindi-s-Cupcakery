@@ -207,7 +207,7 @@ const TopItems = () => {
                     >
                       {category.name}
                     </h3>
-                    <p className={`${category.colors.description} mb-4`}>
+                    <p className={`${category.colors.description} font-bold font-ancient mb-4`}>
                       {category.description}
                     </p>
                   </div>

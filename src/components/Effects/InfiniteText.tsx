@@ -50,7 +50,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
   }, [animate]);
 
   return (
-    <div className="z-[10] h-[120px] sm:h-[160px] md:h-[200px] w-full">
+    <div className="z-[10] h-[100px] sm:h-[140px] md:h-[180px] w-full">
       <div className="relative flex h-full items-center overflow-hidden bg-[#3D1C1A] text-[#F5E6D3] border-none">
         <div className="absolute">
           <div
