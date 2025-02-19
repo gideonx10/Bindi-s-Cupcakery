@@ -29,7 +29,7 @@ interface Category {
 const categories: Category[] = [
   {
     id: 1,
-    name: "Classic Items",
+    name: "Peanut Butter Fudge",
     image: "/images/img1.jpg",
     description: "Timeless collection of traditional favorites",
     colors: {
@@ -44,7 +44,7 @@ const categories: Category[] = [
   },
   {
     id: 2,
-    name: "Specialty Items",
+    name: "Chocolate Fudge Cupcake",
     image: "/images/img2.jpg",
     description: "Unique and innovative combinations",
     colors: {
@@ -59,7 +59,7 @@ const categories: Category[] = [
   },
   {
     id: 3,
-    name: "Premium Selection",
+    name: "Lemon Zest Cake Pop",
     image: "/images/img3.jpg",
     description: "Elegant and sophisticated choices",
     colors: {
@@ -74,7 +74,7 @@ const categories: Category[] = [
   },
   {
     id: 4,
-    name: "Seasonal Items",
+    name: "Walnut Crunch Brownie",
     image: "/images/img4.jpg",
     description: "Limited edition seasonal delights",
     colors: {
