@@ -50,6 +50,7 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",
     "react-qr-code": "^2.0.15",
+    "react-toastify": "^11.0.3",
     "react-transition-group": "^4.4.5",
     "scrolltrigger": "^1.0.1",
     "tailwind-merge": "^3.0.1",

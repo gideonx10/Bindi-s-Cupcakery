@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MoveUpRight } from "lucide-react";
+import { toast } from "react-toastify";
 
 const ReviewForm = () => {
   const [formData, setFormData] = useState({
@@ -28,9 +29,6 @@ const ReviewForm = () => {
         text: `Thank you ${formData.userName}, for filling feedback form`,
       }),
     });
-
-    // const data = await res.json();
-    // alert(data.message);
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,15 +42,21 @@ const ReviewForm = () => {
       });
 
       if (res.ok) {
-        alert("Review submitted successfully!");
+        toast.success("Review submitted successfully!", {
+          position: "top-center",
+        });
         sendEmail();
         setFormData({ userName: "", phone: "", email: "", comment: "" });
       } else {
-        alert("Failed to submit review.");
+        toast.error("Failed to submit review.", {
+          position: "top-center",
+        });
       }
     } catch (error) {
       console.error("Error submitting review:", error);
-      alert("An error occurred.");
+      toast.error("An error occurred.", {
+        position: "top-center",
+      });
     }
 
     setLoading(false);

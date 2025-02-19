@@ -52,11 +52,11 @@ const Footer = () => {
             <h2 className="font-[Ananda] text-[1.8rem] md:text-5xl text-[#4A0D2C]">
               Bindi&apos;s Cupcakery
             </h2>
-            <p className="text-[#4A0D2C] font-ancient text-[0.9rem] md:text-2xl mt-5 hidden md:block">
+            <p className="text-[#4A0D2C] font-ancient font-medium text-[0.9rem] md:text-2xl mt-5 hidden md:block">
               &quot;Baked with Love, Egg-Free Always!&quot;
             </p>
             <div className="flex items-center gap-3 mt-3">
-              <span className="text-[#4A0D2C] font-medium text-lg md:text-xl text-center">
+              <span className="text-[#4A0D2C] font-medium text-lg md:text-xl text-center font-ancient">
                 Cloud Kitchen at Parle Point, Surat
               </span>
             </div>
@@ -78,7 +78,7 @@ const Footer = () => {
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
                 href={user ? "/user" : "/auth"}
               >
-                {user ? "PROFILE" : "SIGN UP"}
+                {user ? "PROFILE" : "SIGN IN"}
               </a>
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
@@ -176,10 +176,10 @@ const Footer = () => {
       {/* Copyright Section */}
       <div className="bg-[#FCFBE4] relative bottom-0 w-full p-6 rounded-t-2xl shadow-[0_-5px_10px_-5px_rgba(0,0,0,0.1)] font-ancient">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-4">
-          <p className="text-[#4A0D2C] text-lg md:text-xl mb-2 md:mb-0 text-center">
+          <p className="text-[#4A0D2C] text-lg  font-medium md:text-xl mb-2 md:mb-0 text-center">
             &copy; 2025 Bindi&apos;s Cupcakery. All rights reserved.
           </p>
-          <p className="text-[#4A0D2C] text-lg md:text-xl flex items-center gap-2">
+          <p className="text-[#4A0D2C] text-lg font-medium md:text-xl flex items-center gap-2">
             <Mail className="w-6 h-6" />
             <a href="mailto:bindis_cupcakery@gmail.com">
               bindis_cupcakery@gmail.com

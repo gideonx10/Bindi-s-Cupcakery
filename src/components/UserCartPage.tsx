@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CartItem from "@/components/CartItem";
 import UPIQrCode from "./UPIQrCode";
+import { toast } from "react-toastify";
 
 interface Product {
   _id: string;
@@ -97,9 +98,13 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
     } catch (error: unknown) {
       console.error("Error:", error);
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message, {
+          position: "top-center",
+        });
       } else {
-        alert("An unexpected error occurred. Please try again later.");
+        toast.error("An unexpected error occurred. Please try again later.", {
+          position: "top-center",
+        });
       }
     } finally {
       setLoading(false);
@@ -122,12 +127,19 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
   }
 
   async function handleCheckout(paymentMethod: "Pay on Takeway" | "Online") {
-    if (cartItems.length === 0) return alert("Your cart is empty!");
+    if (cartItems.length === 0)
+      return toast.info("Your cart is empty!", {
+        position: "top-center",
+      });
     if (isHamper && getTotalQuantity() > 6) {
-      return alert("Hamper orders cannot exceed 6 items in total!");
+      return toast.error("Hamper orders cannot exceed 6 items in total!", {
+        position: "top-center",
+      });
     }
     if (paymentMethod === "Online" && !transactionId) {
-      return alert("Please enter the transaction ID.");
+      return toast.error("Please enter the transaction ID.", {
+        position: "top-center",
+      });
     }
 
     setCheckingOut(true);
@@ -217,11 +229,18 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
       });
 
       await clearCart();
-      alert("Order placed successfully! A confirmation email has been sent.");
+      toast.success(
+        "Order placed successfully! A confirmation email has been sent.",
+        {
+          position: "top-center",
+        }
+      );
       router.push("/user?tab=orders");
     } catch (error) {
       console.error(error);
-      alert("Checkout failed, please try again.");
+      toast.error("Checkout failed, please try again.", {
+        position: "top-center",
+      });
     } finally {
       setCheckingOut(false);
     }

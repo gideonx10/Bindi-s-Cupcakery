@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Clock, Package, CreditCard, AlertCircle } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface Product {
   _id: string;
@@ -60,8 +61,11 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
       const fiveHours = 5 * 60 * 60 * 1000;
 
       if (currentTime - orderTime > fiveHours) {
-        alert(
-          "You cannot cancel this order. The 5-hour cancellation window has passed."
+        toast.error(
+          "You cannot cancel this order. The 5-hour cancellation window has passed.",
+          {
+            position: "top-center",
+          }
         );
         return;
       }
@@ -106,10 +110,17 @@ export default function OrdersPage({ userId }: { userId: string | undefined }) {
           }),
         });
 
-        alert("Order has been cancelled successfully, and notifications sent.");
+        toast.success(
+          "Order has been cancelled successfully, and notifications sent.",
+          {
+            position: "top-center",
+          }
+        );
       } catch (error) {
         console.error(error);
-        alert("Failed to cancel order. Please try again.");
+        toast.error("Failed to cancel order. Please try again.", {
+          position: "top-center",
+        });
       } finally {
         setIsCanceling(false);
       }

@@ -4,6 +4,10 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import useLenis from "@/hooks/useLenis";
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
+
 
 export default function RootLayout({
   children,
@@ -18,6 +22,7 @@ export default function RootLayout({
             <Navbar />
             <div data-scroll-container>{children}</div>
           </Suspense>
+          <ToastContainer />
         </SessionProvider>
       </body>
     </html>
