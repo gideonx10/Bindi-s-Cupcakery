@@ -22,87 +22,30 @@ const UserPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<{
-    userId: string;
-  } | null>(null);
+  const [user, setUser] = useState<{ userId: string } | null>(null);
+
   useEffect(() => {
     const checkSession = async () => {
       const res = await fetch("/api/session", {
         method: "GET",
-        credentials: "include", // ✅ Ensures cookies are sent with request
+        credentials: "include",
       });
       const data = await res.json();
-      // console.log(data);
+
       if (!data.authenticated) {
         router.push(
           `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
         );
-      }
-      if (data.authenticated) {
-        setUser({
-          userId: data.userId,
-        });
       } else {
-        console.log("Not authenticated:", data.message);
+        setUser({ userId: data.userId });
       }
     };
     checkSession();
   }, []);
+
   const userId = user?.userId;
   const initialTab = searchParams.get("tab") || "home";
   const [activeTab, setActiveTab] = useState<string>(initialTab);
-  const [isHovered, setIsHovered] = useState<string | null>(null);
-
-  // useEffect(() => {
-
-  // }, [router]);
-
-  const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    window.location.reload();
-  };
-  const routes = [
-    {
-      label: "Home",
-      icon: Home,
-      id: "home",
-      color: "text-pink-500",
-      hoverColor: "hover:text-pink-600",
-      activeColor: "bg-pink-100",
-    },
-    {
-      label: "Details",
-      icon: User,
-      id: "details",
-      color: "text-violet-500",
-      hoverColor: "hover:text-violet-600",
-      activeColor: "bg-violet-50",
-    },
-    {
-      label: "Orders",
-      icon: ShoppingBag,
-      id: "orders",
-      color: "text-orange-500",
-      hoverColor: "hover:text-orange-600",
-      activeColor: "bg-orange-50",
-    },
-    {
-      label: "Cart",
-      icon: ShoppingCart,
-      id: "cart",
-      color: "text-green-500",
-      hoverColor: "hover:text-green-600",
-      activeColor: "bg-green-50",
-    },
-    {
-      label: "General",
-      icon: Settings,
-      id: "general",
-      color: "text-blue-500",
-      hoverColor: "hover:text-blue-600",
-      activeColor: "bg-blue-50",
-    },
-  ];
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
@@ -111,13 +54,53 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  // if (status === "loading") {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-  //     </div>
-  //   );
-  // }
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
+
+  const routes = [
+    {
+      label: "Home",
+      icon: Home,
+      id: "home",
+      color: "text-blue-500",
+      hoverColor: "hover:text-blue-600",
+      activeColor: "bg-blue-100",
+    },
+    {
+      label: "Details",
+      icon: User,
+      id: "details",
+      color: "text-indigo-500",
+      hoverColor: "hover:text-indigo-600",
+      activeColor: "bg-indigo-50",
+    },
+    {
+      label: "Orders",
+      icon: ShoppingBag,
+      id: "orders",
+      color: "text-cyan-500",
+      hoverColor: "hover:text-cyan-600",
+      activeColor: "bg-cyan-50",
+    },
+    {
+      label: "Cart",
+      icon: ShoppingCart,
+      id: "cart",
+      color: "text-teal-500",
+      hoverColor: "hover:text-teal-600",
+      activeColor: "bg-teal-50",
+    },
+    {
+      label: "General",
+      icon: Settings,
+      id: "general",
+      color: "text-sky-500",
+      hoverColor: "hover:text-sky-600",
+      activeColor: "bg-sky-50",
+    },
+  ];
 
   const handleTabChange = (tab: string) => {
     if (tab !== activeTab) {
@@ -142,7 +125,7 @@ const UserPage = () => {
         return <div className="p-4">General Information Content</div>;
       default:
         return (
-          <div className="p-4 text-lg text-pink-800">
+          <div className="p-4 text-lg text-blue-800">
             Select a tab from the sidebar.
           </div>
         );
@@ -151,14 +134,14 @@ const UserPage = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full h-[14vh] bg-[#FFF0F7] z-20"></div>
-      <div className="min-h-screen bg-[#fff0f7]">
+      <div className="fixed top-0 left-0 w-full h-[14vh] bg-[#E0F2FE] z-20"></div>
+      <div className="min-h-screen bg-[#E0F2FE]">
         {/* Responsive Sidebar/Bottom Navigation */}
-        <div className="fixed lg:w-72 lg:left-0 lg:top-[14vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 bg-[#fff0f7] transition-all duration-300">
-          {/* Desktop Header - Hidden on Mobile */}
+        <div className="fixed lg:w-72 lg:left-0 lg:top-[14vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 bg-[#E0F2FE] transition-all duration-300">
+          {/* Desktop Header */}
           <div className="hidden lg:block p-8">
-            <h2 className="text-2xl font-bold mb-8 py-3 rounded-lg tracking-tight text-center bg-pink-500 text-white">
-              Hey There ! 👋
+            <h2 className="text-2xl font-bold mb-8 py-3 rounded-lg tracking-tight text-center bg-blue-500 text-white">
+              Hey There! 👋
             </h2>
           </div>
 
@@ -175,7 +158,7 @@ const UserPage = () => {
                     "hover:scale-[1.02]",
                     activeTab === route.id
                       ? `${route.activeColor} ${route.color} font-semibold`
-                      : "hover:bg-[#FFE4F0]", // Changed hover background color
+                      : "hover:bg-[#D0EFFF]",
                     route.hoverColor
                   )}
                 >
@@ -197,7 +180,7 @@ const UserPage = () => {
                   onClick={() => signOut()}
                   className={cn(
                     "hidden lg:flex items-center gap-3 w-full justify-start",
-                    "text-red-500 hover:bg-[#FFE4F0] hover:text-red-600", // Changed hover background color
+                    "text-red-500 hover:bg-[#D0EFFF] hover:text-red-600",
                     "transition-all duration-300 hover:scale-[1.02]",
                     "mt-4 py-6 text-base font-medium"
                   )}
@@ -213,14 +196,12 @@ const UserPage = () => {
         {/* Main Content */}
         <div className="flex-1 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
           <div className="max-w-4xl mx-auto px-4">
-            <div className=" rounded-lg">
-              {renderContent()}
-            </div>
+            <div className="rounded-lg">{renderContent()}</div>
           </div>
           <div className="lg:hidden flex justify-center mt-4 pb-4">
             <button
               onClick={() => handleLogout()}
-              className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#FFF0F7] text-red-500 hover:bg-[#ffd1e6] transition-colors duration-200"
+              className="flex items-center shadow-2xl gap-2 px-6 py-3 rounded-xl bg-[#E0F2FE] text-red-500 hover:bg-[#B9E6FE] transition-colors duration-200"
             >
               <LogOut className="mr-3 h-5 w-5" />
               <span>Logout</span>

@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     // Save OTP in DB with 2-minute expiry
     await Otp.create({
-      phoneNumber: `+91${phone}`,
+      phoneNumber: phone,
       otp: hashedOtp,
       expiresAt: new Date(Date.now() + 2 * 60000),
     });

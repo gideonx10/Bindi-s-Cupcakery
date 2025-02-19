@@ -1,10 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Phone, Mail } from "lucide-react";
+import QRCode from "react-qr-code";
 
 const Footer = () => {
+  const [user, setUser] = useState<{
+    userId: string;
+    phone: string;
+    role: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const data = await res.json();
+      if (data.authenticated) {
+        setUser({ userId: data.userId, phone: data.phone, role: data.role });
+      } else {
+        console.log("Not authenticated:", data.message);
+      }
+    };
+    checkSession();
+  }, []);
+
   return (
     <footer className="relative flex flex-col bg-[#FCFBE4] w-full overflow-hidden justify-center pt-10">
       <div className="flex flex-col md:flex-row justify-between p-6 md:px-20 gap-8 -translate-y-8">
@@ -43,15 +67,18 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between w-full md:w-2/3 gap-8">
           {/* Quick Links Section */}
           <div className="flex flex-col items-center md:items-center w-full md:w-1/2 justify-center">
-            <h3 className="text-[#4A0D2C] text-3xl md:text-4xl font-bold mb-6">
+            <h3
+              className="text-[#4A0D2C] text-3xl md:text-5xl font-semibold mb-6"
+              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+            >
               Quick Links
             </h3>
-            <div className="flex md:flex-col gap-4 md:gap-6 items-center">
+            <div className="flex md:flex-col gap-3 md:gap-4 items-center font-ancient">
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
-                href="/user"
+                href={user ? "/user" : "/auth"}
               >
-                PROFILE
+                {user ? "PROFILE" : "SIGN UP"}
               </a>
               <a
                 className="text-[#4A0D2C] text-xl md:text-3xl font-medium hover:underline"
@@ -75,16 +102,17 @@ const Footer = () => {
           </div>
 
           {/* QR Code and Contact Section */}
-          <div className="flex flex-col items-center w-full md:w-1/2 gap-6 justify-center">
+          <div className="flex flex-col items-center w-full md:w-1/2 gap-6 justify-center font-ancient">
             {/* QR Code */}
             <div className="w-36 h-36 p-2">
-              <Image
+              {/* <Image
                 src="/images/footerQR.png"
                 alt="Footer QR"
                 width={140}
                 height={140}
                 className="transform"
-              />
+              /> */}
+              <QRCode value="https://wa.me/918849130189?" size={140} />
             </div>
             <span className="text-[#4A0D2C] font-medium text-xl md:text-2xl">
               Scan QR to Order
