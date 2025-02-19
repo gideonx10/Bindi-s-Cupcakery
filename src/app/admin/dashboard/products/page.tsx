@@ -356,7 +356,7 @@ export default function ProductsPage() {
                           {product.name}
                         </TableCell>
                         <TableCell className="font-mono text-slate-700 dark:text-slate-300">
-                          ${product.price.toFixed(2)}
+                          ₹{product.price.toFixed(2)}
                         </TableCell>
                         <TableCell className="text-slate-600 dark:text-slate-400 max-w-md truncate">
                           {product.description}
