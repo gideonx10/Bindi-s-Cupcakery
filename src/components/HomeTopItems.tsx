@@ -211,7 +211,7 @@ const TopItems = () => {
                       {category.description}
                     </p>
                   </div>
-                  <button
+                  {/* <button
                     className={`
                     w-full ${category.colors.buttonBg} ${category.colors.buttonText} 
                     font-semibold py-3 px-4 rounded-lg
@@ -221,7 +221,7 @@ const TopItems = () => {
                   `}
                   >
                     View Details
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </motion.div>

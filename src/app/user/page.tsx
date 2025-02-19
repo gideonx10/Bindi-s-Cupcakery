@@ -24,6 +24,11 @@ const UserPage = () => {
   const pathname = usePathname();
   const [user, setUser] = useState<{ userId: string } | null>(null);
 
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
+
   useEffect(() => {
     const checkSession = async () => {
       const res = await fetch("/api/session", {
@@ -169,7 +174,7 @@ const UserPage = () => {
               {pathname === "/user" && (
                 <Button
                   variant="ghost"
-                  onClick={() => signOut()}
+                  onClick={() => handleLogout()}
                   className={cn(
                     "hidden lg:flex items-center gap-3 w-full justify-start",
                     "text-red-500 hover:bg-[#D0EFFF] hover:text-red-600",
